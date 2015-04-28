@@ -428,21 +428,22 @@ export default class Promise<T> implements Thenable<T> {
 	 * successfully, or the `reject` function when the operation fails.
 	 */
 	constructor(executor: Executor<T>) {
-		// Create resolver that verifies that the the resolution value isn't this promise. Since any incoming promise
+		// Wrap the executor to verify that the the resolution value isn't this promise. Since any incoming promise
 		// should be wrapped, the native resolver can't automatically detect self-resolution.
-		let createResolve = (resolve: (value?: T | Thenable<T>) => void, reject: (reason?: any) => void) => {
-			return (value: any) => {
-				if (value === this) {
-					reject(new TypeError('Cannot chain a promise to itself'));
-				}
-				else {
-					resolve(value);
-				}
-			};
-		};
-
 		this.promise = new PromiseConstructor(<Executor<T>> ((resolve, reject) => {
-			executor(createResolve(resolve, reject), reject);
+			executor(
+				(value?: T | Thenable<T>): void => {
+					if (value === this) {
+						reject(new TypeError('Cannot chain a promise to itself'));
+					}
+					else {
+						resolve(value);
+					}
+				},
+				(reason?: Error): void => {
+					reject(reason);
+				}
+			);
 		}));
 
 		this._state = State.Pending;
