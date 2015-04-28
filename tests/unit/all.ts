@@ -8,3 +8,4 @@ import './object';
 import './Promise';
 import './async/iteration';
 import './async/Promise';
+import './async/Task';

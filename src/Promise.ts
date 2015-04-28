@@ -416,23 +416,23 @@ export class PlatformPromise<T> implements Thenable<T> {
 	}
 
 	constructor(executor: Executor<T>) {
-		let createResolve = (resolve: (value?: T | Thenable<T>) => void, reject: (reason?: any) => void) => {
-			return (value: any) => {
-				if (value === this) {
-					reject(new TypeError('Cannot chain a promise to itself'));
+		// Wrap the executor to verify that the the resolution value isn't this promise. Since any incoming promise
+		// should be wrapped, the native resolver can't automatically detect self-resolution.
+		this.promise = new PromiseConstructor(<Executor<T>> ((resolve, reject) => {
+			executor(
+				(value?: T | Thenable<T>): void => {
+					if (value === this) {
+						reject(new TypeError('Cannot chain a promise to itself'));
+					}
+					else {
+						resolve(value);
+					}
+				},
+				(reason?: Error): void => {
+					reject(reason);
 				}
-				else {
-					resolve(value);
-				}
-			};
-		};
-		// Create safe executor that verifies that the the resolution value isn't this promise. Since any incoming
-		// promise should be wrapped, the native resolver can't automatically detect self-resolution.
-		let safeExecutor: Executor<T> = (resolve, reject) => {
-			(<Executor<T>> executor)(createResolve(resolve, reject), reject);
-		};
-
-		this.promise = new PromiseConstructor(safeExecutor);
+			);
+		}));
 	}
 
 	private promise: typeof global.Promise;
