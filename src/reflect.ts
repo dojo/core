@@ -131,6 +131,30 @@ export function preventExtensions(target: {}): boolean {
 	});
 }
 
+/**
+ * Calls a target function with arguments as specified by the args parameter
+ * with a specified context context
+ *
+ * @param func the function to call
+ * @param thisArg the context in which to run the function
+ * @param args arguments to pass the function during execution
+ * @return the result of the function call
+ */
+export function apply(func: () => any, thisArg: {}, args: any[]): boolean {
+	if (typeof func !== 'function') {
+		throw new TypeError(func + 'is not a function');
+	}
+	args = args || []
+	return func.apply(thisArg, args);
+}
+
+/**
+ * Sets a new prototype on the target object
+ *
+ * @param target the object set a new prototype on
+ * @param proto the protoype
+ * @return true or false indicating whether the prototype setting succeeded
+ */
 export function setPrototypeOf(target: any, proto?: {}): boolean {
 	if (typeof target !== 'object') {
 		throw new TypeError('target must be an object');
