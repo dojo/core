@@ -1,5 +1,6 @@
 import nextTick from './nextTick';
 import global from './global';
+import has, { add as hasAdd } from './has';
 
 /**
  * Return true if a given value meets Promise's definition of "iterable".
@@ -81,7 +82,7 @@ export class PromiseShim<T> implements Thenable<T> {
 				if (item instanceof PromiseShim) {
 					// If an item PromiseShim rejects, this PromiseShim is immediately rejected with the item
 					// PromiseShim's rejection error.
-					item.then(fulfill.bind(null, index), reject.bind(null));
+					item.then(fulfill.bind(null, index), reject);
 				}
 				else {
 					PromiseShim.resolve(item).then(fulfill.bind(null, index));
@@ -143,10 +144,10 @@ export class PromiseShim<T> implements Thenable<T> {
 					if (item instanceof PromiseShim) {
 						// If a PromiseShim item rejects, this PromiseShim is immediately rejected with the item
 						// PromiseShim's rejection error.
-						item.then(resolve.bind(null), reject.bind(null));
+						item.then(resolve, reject);
 					}
 					else {
-						PromiseShim.resolve(item).then(resolve.bind(null));
+						PromiseShim.resolve(item).then(resolve);
 					}
 				}
 			}
@@ -378,7 +379,8 @@ function unwrapPromises(items: any[]): any[] {
 /**
  * PromiseConstructor points to the promise constructor this platform should use.
  */
-let PromiseConstructor = global.Promise || PromiseShim;
+hasAdd('promise', typeof global.Promise !== 'undefined');
+let PromiseConstructor = has('promise') ? global.Promise : PromiseShim;
 
 /**
  * PlatformPromise is a very thin wrapper around either a native promise implementation or PromiseShim.
@@ -435,7 +437,7 @@ export class PlatformPromise<T> implements Thenable<T> {
 		}));
 	}
 
-	private promise: typeof global.Promise;
+	private promise: any;
 
 	catch<U>(onRejected: (reason?: Error) => (U | Thenable<U>)): PlatformPromise<U> {
 		return this.then<U>(null, onRejected);

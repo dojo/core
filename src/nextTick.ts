@@ -1,23 +1,48 @@
 import global from './global';
-import has, { add as hasAdd } from './has';
+import has from './has';
 import { Handle } from './interfaces';
+
+/**
+ * Create macro-scheduler based nextTick function.
+ */
+function createMacroScheduler(
+	schedule: ((callback: () => void, timeout?: number) => void),
+	clearSchedule: ((handle: any) => void)
+) {
+	let queue = new CallbackQueue();
+	let timer: any;
+
+	return function(callback: () => void): Handle {
+		let handle = queue.add(callback);
+
+		if (!timer) {
+			timer = schedule(function (): void {
+				clearSchedule(timer);
+				timer = null;
+				queue.drain();
+			}, 0);
+		}
+
+		return handle;
+	};
+}
 
 /**
  * An item in a CallbackQueue.
  */
-interface QueueItem<T extends Function> {
+interface QueueItem {
 	active: boolean;
-	callback: T;
+	callback: () => void;
 }
 
 /**
  * A queue of callbacks that will be executed in FIFO order when the queue is drained.
  */
-class CallbackQueue<T extends Function> {
-	private _callbacks: QueueItem<T>[] = [];
+class CallbackQueue {
+	private _callbacks: QueueItem[] = [];
 
-	add(callback: T): { destroy: () => void } {
-		var _callback = {
+	add(callback: () => void): { destroy: () => void } {
+		let _callback = {
 			active: true,
 			callback: callback
 		};
@@ -35,15 +60,15 @@ class CallbackQueue<T extends Function> {
 	}
 
 	drain(...args: any[]): void {
-		var callbacks = this._callbacks;
-		var item: QueueItem<T>;
-		var count = callbacks.length;
+		let callbacks = this._callbacks;
+		let item: QueueItem;
+		let count = callbacks.length;
 
 		// Any callbacks added after drain is called will be processed
 		// the next time drain is called
 		this._callbacks = [];
 
-		for (var i = 0; i < count; i++) {
+		for (let i = 0; i < count; i++) {
 			item = callbacks[i];
 			if (item && item.active) {
 				item.callback.apply(null, args);
@@ -52,31 +77,18 @@ class CallbackQueue<T extends Function> {
 	}
 }
 
-hasAdd('dom-mutationobserver', function(): boolean {
-	return has('host-browser') && Boolean(global.MutationObserver || global.WebKitMutationObserver);
-});
+let nextTick: (callback: () => void) => Handle;
+let nodeVersion = has('host-node');
 
-function noop(): void { }
-declare var process: any;
-var nextTick: (callback: () => void) => Handle;
-
-if (has('host-node')) {
-	// Node.JS 0.10 added `setImmediate` and then started throwing warnings when people called `nextTick` recursively;
-	// Node.JS 0.11 supposedly removes this behaviour, so only target 0.10
-	if (typeof setImmediate !== 'undefined' && process.version.indexOf('v0.10.') === 0) {
-		nextTick = function (callback: () => void): Handle {
-			var timer = setImmediate(callback);
-			return {
-				destroy: function(): void {
-					this.destroy = noop;
-					clearImmediate(timer);
-				}
-			};
-		};
+if (nodeVersion) {
+	// In Node.JS 0.9.x and 0.10.x, deeply recursive process.nextTick calls can cause stack overflows, so use
+	// setImmediate.
+	if (nodeVersion.indexOf('0.9.') === 0 || nodeVersion.indexOf('0.10.') === 0) {
+		nextTick = createMacroScheduler(setImmediate, clearImmediate);
 	}
 	else {
 		nextTick = function(callback: () => void): Handle {
-			var removed = false;
+			let removed = false;
 			process.nextTick(function (): void {
 				// There isn't an API to remove a pending call from `process.nextTick`
 				if (removed) {
@@ -88,52 +100,35 @@ if (has('host-node')) {
 
 			return {
 				destroy: function (): void {
-					this.destroy = noop;
+					this.destroy = () => {};
 					removed = true;
 				}
 			};
 		};
 	}
 }
+else if (has('dom-mutationobserver')) {
+	let queue = new CallbackQueue();
+
+	nextTick = (function (): typeof nextTick {
+		let MutationObserver = this.MutationObserver || this.WebKitMutationObserver;
+		let element = document.createElement('div');
+		let observer = new MutationObserver(function (): void {
+			queue.drain();
+		});
+
+		observer.observe(element, { attributes: true });
+
+		return function(callback: () => void): Handle {
+			let handle = queue.add(callback);
+			element.setAttribute('drainQueue', '1');
+			return handle;
+		};
+	})();
+}
 else {
-	var queue = new CallbackQueue<() => void>();
-
-	if (has('dom-mutationobserver')) {
-		nextTick = (function (): typeof nextTick {
-			var MutationObserver = this.MutationObserver || this.WebKitMutationObserver;
-			var element = document.createElement('div');
-			var observer = new MutationObserver(function (): void {
-				queue.drain();
-			});
-
-			observer.observe(element, { attributes: true });
-
-			return function(callback: () => void): Handle {
-				var handle = queue.add(callback);
-				element.setAttribute('drainQueue', '1');
-				return handle;
-			};
-		})();
-	}
-	else {
-		nextTick = (function (): typeof nextTick {
-			// Node.js returns a Timer object from setTimeout, HTML5 specifies a number
-			var timer: any;
-			return function(callback: () => void): Handle {
-				var handle = queue.add(callback);
-
-				if (!timer) {
-					timer = setTimeout(function (): void {
-						clearTimeout(timer);
-						timer = null;
-						queue.drain();
-					}, 0);
-				}
-
-				return handle;
-			};
-		})();
-	}
+	// If nothing better is available, fallback to setTimeout
+	nextTick = createMacroScheduler(setTimeout, clearTimeout);
 }
 
 export default nextTick;
