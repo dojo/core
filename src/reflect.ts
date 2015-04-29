@@ -140,7 +140,7 @@ export function preventExtensions(target: {}): boolean {
  * @param args arguments to pass the function during execution
  * @return the result of the function call
  */
-export function apply(func: () => any, thisArg: {}, args: any[]): boolean {
+export function apply(func: () => any, thisArg: {}, args: any[]): any {
 	if (typeof func !== 'function') {
 		throw new TypeError(func + 'is not a function');
 	}
