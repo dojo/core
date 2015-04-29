@@ -1,5 +1,5 @@
 import PlatformPromise, { isThenable, Thenable, Executor } from '../Promise';
-export { Thenable } from '../Promise';
+export { Thenable, isThenable } from '../Promise';
 
 export default class Promise<T> extends PlatformPromise<T> {
 	static all<T>(items: (T | Thenable<T>)[]): Promise<T[]> {
@@ -21,7 +21,7 @@ export default class Promise<T> extends PlatformPromise<T> {
 	}
 
 	protected static copy<U>(other: PlatformPromise<U>): Promise<U> {
-		var promise = <Promise<U>> super.copy(other);
+		let promise = <Promise<U>> super.copy(other);
 
 		if (other instanceof Promise && other._state !== State.Pending) {
 			promise._state = other._state;
@@ -32,15 +32,26 @@ export default class Promise<T> extends PlatformPromise<T> {
 				() => promise._state = State.Rejected
 			);
 		}
+
 		return promise;
 	}
 
+	private finallyCallback: () => (void | Thenable<any>);
+
 	protected _state = State.Pending;
+
+	protected doFinally(): void | Thenable<any> {
+		if (this.finallyCallback) {
+			return this.finallyCallback();
+		}
+	}
 
 	/**
 	 * Allows for cleanup actions to be performed after resolution of a Promise.
 	 */
 	finally(callback: () => void | Thenable<any>): Promise<T> {
+		this.finallyCallback = callback;
+
 		// handler to be used for fulfillment and rejection; whether it was fulfilled or rejected is explicitly
 		// indicated by the first argument
 		let handler = (rejected: boolean, valueOrError: any) => {
