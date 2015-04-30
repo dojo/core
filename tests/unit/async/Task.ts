@@ -2,11 +2,12 @@ import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import Task, { Canceled } from 'src/async/Task';
 import Promise from 'src/Promise';
+import { addPromiseTests } from '../Promise';
 
-registerSuite({
+var suite = {
 	name: 'Task',
 
-	'#cancel'() {
+	'Task#cancel'() {
 		let dfd = this.async();
 		let cancelerCalled = false;
 		let resolver: any;
@@ -26,7 +27,7 @@ registerSuite({
 		setTimeout(dfd.callback(() => {}), 100);
 	},
 
-	'#finally': {
+	'Task#finally': {
 		'canceled resolve'() {
 			let dfd = this.async();
 			let resolver: any;
@@ -107,4 +108,8 @@ registerSuite({
 			resolver();
 		}
 	}
-});
+};
+
+addPromiseTests(suite, Task);
+
+registerSuite(suite);
