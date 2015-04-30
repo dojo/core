@@ -27,6 +27,7 @@ export default class Promise<T> extends PlatformPromise<T> {
 			promise._state = other._state;
 		}
 		else {
+			promise._state = State.Pending;
 			other.then(
 				() => promise._state = State.Fulfilled,
 				() => promise._state = State.Rejected
@@ -36,18 +37,11 @@ export default class Promise<T> extends PlatformPromise<T> {
 		return promise;
 	}
 
-	private finallyCallback: () => (void | Thenable<any>);
-
-	protected _state = State.Pending;
-
-	protected doFinally(): void | Thenable<any> {
-		if (this.finallyCallback) {
-			return this.finallyCallback();
-		}
-	}
+	protected _state: State;
 
 	constructor(executor: Executor<T>) {
 		super(executor);
+		this._state = State.Pending;
 		super.then(
 			() => this._state = State.Fulfilled,
 			() => this._state = State.Rejected
@@ -58,15 +52,13 @@ export default class Promise<T> extends PlatformPromise<T> {
 	 * Allows for cleanup actions to be performed after resolution of a Promise.
 	 */
 	finally(callback: () => void | Thenable<any>): Promise<T> {
-		this.finallyCallback = callback;
-
 		// handler to be used for fulfillment and rejection; whether it was fulfilled or rejected is explicitly
 		// indicated by the first argument
-		let handler = (rejected: boolean, valueOrError: any) => {
+		function handler(rejected: boolean, valueOrError: any) {
 			let result: any;
 			try {
 				result = callback();
-				if (result && typeof result.then === 'function') {
+				if (isThenable(result)) {
 					return result.then(
 						() => {
 							if (rejected) {
