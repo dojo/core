@@ -2,15 +2,19 @@
 
 ## Modules
 
+### Promise
+
+The `Promise` class is an implementation of the ES2015 Promise API that also includes static state inspection and a `finally` method for cleanup actions.
+
 ### core/lang
 
 ### core/async
 
 `core/async` contains a number of classes and utility modules to simplify working with asynchronous operations.
 
-#### Promise
+#### Task
 
-The `Promise` class extends `dojo-core/Promise` with several new features, including static state inspection, cancelation support, and a `finally` method for easy cleanup.
+The `async/Task` is an extension of `Promise` that provides cancelation support.
 
 ### core/has
 

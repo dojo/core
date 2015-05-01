@@ -2,6 +2,9 @@ import Promise, { Executor, State, Thenable, isThenable } from '../Promise';
 
 export let Canceled = <State> 4;
 
+/**
+ * Task is an extension of Promise that supports cancelation.
+ */
 export default class Task<T> extends Promise<T> {
 	protected static copy<U>(other: Promise<U>): Task<U> {
 		let task = <Task<U>> super.copy(other);
@@ -45,7 +48,7 @@ export default class Task<T> extends Promise<T> {
 	private children: Task<any>[];
 
 	/**
-	 * The finally callback for this Task if it was created by a call to `finally`
+	 * The finally callback for this Task (if it was created by a call to `finally`).
 	 */
 	private _finally: () => void | Thenable<any>;
 
@@ -80,8 +83,8 @@ export default class Task<T> extends Promise<T> {
 	}
 
 	/**
-	 * Immediately cancel this task. This Task and any descendants are synchronously set to the Canceled state and any
-	 * `finally` added downstream from the canceled Task are invoked.
+	 * Immediately cancel this task if it has not already resolved. This Task and any descendants are synchronously set
+	 * to the Canceled state and any `finally` added downstream from the canceled Task are invoked.
 	 */
 	cancel(): void {
 		if (this._state === State.Pending) {
