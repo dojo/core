@@ -2,16 +2,15 @@ import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import Promise, { Executor, PromiseShim, State, Thenable } from 'src/Promise';
 
-interface PromiseConstructor {
-	prototype: Promise<any>;
-	new <T>(executor: Executor<T>): Promise<T>;
-	all<T>(items: (T | Thenable<T>)[]): Promise<T>;
-	race<T>(items: (T | Thenable<T>)[]): Promise<T>;
-	reject<T>(reason: any): Promise<T>;
-	resolve<T>(value: (T | Thenable<T>)): Promise<T>;
+export interface PromiseType {
+        new <T>(executor: Executor<T>): Promise<T>;
+        all<T>(items: (T | Thenable<T>)[]): Promise<T>;
+        race<T>(items: (T | Thenable<T>)[]): Promise<T>;
+        reject<T>(reason: any): Promise<T>;
+        resolve<T>(value: (T | Thenable<T>)): Promise<T>;
 }
 
-export function addPromiseTests(suite: any, Promise: PromiseConstructor) {
+export function addPromiseTests(suite: any, Promise: PromiseType) {
 	suite['.all'] = {
 		'empty array': function () {
 			var dfd = this.async();
@@ -404,11 +403,27 @@ export function addPromiseTests(suite: any, Promise: PromiseConstructor) {
 
 var suite = {
 	name: 'Promise',
-	PromiseShim: {},
+
+	PromiseShim: (function () {
+		let originalConstructor: any;
+		return {
+			// For the PromiseShim tests, force Promise to use the PromiseShim constructor rather than the global
+			// Promise, if it exists.
+			setup() {
+				originalConstructor = Promise.PromiseConstructor;
+				Promise.PromiseConstructor = PromiseShim;
+			},
+
+			teardown() {
+				Promise.PromiseConstructor = originalConstructor;
+			}
+		}
+	})(),
+
 	Promise: {}
 };
 
-addPromiseTests(suite.PromiseShim, <any> PromiseShim);
+addPromiseTests(suite.PromiseShim, Promise);
 addPromiseTests(suite.Promise, Promise);
 
 registerSuite(suite);

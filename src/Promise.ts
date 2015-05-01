@@ -328,6 +328,11 @@ let PromiseConstructor = has('promise') ? global.Promise : PromiseShim;
  */
 export default class Promise<T> implements Thenable<T> {
 	/**
+	 * Points to the promise constructor this platform should use.
+	 */
+	static PromiseConstructor = has('promise') ? global.Promise : PromiseShim;
+
+	/**
 	 * Converts an iterable object containing promises into a single promise that resolves to a new iterable object
 	 * containing the fulfilled values of all the promises in the iterable, in the same order as the Promises in the
 	 * iterable. Iterable values that are not promises are converted to promises using PromiseShim.resolve.
@@ -348,7 +353,7 @@ export default class Promise<T> implements Thenable<T> {
 	 * });
 	 */
 	static all<T>(items: (T | Thenable<T>)[]): Promise<T[]> {
-		return this.copy(PromiseConstructor.all(unwrapPromises(items)));
+		return this.copy(Promise.PromiseConstructor.all(unwrapPromises(items)));
 	}
 
 	/**
@@ -370,14 +375,14 @@ export default class Promise<T> implements Thenable<T> {
 	 * });
 	 */
 	static race<T>(items: (T | Thenable<T>)[]): Promise<T> {
-		return this.copy(PromiseConstructor.race(unwrapPromises(items)));
+		return this.copy(Promise.PromiseConstructor.race(unwrapPromises(items)));
 	}
 
 	/**
 	 * Creates a new promise that is rejected with the given error.
 	 */
 	static reject<T>(reason: Error): Promise<any> {
-		return this.copy(PromiseConstructor.reject(reason));
+		return this.copy(Promise.PromiseConstructor.reject(reason));
 	}
 
 	/**
@@ -390,7 +395,7 @@ export default class Promise<T> implements Thenable<T> {
 		if (value instanceof Promise) {
 			return value;
 		}
-		return this.copy(PromiseConstructor.resolve(value));
+		return this.copy(Promise.PromiseConstructor.resolve(value));
 	}
 
 	/**
@@ -398,7 +403,7 @@ export default class Promise<T> implements Thenable<T> {
 	 */
 	protected static copy<U>(other: Promise<U>): Promise<U> {
 		let promise = Object.create(this.prototype, {
-			promise: { value: other instanceof PromiseConstructor ? other : other.promise }
+			promise: { value: other instanceof Promise.PromiseConstructor ? other : other.promise }
 		});
 
 		if (other instanceof Promise && other._state !== State.Pending) {
@@ -430,7 +435,7 @@ export default class Promise<T> implements Thenable<T> {
 	constructor(executor: Executor<T>) {
 		// Wrap the executor to verify that the the resolution value isn't this promise. Since any incoming promise
 		// should be wrapped, the native resolver can't automatically detect self-resolution.
-		this.promise = new PromiseConstructor(<Executor<T>> ((resolve, reject) => {
+		this.promise = new Promise.PromiseConstructor(<Executor<T>> ((resolve, reject) => {
 			executor(
 				(value?: T | Thenable<T>): void => {
 					if (value === this) {

@@ -13,26 +13,30 @@ export default class Task<T> extends Promise<T> {
 		return task;
 	}
 
-	constructor(executor: Executor<T>, canceler: () => void) {
+	constructor(executor: Executor<T>, canceler?: () => void) {
 		super(<Executor<T>> ((resolve, reject) => {
 			// Don't let the Task resolve if it's been canceled
 			executor(
 				value => {
-					if (this._state !== Canceled) {
-						resolve(value);
+					if (this._state === Canceled) {
+						return;
 					}
+					resolve(value);
 				},
 				reason => {
-					if (this._state !== Canceled) {
-						reject(reason);
+					if (this._state === Canceled) {
+						return;
 					}
+					reject(reason);
 				}
 			);
 		}));
 
 		this.children = [];
 		this.canceler = () => {
-			canceler();
+			if (canceler) {
+				canceler();
+			}
 			this._cancel();
 		}
 	}
@@ -103,14 +107,22 @@ export default class Task<T> extends Promise<T> {
 		let task = <Task<U>> Task.copy(super.then<U>(
 			// Don't call the onFulfilled or onRejected handlers if this Task is canceled
 			value => {
-				if (task._state !== Canceled) {
+				if (task._state === Canceled) {
+					return;
+				}
+				if (onFulfilled) {
 					return onFulfilled(value);
 				}
+				return <any> value;
 			},
 			error => {
-				if (task._state !== Canceled) {
+				if (task._state === Canceled) {
+					return;
+				}
+				if (onRejected) {
 					return onRejected(error);
 				}
+				throw error;
 			}
 		));
 
