@@ -34,7 +34,7 @@ export function defineProperty(target: {}, prop: string, descriptor: {}): boolea
  * @return true if the property was deleted from the object without error,
  * false otherwise
  */
-export function deleteProperty(target: any, prop: string): boolean {
+export function deleteProperty(target: {}, prop: string): boolean {
 	if (typeof target !== 'object') {
 		throw new TypeError('target must be an object');
 	}
@@ -155,7 +155,7 @@ export function apply(func: () => any, thisArg: {}, args: any[]): any {
  * @param proto the protoype
  * @return true or false indicating whether the prototype setting succeeded
  */
-export function setPrototypeOf(target: any, proto?: {}): boolean {
+export function setPrototypeOf(target: {}, proto?: {}): boolean {
 	if (typeof target !== 'object') {
 		throw new TypeError('target must be an object');
 	}
