@@ -130,9 +130,9 @@ export class PromiseShim<T> implements Thenable<T> {
 		});
 	}
 
-	static reject<T>(reason?: any): PromiseShim<T> {
+	static reject<T>(reason?: Error): PromiseShim<T> {
 		return new this((
-			resolve: (value: T) => void,
+			resolve: (value: any) => void,
 			reject: (reason: any) => void
 		): void => {
 			reject(reason);
@@ -255,7 +255,7 @@ export class PromiseShim<T> implements Thenable<T> {
 
 		this.then = <U>(
 			onFulfilled?: (value?: T) => (U | PromiseShim<U>),
-			onRejected?: (reason?: any) => (U | PromiseShim<U>)
+			onRejected?: (reason?: Error) => (U | PromiseShim<U>)
 		): PromiseShim<U> => {
 			return new PromiseShim<U>((
 				resolve: (value?: U) => void,
@@ -308,13 +308,13 @@ export class PromiseShim<T> implements Thenable<T> {
 	 */
 	private resolvedValue: any;
 
-	catch<U>(onRejected: (reason?: any) => (U | Thenable<U>)): PromiseShim<U> {
+	catch<U>(onRejected: (reason?: Error) => (U | Thenable<U>)): PromiseShim<U> {
 		return this.then<U>(null, onRejected);
 	}
 
 	then<U>(
 		onFulfilled?: (value?: T) => (U | Thenable<U>),
-		onRejected?: (reason?: any) => (U | Thenable<U>)
+		onRejected?: (reason?: Error) => (U | Thenable<U>)
 	): PromiseShim<U> { return null; }
 }
 

@@ -14,10 +14,11 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 	suite['.all'] = {
 		'empty array': function () {
 			var dfd = this.async();
-			Promise.all([]).then(dfd.callback((value: any[]) => {
+			var promise = Promise.all([]).then(dfd.callback((value: any[]) => {
 				assert.isArray(value);
 				assert.deepEqual(value, []);
 			}));
+			assert.instanceOf(promise, Promise, 'promise should have expected type');
 		},
 
 		'mixed values and resolved': function () {
@@ -136,6 +137,94 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 			Promise.race([ normal, foreign ]).then(dfd.callback((value: any) => {
 				assert.strictEqual(value, 1);
 			}));
+		}
+	};
+
+	suite['.reject'] = {
+		error() {
+			var dfd = this.async();
+			var resolved = false;
+			var promise = Promise.reject(new Error('foo')).then(
+				dfd.rejectOnError(() => {
+					resolved = true;
+					assert(false, 'should not have resolved');
+				}),
+				dfd.callback((error: Error) => {
+					resolved = true;
+					assert.instanceOf(error, Error, 'error value should be an Error');
+					assert.propertyVal(error, 'message', 'foo', 'error value should have expected message');
+				})
+			);
+
+			assert.instanceOf(promise, Promise, 'promise should have expected type');
+			assert.isFalse(resolved, 'promise should not have resolved synchronously');
+		},
+
+		'rejected thenable'() {
+			var dfd = this.async();
+			var resolved = false;
+			var thenable = <any> {
+				then: (f: Function, r: Function) => {
+					r(new Error('foo'));
+				}
+			};
+			var promise = Promise.resolve(thenable).then(
+				dfd.rejectOnError(() => {
+					resolved = true;
+					assert(false, 'should not have rejected');
+				}),
+				dfd.callback((error: Error) => {
+					resolved = true;
+					// value should be resolved value of thenable
+					assert.instanceOf(error, Error, 'error value should be an Error');
+					assert.propertyVal(error, 'message', 'foo', 'error value should have expected message');
+				})
+			);
+
+			assert.isFalse(resolved, 'promise should not have resolved synchronously');
+		}
+	};
+
+	suite['.resolve'] = {
+		'simple value'() {
+			var dfd = this.async();
+			var resolved = false;
+			var promise = Promise.resolve('foo').then(
+				dfd.callback((value: any) => {
+					resolved = true;
+					assert.equal(value, 'foo', 'unexpected resolution value');
+				}),
+				dfd.rejectOnError(() => {
+					resolved = true;
+					assert(false, 'should not have rejected');
+				})
+			);
+
+			assert.instanceOf(promise, Promise, 'promise should have expected type');
+			assert.isFalse(resolved, 'promise should not have resolved synchronously');
+		},
+
+		thenable() {
+			var dfd = this.async();
+			var resolved = false;
+			var thenable = <any> {
+				then: (f: Function) => {
+					f(2);
+				}
+			};
+			var promise = Promise.resolve(thenable).then(
+				dfd.callback((value: any) => {
+					resolved = true;
+					// value should be resolved value of thenable
+					assert.equal(value, 2, 'unexpected resolution value');
+				}),
+				dfd.rejectOnError(() => {
+					resolved = true;
+					assert(false, 'should not have rejected');
+				})
+			);
+
+			assert.isFalse(resolved, 'promise should not have resolved synchronously');
 		}
 	};
 
