@@ -26,7 +26,7 @@ export class Map<K, V> {
 	* Returns the value associated with a given key.
 	*
 	* @param key The key to look up
-	* @return the value of one exists or undefined
+	* @return the value if one exists or undefined
 	*/
 	get(key: K): V {
 		var index = this.indexOfKey(this.mapKeys, key);
@@ -88,7 +88,7 @@ export class Map<K, V> {
 	*/
 	keys(): K[] {
 		return this.mapKeys;
-    }
+	}
 
 	/**
 	* Returns an array of map values in order of insertion.
@@ -112,7 +112,7 @@ export class Map<K, V> {
 			entries.push([key, this.get(key)]);
 		}, this);
 		return entries;
-    }
+	}
 
 	/**
 	* Executes a given function for each map entry.
