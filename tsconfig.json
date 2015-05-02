@@ -44,6 +44,7 @@
 		"./tests/functional/all.ts",
 		"./tests/unit/all.ts",
 		"./tests/unit/array.ts",
+		"./tests/unit/decorators.ts",
 		"./tests/unit/global.ts",
 		"./tests/unit/has.ts",
 		"./tests/unit/lang.ts",

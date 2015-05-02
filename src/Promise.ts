@@ -1,6 +1,7 @@
 import nextTick from './nextTick';
 import global from './global';
 import has, { add as hasAdd } from './has';
+import { hidden } from './decorators';
 
 hasAdd('promise', typeof global.Promise !== 'undefined');
 
@@ -301,6 +302,7 @@ export class PromiseShim<T> implements Thenable<T> {
 	/**
 	 * The current state of this promise.
 	 */
+	@hidden
 	private state = State.Pending;
 
 	/**
@@ -308,6 +310,7 @@ export class PromiseShim<T> implements Thenable<T> {
 	 *
 	 * @type {T|Error}
 	 */
+	@hidden
 	private resolvedValue: any;
 
 	catch<U>(onRejected: (reason?: any) => (U | Thenable<U>)): PromiseShim<U> {
@@ -398,10 +401,13 @@ export default class Promise<T> implements Thenable<T> {
 	/**
 	 * Copy another Promise, taking on its inner state.
 	 */
+	@hidden
 	protected static copy<U>(other: Promise<U>): Promise<U> {
-		let promise = Object.create(this.prototype, {
-			promise: { value: other instanceof PromiseConstructor ? other : other.promise }
-		});
+		let promise = Object.create(this.prototype);
+
+		// Set promise property on the newly created object rather than in the Object.create statement so we get along
+		// with the @hidden decorator.
+		promise.promise = other instanceof PromiseConstructor ? other : other.promise;
 
 		if (other instanceof Promise && other._state !== State.Pending) {
 			promise._state = other._state;
@@ -457,11 +463,13 @@ export default class Promise<T> implements Thenable<T> {
 	/**
 	 * An object wrapped by this class that actually implements the Promise API.
 	 */
+	@hidden
 	private promise: any;
 
 	/**
 	 * The internal state of this promise. This may be updated directly by subclasses.
 	 */
+	@hidden
 	protected _state: State;
 
 	/**
