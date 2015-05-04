@@ -1,6 +1,6 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import {Map} from 'src/Map';
+import Map from 'src/Map';
 
 var map: Map<any, any>;
 
