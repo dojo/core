@@ -21,6 +21,10 @@ export function isThenable(value: any) {
  * for .all and .race so that the native promise doesn't treat the PlatformPromises like generic thenables.
  */
 function unwrapPromises(items: any[]): any[] {
+	if (!isIterable(items)) {
+		throw new Error('invalid argument');
+	}
+
 	let unwrapped: typeof items = [];
 	let count = items.length;
 	for (let i = 0; i < count; i++) {
@@ -308,14 +312,10 @@ export class PromiseShim<T> implements Thenable<T> {
 	 */
 	private resolvedValue: any;
 
-	catch<U>(onRejected: (reason?: Error) => (U | Thenable<U>)): PromiseShim<U> {
-		return this.then<U>(null, onRejected);
-	}
-
-	then<U>(
+	then: <U>(
 		onFulfilled?: (value?: T) => (U | Thenable<U>),
 		onRejected?: (reason?: Error) => (U | Thenable<U>)
-	): PromiseShim<U> { return null; }
+	) => PromiseShim<U>;
 }
 
 /**

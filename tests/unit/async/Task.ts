@@ -50,7 +50,7 @@ var suite = {
 			let dfd = this.async();
 			let resolver: any;
 			let task = new Task(
-				(resolve, reject) => resolver = resolve,
+				(resolve, reject) => resolver = reject,
 				() => {}
 			)
 			.then(dfd.rejectOnError(() => {
@@ -87,7 +87,7 @@ var suite = {
 			resolver();
 		},
 
-		'canceled inside then callback'() {
+		'canceled and resolved inside then callback'() {
 			let dfd = this.async();
 			let resolvedTasks: any = {};
 			let resolver: any;
@@ -99,6 +99,27 @@ var suite = {
 				task.cancel();
 				return new Promise((resolve, reject) => {
 					setTimeout(resolve);
+				});
+			})
+			.then(dfd.rejectOnError(() => assert(false, 'should not have run')))
+			.then(dfd.rejectOnError(() => assert(false, 'should not have run')))
+			.finally(dfd.callback(() => {}));
+
+			resolver();
+		},
+
+		'canceled and rejected inside then callback'() {
+			let dfd = this.async();
+			let resolvedTasks: any = {};
+			let resolver: any;
+
+			let task = new Task(
+				(resolve, reject) => resolver = resolve,
+				() => {}
+			).then(() => {
+				task.cancel();
+				return new Promise((resolve, reject) => {
+					setTimeout(reject);
 				});
 			})
 			.then(dfd.rejectOnError(() => assert(false, 'should not have run')))

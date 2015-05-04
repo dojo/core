@@ -21,6 +21,12 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 			assert.instanceOf(promise, Promise, 'promise should have expected type');
 		},
 
+		'non-iterable': function () {
+			assert.throws(function () {
+				Promise.all(<any> 5);
+			});
+		},
+
 		'mixed values and resolved': function () {
 			var dfd = this.async();
 			Promise.all([ 0, Promise.resolve(1), Promise.resolve(2) ]).then(
@@ -102,6 +108,12 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 				assert.fail(false, true, 'Promise should not have resolved');
 			}));
 			setTimeout(dfd.callback(() => {}), 10);
+		},
+
+		'non-iterable': function () {
+			assert.throws(function () {
+				Promise.all(<any> 5);
+			});
 		},
 
 		'mixed values and resolved': function () {
@@ -488,6 +500,53 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 			promise.catch(dfd.callback(() => assert.strictEqual(promise.state, State.Rejected)));
 		}
 	};
+
+	suite['constructed'] = {
+		resolved() {
+			let dfd = this.async();
+			let resolver: any;
+			let resolved = false;
+			let promise = new Promise((resolve, reject) => {
+				resolver = resolve;
+			}).then(
+				dfd.callback(() => { resolved = true; }),
+				dfd.rejectOnError(() => assert(false, 'should not have rejected'))
+			);
+			assert.isFalse(resolved, 'should not be resolved');
+			resolver();
+		},
+
+		'resolved with self'() {
+			let dfd = this.async();
+			let resolver: any;
+			let promise = new Promise((resolve, reject) => {
+				resolver = resolve;
+			});
+			
+			promise.then(
+				dfd.rejectOnError(() => assert(false, 'should not have resolved')),
+				dfd.callback((error: Error) => {
+					assert.equal(error.message, 'Cannot chain a promise to itself');
+				})
+			);
+
+			resolver(promise);
+		},
+
+		rejected() {
+			let dfd = this.async();
+			let resolver: any;
+			let resolved = false;
+			let promise = new Promise((resolve, reject) => {
+				resolver = reject;
+			}).then(
+				dfd.rejectOnError(() => assert(false, 'should not have resolved')),
+				dfd.callback(() => { resolved = true; })
+			);
+			assert.isFalse(resolved, 'should not be resolved');
+			resolver();
+		}
+	}
 }
 
 var suite = {
