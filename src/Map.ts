@@ -91,6 +91,15 @@ export class Map<K, V> {
 	}
 
 	/**
+	 * Returns the number of key / value pairs in the Map
+	 *
+	 * @return the number of key / value pairs in the Map
+	 */
+	get size(): number {
+		return this.mapKeys.length;
+	}
+
+	/**
 	 * Returns an array of map values in order of insertion.
 	 *
 	 * @return an array of values in order of insertion
@@ -115,17 +124,19 @@ export class Map<K, V> {
 	}
 
 	/**
-	 * Executes a given function for each map entry.
+	 * Executes a given function for each map entry. The function 
+	 * is invoked with three arguments: the element value, the
+	 * element key, and the associated Map instance.
 	 *
 	 * @param callback The function to execute for each map entry,
 	 * @param context The value to use for `this` for each execution
 	 * of the calbackv
 	 */
-	forEach(callback: () => any, context?: {}) {
+	forEach(callback: (key: K, value: V, mapInstance: Map<K, V>) => any, context?: {}) {
 		// don't use this.entries to avoid second forEach call
 		this.mapKeys.forEach(function (key, index) {
-			callback.call(context, [key, this.get(key), index]);
-		});
+			callback.call(context, key, this.get(key), this);
+		}, this);
 	}
 
 	/**
@@ -139,7 +150,7 @@ export class Map<K, V> {
 	 * corresponds to the key of the map entry. The second
 	 * item corresponds to the value of the map entry.
 	 */
-	constructor(iterable: ArrayLike<[K, V]>) {
+	constructor(iterable?: ArrayLike<[K, V]>) {
 		if (!(this instanceof Map)) {
 			throw new TypeError('Constructor Map requires "new"');
 		}
