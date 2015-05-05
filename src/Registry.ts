@@ -81,8 +81,8 @@ export default class Registry<T> {
 		(<any> entries)[(first ? 'unshift' : 'push')](entry);
 
 		return {
-			destroy: function ():void {
-				this.remove = function ():void {};
+			destroy: function () {
+				this.destroy = function ():void {};
 				let i = 0;
 				while ((i = entries.indexOf(entry, i)) > -1) {
 					entries.splice(i, 1);

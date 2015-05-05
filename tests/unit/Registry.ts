@@ -63,6 +63,9 @@ registerSuite({
 			assert.equal(registry.match('foo'), 1);
 			handle.destroy();
 			assert.equal(registry.match('foo'), 2);
+
+			// check that destroying a second time doesn't throw
+			handle.destroy();
 		}
 	},
 
