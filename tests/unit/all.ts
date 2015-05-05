@@ -8,5 +8,6 @@ import './nextTick';
 import './number';
 import './object';
 import './Promise';
+import './Registry';
 import './async/iteration';
 import './async/timing';
