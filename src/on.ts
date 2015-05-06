@@ -2,6 +2,7 @@ import {Handle, EventObject} from './interfaces';
 import * as util from './util';
 import Evented from './Evented';
 
+// Only used for Evented and EventEmitter, as EventTarget uses EventListener
 type EventCallback = (event: {}) => void;
 
 interface ExtensionEvent {
@@ -28,12 +29,12 @@ export default function on(target: any, type: any, listener: EventListener): Han
 	if (type.call) {
 		return type.call(this, target, listener, false);
 	}
+
 	if (target.addEventListener && target.removeEventListener) {
 		target.addEventListener(type, listener, false);
 		return util.createHandle(function () { target.removeEventListener(type, listener, false); });
 	}
 	else if (target.on && target.removeListener) {
-		console.log('ADDING NODE EVENT ', type);
 		target.on(type, listener);
 		return util.createHandle(function () { target.removeListener(type, listener); });
 	}
@@ -45,6 +46,7 @@ export default function on(target: any, type: any, listener: EventListener): Han
 	}
 };
 
+// TODO: What should this return type signature be? Boolean for cancel? The event object itself?
 export function emit(target: EventTarget, event: EventObject): boolean;
 export function emit(target: EventEmitter, event: EventObject): boolean;
 export function emit(target: Evented, event: EventObject): boolean;
