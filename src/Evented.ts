@@ -1,6 +1,6 @@
 import {Handle, EventObject} from './interfaces';
 import {createCompositeHandle} from './util';
-import * as aspect from './aspect';
+import aspect from './aspect';
 
 export default class Evented {
 	emit(data: EventObject): boolean {
@@ -11,18 +11,7 @@ export default class Evented {
 		}
 	};
 
-	on(type: string, listener: (event: EventObject) => void): Handle;
-	on(type: string[], listener: (event: EventObject) => void): Handle;
-	on(type: any, listener: (event: EventObject) => void): Handle {
-		// Array of event support, e.g. on(['foo', 'bar'], function () { /* ... */ })
-		if (typeof type === 'array') {
-			var handles: Handle[] = type.map(function (type: string): Handle {
-				return this.on(type, listener);
-			}, this);
-
-			return createCompositeHandle.call(null, handles);
-		}
-
+	on(type: string, listener: (event: EventObject) => void): Handle {
 		var name = '__on' + type;
 		if (!(<any> this)[name]) {
 			Object.defineProperty(this, name, {
@@ -31,6 +20,6 @@ export default class Evented {
 				writable: true
 			});
 		}
-		return aspect.default(this, '__on' + type, listener);
+		return aspect(this, '__on' + type, listener);
 	};
 }

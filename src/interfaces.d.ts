@@ -3,7 +3,5 @@ export interface Handle {
 }
 
 export interface EventObject {
-    type: string|string[];
-	bubbles?: boolean;
-	cancelable?: boolean;
+    type: string;
 }
