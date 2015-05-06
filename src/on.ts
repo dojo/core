@@ -58,10 +58,9 @@ export default function on(target: any, type: any, listener: EventListener): Han
 export function emit(target: EventTarget, event: EventObject): boolean;
 export function emit(target: EventEmitter, event: EventObject): boolean;
 export function emit(target: Evented, event: EventObject): boolean;
-
-export function emit(target: any, event: EventObject): boolean {
+export function emit(target: any, event: any): boolean {
 	if (typeof target.emit === 'function' && !target.nodeType) {
-		return target.emit(event);
+		return target.emit(event.type, event);
 	}
 
 	if (target.dispatchEvent && target.ownerDocument && target.ownerDocument.createEvent) {
