@@ -13,8 +13,8 @@ interface EventTarget {
 }
 
 interface EventEmitter {
-    on(event: string, listener: Function): EventEmitter;
-	removeListener(event: string, listener: Function): EventEmitter;
+    on(event: string, listener: () => any): EventEmitter;
+	removeListener(event: string, listener: () => any): EventEmitter;
 }
 
 interface Evented {
@@ -35,7 +35,6 @@ export default function on(target: any, type: any, listener: EventListener): Han
 	}
 	else if (target.on && target.removeListener) {
 		target.on(type, listener);
-
 		return createHandle(function () { target.removeListener(type, listener); });
 	}
 	else if (target.on) {
@@ -45,3 +44,27 @@ export default function on(target: any, type: any, listener: EventListener): Han
 		throw new TypeError('Unknown event emitter object')
 	}
 };
+
+export function emit(target: EventTarget, type: string, event?: Object): boolean;
+export function emit(target: EventEmitter, type: string, event?: Object): boolean;
+export function emit(target: Evented, type: string, event?: Object): boolean;
+export function emit(target: any, type: string, event?: any): boolean {
+	if (typeof target.emit === 'function' && !target.nodeType) {
+		return target.emit(type, event);
+	}
+
+	if (target.dispatchEvent && target.ownerDocument && target.ownerDocument.createEvent) {
+		var nativeEvent = target.ownerDocument.createEvent('HTMLEvents');
+		nativeEvent.initEvent(type, Boolean(event.bubbles), Boolean(event.cancelable));
+
+		for (var key in event) {
+			if (!(key in nativeEvent)) {
+				nativeEvent[key] = event[key];
+			}
+		}
+
+		return target.dispatchEvent(nativeEvent);
+	}
+
+	throw new Error('Target must be an event emitter');
+}
