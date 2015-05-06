@@ -12,7 +12,7 @@ interface Entry<T> {
 /**
  * A registry of values tagged with matchers.
  */
-export default class Registry<T> {
+export default class Registry<M extends Test, T> {
 	/**
 	 * Construct a new Registry, optionally containing a given default value.
 	 */
@@ -55,26 +55,10 @@ export default class Registry<T> {
 	 * @param value A value being registered.
 	 * @param first If true, the newly registered test and value will be the first entry in the registry.
 	 */
-	register(test: string | RegExp | Test, value: T, first?: boolean): Handle {
+	register(test: M, value: T, first?: boolean): Handle {
 		let entries = this.entries;
-		let entryTest: Test;
-
-		if (typeof test === 'string') {
-			entryTest = (...args: any[]): boolean => {
-				return test === args[0];
-			}
-		}
-		else if (test instanceof RegExp) {
-			entryTest = (...args: any[]): boolean => {
-				return test.test.apply(test, args);
-			}
-		}
-		else {
-			entryTest = <Test> test;
-		}
-
 		let entry: Entry<T> = {
-			test: entryTest,
+			test: test,
 			value: value
 		};
 
