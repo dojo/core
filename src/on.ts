@@ -1,4 +1,5 @@
 import {Handle} from './interfaces';
+import {createHandle} from './util'
 
 interface ExtensionEvent {
 	(target: any, listener: EventListener): Handle;
@@ -12,10 +13,8 @@ interface EventTarget {
 }
 
 interface EventEmitter {
-	on(event: string, listener: EventListener): Handle;
-	on(event: ExtensionEvent, listener: EventListener): Handle;
-	removeListener(event: string, listener: EventListener): EventEmitter;
-	removeListener(event: ExtensionEvent, listener: EventListener): EventEmitter;
+    on(event: string, listener: Function): EventEmitter;
+	removeListener(event: string, listener: Function): EventEmitter;
 }
 
 interface Evented {
@@ -29,16 +28,15 @@ export default function on(target: EventEmitter, type: string, listener: EventLi
 export default function on(target: EventEmitter, type: ExtensionEvent, listener: EventListener): Handle;
 export default function on(target: Evented, type: string, listener: EventListener): Handle;
 export default function on(target: Evented, type: ExtensionEvent, listener: EventListener): Handle;
-
 export default function on(target: any, type: any, listener: EventListener): Handle {
 	if (target.addEventListener && target.removeEventListener) {
 		target.addEventListener(type, listener, false);
-		return { destroy: function () { target.removeEventListener(type, listener, false); } };
+		return createHandle(function () { target.removeEventListener(type, listener, false); });
 	}
 	else if (target.on && target.removeListener) {
 		target.on(type, listener);
 
-		return { destroy: function () { target.removeListener(type, listener); } };
+		return createHandle(function () { target.removeListener(type, listener); });
 	}
 	else if (target.on) {
 		return target.on(type, listener);
