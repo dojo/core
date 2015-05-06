@@ -1,26 +1,34 @@
-import Promise = require('../Promise');
-import request = require('../request');
+// TODO replace with async/Task when that's merged
+import { default as Task } from '../Promise';
+import request, { RequestOptions, RequestPromise, Response } from '../request';
 
-module xhr {
-	export interface IRequestOptions extends request.IRequestOptions {
-		blockMainThread?:boolean;
-	}
-
-	export interface IResponse extends request.IResponse {
-		statusText:string;
-	}
+export interface XHRRequestOptions extends RequestOptions {
+	blockMainThread?: boolean;
 }
 
-function xhr(url:string, options:xhr.IRequestOptions = {}):Promise<xhr.IResponse> {
-	var deferred:Promise.Deferred<xhr.IResponse> = new Promise.Deferred(function (reason:Error):void {
-		request && request.abort();
-		throw reason;
+export interface XHRResponse<T> extends Response<T> {
+	statusText: string;
+}
+
+export default function xhr<T>(url: string, options: XHRRequestOptions = {}): RequestPromise<T> {
+	let resolve: (value: XHRResponse<T> | Task<XHRResponse<T>>) => void;
+	let reject: (error: Error) => void;
+	// TODO: use proper Task signature when Task is available
+	// let promise = <RequestPromise<T>> (new Task<XHRResponse<T>>((_resolve, _reject) => {
+	// 	resolve = _resolve;
+	// 	reject = _reject;
+	// }, () => {
+	// 	request && request.abort();
+	// });
+	let promise = <RequestPromise<T>> new Task<XHRResponse<T>>((_resolve, _reject) => {
+		resolve = _resolve;
+		reject = _reject;
 	});
 
 	var request = new XMLHttpRequest();
-	var response:xhr.IResponse = {
+	var response = <XHRResponse<T>> {
 		data: null,
-		getHeader: function (name:string):string {
+		getHeader: function (name: string): string {
 			return request.getResponseHeader(name);
 		},
 		nativeResponse: request,
@@ -31,35 +39,22 @@ function xhr(url:string, options:xhr.IRequestOptions = {}):Promise<xhr.IResponse
 	};
 
 	if ((!options.user || !options.password) && options.auth) {
-		(function ():void {
-			var auth:string[] = options.auth.split(':');
-			options.user = decodeURIComponent(auth[0]);
-			options.password = decodeURIComponent(auth[1]);
-		})();
+		let auth = options.auth.split(':');
+		options.user = decodeURIComponent(auth[0]);
+		options.password = decodeURIComponent(auth[1]);
 	}
 
 	request.open(options.method, url, !options.blockMainThread, options.user, options.password);
 
-	request.onerror = function (event:ErrorEvent):void {
-		deferred.reject(event.error);
+	request.onerror = function (event: ErrorEvent): void {
+		reject(event.error);
 	};
 
-	request.onload = function ():void {
-		if (options.responseType === 'xml') {
-			response.data = request.responseXML;
-		}
-		else {
-			response.data = request.response;
-		}
-
+	request.onload = function (): void {
+		response.data = options.responseType === 'xml' ? request.responseXML : request.response;
 		response.statusCode = request.status;
 		response.statusText = request.statusText;
-
-		deferred.resolve(response);
-	};
-
-	request.onprogress = function (event:ProgressEvent):void {
-		deferred.progress(event);
+		resolve(response);
 	};
 
 	if (options.timeout > 0 && options.timeout !== Infinity) {
@@ -72,7 +67,8 @@ function xhr(url:string, options:xhr.IRequestOptions = {}):Promise<xhr.IResponse
 
 	request.send(options.data);
 
-	return deferred.promise;
-}
+	promise.data = promise.then(response => response.data);
+	promise.headers = promise.then(response => response);
 
-export = xhr;
+	return promise;
+}

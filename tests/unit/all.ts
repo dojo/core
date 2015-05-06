@@ -9,5 +9,6 @@ import './number';
 import './object';
 import './Promise';
 import './Registry';
+import './request';
 import './async/iteration';
 import './async/timing';

@@ -12,7 +12,7 @@ interface Entry<T> {
 /**
  * A registry of values tagged with matchers.
  */
-export default class Registry<M extends Test, T> {
+export default class Registry<T> {
 	/**
 	 * Construct a new Registry, optionally containing a given default value.
 	 */
@@ -31,7 +31,7 @@ export default class Registry<M extends Test, T> {
 	 * @param ...args Arguments that will be used to select a matching value.
 	 * @returns the matching value, or a default value if one exists.
 	 */
-	match<U>(...args: U[]): T {
+	match(...args: any[]): T {
 		let entries = this.entries.slice(0);
 		let entry: Entry<T>;
 
@@ -55,7 +55,7 @@ export default class Registry<M extends Test, T> {
 	 * @param value A value being registered.
 	 * @param first If true, the newly registered test and value will be the first entry in the registry.
 	 */
-	register(test: M, value: T, first?: boolean): Handle {
+	register(test: Test, value: T, first?: boolean): Handle {
 		let entries = this.entries;
 		let entry: Entry<T> = {
 			test: test,

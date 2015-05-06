@@ -1,11 +1,12 @@
 import { Handle } from '../interfaces';
-import http = require('http');
-import https = require('https');
-import Promise from '../Promise';
-import request, { RequestError, RequestOptions, RequestTask, Response } from '../request';
+import * as http from 'http';
+import * as https from 'https';
+// TODO replace with async/Task when that's merged
+import { default as Task } from '../Promise';
+import request, { RequestError, RequestOptions, RequestPromise, Response } from '../request';
 import urlUtil = require('url');
 
-// TODO: where should the dojo version come from?
+// TODO: Where should the dojo version come from? It used to be kernel, but we don't have that.
 let version = '2.0.0-pre';
 
 interface Options {
@@ -32,35 +33,33 @@ interface HttpsOptions extends Options {
 	secureProtocol?: string;
 }
 
-module node {
-	export interface NodeRequestOptions extends RequestOptions {
-		agent?: any;
-		ca?: any;
-		cert?: string;
-		ciphers?: string;
-		dataEncoding?: string;
-		followRedirects?: boolean;
-		key?: string;
-		localAddress?: string;
-		passphrase?: string;
-		pfx?: any;
-		proxy?: string;
-		rejectUnauthorized?: boolean;
-		secureProtocol?: string;
-		socketPath?: string;
-		socketOptions?:{
-			keepAlive?: number;
-			noDelay?: boolean;
-			timeout?: number;
-		};
-		streamData?: boolean;
-		streamEncoding?: string;
-		streamTarget?: any;
-	}
+export interface NodeRequestOptions extends RequestOptions {
+	agent?: any;
+	ca?: any;
+	cert?: string;
+	ciphers?: string;
+	dataEncoding?: string;
+	followRedirects?: boolean;
+	key?: string;
+	localAddress?: string;
+	passphrase?: string;
+	pfx?: any;
+	proxy?: string;
+	rejectUnauthorized?: boolean;
+	secureProtocol?: string;
+	socketPath?: string;
+	socketOptions?:{
+		keepAlive?: number;
+		noDelay?: boolean;
+		timeout?: number;
+	};
+	streamData?: boolean;
+	streamEncoding?: string;
+	streamTarget?: any;
 }
 
-function normalizeHeaders(headers:{ [name: string]: string; }):{ [name: string]: string; } {
-	var normalizedHeaders:{ [name: string]: string; } = {};
+function normalizeHeaders(headers: { [name: string]: string }): { [name: string]: string } {
+	var normalizedHeaders: { [name: string]: string } = {};
 	for (var key in headers) {
 		normalizedHeaders[key.toLowerCase()] = headers[key];
 	}
@@ -68,15 +67,35 @@ function normalizeHeaders(headers:{ [name: string]: string; }):{ [name: string]:
 	return normalizedHeaders;
 }
 
-function node(url: string, options: node.NodeRequestOptions = {}): Promise<Response> {
-	var deferred: Promise.Deferred<Response> = new Promise.Deferred(function (reason: Error): void {
-		request && request.abort();
-		throw reason;
-	});
-	var promise: RequestTask = <RequestTask> deferred.promise;
-	var parsedUrl: urlUtil.Url = urlUtil.parse(options.proxy || url);
+export default function node<T>(url: string, options: NodeRequestOptions = {}): RequestPromise<T> {
+	let resolve: (value: Response<T> | RequestPromise<T>) => void;
+	let reject: (error: Error) => void;
+	// TODO: use proper Task signature when Task is available
+	// let promise = <RequestPromise<T>> new Task<Response<T>>((_resolve, _reject) => {
+	// 	resolve = _resolve;
+	// 	reject = _reject;
+	// }, () => {
+	// 	request && request.abort();
+	// });
+	let promise = <RequestPromise<T>> new Task<Response<T>>((_resolve, _reject) => {
+		resolve = _resolve;
+		reject = _reject;
+	}).catch(function (error: Error): any {
+		let parsedUrl = urlUtil.parse(url);
 
-	var requestOptions: HttpsOptions = {
+		if (parsedUrl.auth) {
+			parsedUrl.auth = '(redacted)';
+		}
+
+		let sanitizedUrl = urlUtil.format(parsedUrl);
+
+		error.message = '[' + requestOptions.method + ' ' + sanitizedUrl + '] ' + error.message;
+		throw error;
+	});
+
+	let parsedUrl = urlUtil.parse(options.proxy || url);
+
+	var requestOptions = <HttpsOptions> {
 		agent: options.agent,
 		auth: parsedUrl.auth || options.auth,
 		ca: options.ca,
@@ -107,20 +126,17 @@ function node(url: string, options: node.NodeRequestOptions = {}): Promise<Respo
 			requestOptions.headers['proxy-authorization'] = 'Basic ' + new Buffer(parsedUrl.auth).toString('base64');
 		}
 
-		(function (): void {
-			var parsedUrl: urlUtil.Url = urlUtil.parse(url);
-			requestOptions.headers['host'] = parsedUrl.host;
-			requestOptions.auth = parsedUrl.auth || options.auth;
-		})();
+		let _parsedUrl = urlUtil.parse(url);
+		requestOptions.headers['host'] = _parsedUrl.host;
+		requestOptions.auth = _parsedUrl.auth || options.auth;
 	}
 
 	if (!options.auth && (options.user || options.password)) {
 		requestOptions.auth = encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
 	}
 
-	// TODO: Cast to `any` prevents TS2226 error
-	var request: http.ClientRequest = (parsedUrl.protocol === 'https:' ? <any> https : http).request(requestOptions);
-	var response: Response<any> = {
+	let request = (parsedUrl.protocol === 'https:' ? https : http).request(requestOptions);
+	let response = <Response<T>> {
 		data: null,
 		getHeader: function (name: string): string {
 			return (this.nativeResponse && this.nativeResponse.headers[name.toLowerCase()]) || null;
@@ -158,17 +174,13 @@ function node(url: string, options: node.NodeRequestOptions = {}): Promise<Respo
 		// TODO: This redirect code is not 100% correct according to the RFC; needs to handle redirect loops and
 		// restrict/modify certain redirects
 		if (
-			response.statusCode >= 300 && response.statusCode < 400 && response.statusCode !== 304 &&
+			response.statusCode >= 300 &&
+			response.statusCode < 400 &&
+			response.statusCode !== 304 &&
 			options.followRedirects !== false &&
 			nativeResponse.headers.location
 		) {
-			deferred.progress({
-				type: 'redirect',
-				location: nativeResponse.headers.location,
-				response: nativeResponse
-			});
-
-			deferred.resolve(node(nativeResponse.headers.location, options));
+			resolve(node(nativeResponse.headers.location, options));
 			return;
 		}
 
@@ -179,40 +191,38 @@ function node(url: string, options: node.NodeRequestOptions = {}): Promise<Respo
 		options.streamEncoding && nativeResponse.setEncoding(options.streamEncoding);
 		if (options.streamTarget) {
 			nativeResponse.pipe(options.streamTarget);
-			options.streamTarget.once('error', function (error: RequestError): void {
+			options.streamTarget.once('error', function (error: RequestError<T>): void {
 				nativeResponse.unpipe(options.streamTarget);
 				request.abort();
 				error.response = response;
-				deferred.reject(error);
+				reject(error);
 			});
 			options.streamTarget.once('close', function (): void {
-				deferred.resolve(response);
+				resolve(response);
 			});
 		}
 
 		nativeResponse.on('data', function (chunk: any): void {
 			options.streamData || data.push(chunk);
 			loaded += typeof chunk === 'string' ? Buffer.byteLength(chunk, options.streamEncoding) : chunk.length;
-			deferred.progress({ type: 'data', chunk: chunk, loaded: loaded, total: total });
 		});
 
 		nativeResponse.once('end', function (): void {
-			timeout && timeout.remove();
+			timeout && timeout.destroy();
 
 			if (!options.streamData) {
-				response.data = options.streamEncoding ? data.join('') : Buffer.concat(data, loaded);
+				// TODO: what type should data have?
+				response.data = <any> (options.streamEncoding ? data.join('') : Buffer.concat(data, loaded));
 			}
 
 			// If using a streamTarget, wait for it to finish in case it throws an error
 			if (!options.streamTarget) {
-				deferred.resolve(response);
+				resolve(response);
 			}
 		});
-
-		deferred.progress({ type: 'nativeResponse', response: nativeResponse });
 	});
 
-	request.once('error', deferred.reject);
+	request.once('error', reject);
 
 	if (options.data) {
 		if (options.data.pipe) {
@@ -231,31 +241,22 @@ function node(url: string, options: node.NodeRequestOptions = {}): Promise<Respo
 			var timer = setTimeout(function (): void {
 				var error = new Error('Request timed out after ' + options.timeout + 'ms');
 				error.name = 'RequestTimeoutError';
-				promise.cancel(error);
+				// TODO: uncomment when Task is available
+				// task.cancel(error);
 			}, options.timeout);
 
+			// TODO: use lang.createHandle
 			return {
-				remove: function (): void {
-					this.remove = function (): void {};
+				destroy: function (): void {
+					this.destroy = function (): void {};
 					clearTimeout(timer);
 				}
 			};
 		})();
 	}
 
-	return promise.catch(function (error: Error): any {
-		var parsedUrl: urlUtil.UrlOptions = urlUtil.parse(url);
+	promise.data = promise.then(response => response.data);
+	promise.headers = promise.then(response => response);
 
-		if (parsedUrl.auth) {
-			parsedUrl.auth = '(redacted)';
-		}
-
-		var sanitizedUrl = urlUtil.format(parsedUrl);
-
-		error.message = '[' + requestOptions.method + ' ' + sanitizedUrl + '] ' + error.message;
-
-		throw error;
-	});
+	return promise;
 }
-
-export = node;

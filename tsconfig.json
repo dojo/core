@@ -59,6 +59,7 @@
 		"./tests/unit/object.ts",
 		"./tests/unit/Promise.ts",
 		"./tests/unit/Registry.ts",
+		"./tests/unit/request.ts",
 		"./tests/unit/async/iteration.ts",
 		"./tests/unit/streams/all.ts",
 		"./tests/unit/streams/ReadableStream.ts",
