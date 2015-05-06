@@ -3,7 +3,7 @@ import {Handle} from './interfaces';
 export function createHandle(destructor: () => void): Handle {
 	return {
 		destroy: function () {
-			this.remove = function () {};
+			this.destroy = function () {};
 			destructor.call(this);
 		}
 	};

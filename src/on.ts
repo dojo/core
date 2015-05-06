@@ -1,5 +1,5 @@
-import {Handle} from './interfaces';
-import {createHandle} from './util'
+import {Handle, EventObject} from './interfaces';
+import * as util from './util'
 
 interface ExtensionEvent {
 	(target: any, listener: EventListener): Handle;
@@ -7,9 +7,7 @@ interface ExtensionEvent {
 
 interface EventTarget {
 	addEventListener(event: string, listener: EventListener, capture?: boolean): Handle;
-	addEventListener(event: ExtensionEvent, listener: EventListener, capture?: boolean): Handle;
 	removeEventListener(event: string, listener: EventListener, capture?: boolean): void;
-	removeEventListener(event: ExtensionEvent, listener: EventListener, capture?: boolean): void;
 }
 
 interface EventEmitter {
@@ -20,12 +18,6 @@ interface EventEmitter {
 interface Evented {
 	on(event: string, listener: EventListener): Handle;
 	on(event: ExtensionEvent, listener: EventListener): Handle;
-}
-
-interface EventObject {
-    type: string;
-	bubbles?: boolean;
-	cancelable?: boolean;
 }
 
 export default function on(target: EventTarget, type: string, listener: EventListener): Handle;
@@ -39,13 +31,22 @@ export default function on(target: any, type: any, listener: EventListener): Han
 		return type.call(this, target, listener, false);
 	}
 
+	// Array of event support, e.g. on(['foo', 'bar'], function () { /* ... */ })
+	if (typeof target.type === 'array') {
+		var handles: Handle[] = target.type.map(function (type: string): Handle {
+			return on(target, type, listener);
+		});
+
+		return util.createCompositeHandle.call(null, handles);
+	}
+
 	if (target.addEventListener && target.removeEventListener) {
 		target.addEventListener(type, listener, false);
-		return createHandle(function () { target.removeEventListener(type, listener, false); });
+		return util.createHandle(function () { target.removeEventListener(type, listener, false); });
 	}
 	else if (target.on && target.removeListener) {
 		target.on(type, listener);
-		return createHandle(function () { target.removeListener(type, listener); });
+		return util.createHandle(function () { target.removeListener(type, listener); });
 	}
 	else if (target.on) {
 		return target.on(type, listener);
