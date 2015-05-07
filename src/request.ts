@@ -28,8 +28,30 @@ class ProviderRegistry extends Registry<RequestProvider> {
 	}
 }
 
+class FilterRegistry extends Registry<RequestFilter> {
+	register(test: string | RegExp | RequestFilterTest, value: RequestFilter, first?: boolean): Handle {
+		let entryTest: Test;
+
+		if (typeof test === 'string') {
+			entryTest = (response, url, options) => {
+				return test === url;
+			}
+		}
+		else if (test instanceof RegExp) {
+			entryTest = (response, url, options) => {
+				return test.test(url);
+			}
+		}
+		else {
+			entryTest = <RequestFilterTest> test;
+		}
+
+		return super.register(entryTest, value, first);
+	}
+}
+
 interface Request extends RequestProvider {
-	filterRegistry: Registry<RequestFilter>;
+	filterRegistry: FilterRegistry;
 	providerRegistry: ProviderRegistry;
 
 	delete<T>(url: string, options?: RequestOptions): RequestPromise<T>;
@@ -43,11 +65,11 @@ export interface RequestError<T> extends Error {
 }
 
 export interface RequestFilter {
-	<T>(response: Response<T>, url: string, options: RequestOptions): T;
+	<T>(response: Response<T>, url: string, options?: RequestOptions): T;
 }
 
 export interface RequestFilterTest extends Test {
-	(response: Response<any>, url: string, options: RequestOptions): boolean;
+	<T>(response: Response<any>, url: string, options?: RequestOptions): boolean;
 }
 
 export interface RequestOptions {
@@ -97,8 +119,7 @@ export interface Response<T> {
 let defaultProvider: RequestProvider;
 
 if (has('host-node')) {
-	// defaultProvider = nodeRequest;
-	defaultProvider = <any> {};
+	defaultProvider = nodeRequest;
 }
 else if (has('host-browser')) {
 	defaultProvider = xhrRequest;
@@ -128,7 +149,7 @@ let request = <Request> function <T>(url: string, options: RequestOptions = {}):
 /**
  * Request filters, which filter or modify responses. The default filter simply passes a response through unchanged.
  */
-request.filterRegistry = new Registry<RequestFilter>(function (response: any): any {
+request.filterRegistry = new FilterRegistry(function (response: Response<any>): Response<any> {
 	return response;
 });
 
@@ -153,7 +174,7 @@ request.filterRegistry.register(
  * Create the standard HTTP verb handlers.
  */
 [ 'delete', 'get', 'post', 'put' ].forEach(function (method) {
-	(<any> request)[method] = function <T>(url: string, options: RequestOptions): RequestPromise<T> {
+	(<any> request)[method] = function <T>(url: string, options: RequestOptions = {}): RequestPromise<T> {
 		options = Object.create(options);
 		options.method = method.toUpperCase();
 		return request(url, options);

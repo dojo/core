@@ -4,7 +4,7 @@ import * as https from 'https';
 // TODO replace with async/Task when that's merged
 import { default as Task } from '../Promise';
 import request, { RequestError, RequestOptions, RequestPromise, Response } from '../request';
-import urlUtil = require('url');
+import * as urlUtil from 'url';
 
 // TODO: Where should the dojo version come from? It used to be kernel, but we don't have that.
 let version = '2.0.0-pre';
@@ -93,6 +93,7 @@ export default function node<T>(url: string, options: NodeRequestOptions = {}): 
 		throw error;
 	});
 
+	console.log('urlUtil:', urlUtil.parse);
 	let parsedUrl = urlUtil.parse(options.proxy || url);
 
 	var requestOptions = <HttpsOptions> {
