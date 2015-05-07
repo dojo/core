@@ -437,7 +437,9 @@ export default class ReadableStream<T> {
 
 export interface Source<T> {
 
-	start(controller: ReadableStreamController<T>): Promise<void>;
+	restartable?: boolean;
+
+	start(controller: ReadableStreamController<T>, position?: number): Promise<void>;
 
 	pull(controller: ReadableStreamController<T>): Promise<void>;
 
