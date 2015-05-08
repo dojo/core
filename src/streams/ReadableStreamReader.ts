@@ -22,7 +22,9 @@ export default class ReadableStreamReader<T> {
 	}
 
 	private _closedPromise: Promise<void>;
-	private _ownerReadableStream: ReadableStream<T>;
+	protected _ownerReadableStream: ReadableStream<T>;
+	_readRequests: ReadRequest<T>[];
+	state: State;
 	private _storedError: Error;
 	private _readRequests: ReadRequest<T>[];
 	private _resolveClosedPromise: () => void;
