@@ -1,5 +1,5 @@
-import {Handle, EventObject} from './interfaces';
-import {createCompositeHandle} from './util';
+import { Handle, EventObject } from './interfaces';
+import { createCompositeHandle } from './lang';
 import aspect from './aspect';
 
 export default class Evented {

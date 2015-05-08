@@ -1,5 +1,5 @@
-import {Handle} from './interfaces';
-import {createHandle} from './util';
+import { Handle } from './interfaces';
+import { createHandle } from './lang';
 
 interface Advised {
 	id?: number;
@@ -17,11 +17,11 @@ interface Dispatcher {
 	after?: Advised;
 }
 
-var nextId = 0;
+let nextId = 0;
 
 function advise(dispatcher: Dispatcher, type: string, advice: Function, receiveArguments?: boolean): Handle {
 	var previous = (<any> dispatcher)[type];
-	var advised = <Advised> {
+	let advised: Advised = {
 		id: nextId++,
 		advice: advice,
 		receiveArguments: receiveArguments
