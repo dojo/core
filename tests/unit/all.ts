@@ -13,4 +13,4 @@ import './async/iteration';
 import './async/timing';
 import './queue';
 import './Scheduler';
-import './on';
+import './on/all';
