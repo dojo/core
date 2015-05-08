@@ -49,8 +49,8 @@ function advise(dispatcher: Dispatcher, type: string, advice: Function, receiveA
 	advice = previous = null;
 
 	return createHandle(function() {
-		var previous = advised.previous;
-		var next = advised.next;
+		let previous = advised.previous;
+		let next = advised.next;
 
 		if (!previous && !next) {
 			(<any> dispatcher)[type] = null;
@@ -73,7 +73,7 @@ function advise(dispatcher: Dispatcher, type: string, advice: Function, receiveA
 }
 
 function getDispatcher(target: any, methodName: string): Dispatcher {
-	var existing = target[methodName];
+	const existing = target[methodName];
 	var dispatcher: Dispatcher;
 
 	if (!existing || existing.target !== target) {
@@ -127,11 +127,11 @@ function getDispatcher(target: any, methodName: string): Dispatcher {
 	return dispatcher;
 }
 
-export function after(target: Object, methodName: string, advice: (originalReturn: any, originalArgs: any[]) => any): Handle {
+export function after(target: any, methodName: string, advice: (originalReturn: any, originalArgs: any[]) => any): Handle {
 	return advise(getDispatcher(target, methodName), 'after', advice);
 }
 
-export function around(target: Object, methodName: string, advice: (previous: Function) => Function): Handle {
+export function around(target: any, methodName: string, advice: (previous: Function) => Function): Handle {
 	var dispatcher = getDispatcher(target, methodName);
 	var previous = dispatcher.around;
 	var advised = advice(function (): any {
@@ -153,10 +153,10 @@ export function around(target: Object, methodName: string, advice: (previous: Fu
 	});
 }
 
-export function before(target: Object, methodName: string, advice: (...originalArgs: any[]) => any[]): Handle {
+export function before(target: any, methodName: string, advice: (...originalArgs: any[]) => any[]): Handle {
 	return advise(getDispatcher(target, methodName), 'before', advice);
 }
 
-export default function on(target: Object, methodName: string, advice: (...originalArgs: any[]) => any): Handle {
+export default function on(target: any, methodName: string, advice: (...originalArgs: any[]) => any): Handle {
 	return advise(getDispatcher(target, methodName), 'after', advice, true);
 }
