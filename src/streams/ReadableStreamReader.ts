@@ -15,7 +15,7 @@ export interface ReadResult<T> {
 export default class ReadableStreamReader<T> {
 
 	_closedPromise: Promise<void>;
-	private _ownerReadableStream: ReadableStream<T>;
+	protected _ownerReadableStream: ReadableStream<T>;
 	_readRequests: ReadRequest<T>[];
 	state: State;
 	private _storedError: Error;

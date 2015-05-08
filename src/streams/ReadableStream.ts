@@ -437,9 +437,14 @@ export default class ReadableStream<T> {
 
 export interface Source<T> {
 
-	restartable?: boolean;
+	// Requests the source seek to a new position.  This may be
+	// ahead or behind the current position.  A promise will be returned that
+	// resolves to the new position.  If the source is incapable
+	// of moving to the requested position, then the promise
+	// rejects.
+	seek?(controller: ReadableStreamController<T>, position: number): Promise<number>;
 
-	start(controller: ReadableStreamController<T>, position?: number): Promise<void>;
+	start(controller: ReadableStreamController<T>): Promise<void>;
 
 	pull(controller: ReadableStreamController<T>): Promise<void>;
 
