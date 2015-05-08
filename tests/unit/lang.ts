@@ -305,7 +305,7 @@ registerSuite({
 
 	'.createHandle'() {
 		var count = 0;
-		var handle = lang.createHandle(function ():void {
+		var handle = lang.createHandle(function(): void {
 			count++;
 		});
 
@@ -318,7 +318,7 @@ registerSuite({
 
 	'.createCompositeHandle'() {
 		var count = 0;
-		function destructor():void {
+		function destructor(): void {
 			count++;
 		}
 		var handle = lang.createCompositeHandle(

@@ -15,3 +15,4 @@ import './queue';
 import './Scheduler';
 import './on/all';
 import './Evented';
+import './aspect';
