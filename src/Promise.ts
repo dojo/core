@@ -21,6 +21,10 @@ export function isThenable(value: any) {
  * for .all and .race so that the native promise doesn't treat the PlatformPromises like generic thenables.
  */
 function unwrapPromises(items: any[]): any[] {
+	if (!isIterable(items)) {
+		throw new Error('invalid argument');
+	}
+
 	let unwrapped: typeof items = [];
 	let count = items.length;
 	for (let i = 0; i < count; i++) {
@@ -130,9 +134,9 @@ export class PromiseShim<T> implements Thenable<T> {
 		});
 	}
 
-	static reject<T>(reason?: any): PromiseShim<T> {
+	static reject<T>(reason?: Error): PromiseShim<T> {
 		return new this((
-			resolve: (value: T) => void,
+			resolve: (value: any) => void,
 			reject: (reason: any) => void
 		): void => {
 			reject(reason);
@@ -255,7 +259,7 @@ export class PromiseShim<T> implements Thenable<T> {
 
 		this.then = <U>(
 			onFulfilled?: (value?: T) => (U | PromiseShim<U>),
-			onRejected?: (reason?: any) => (U | PromiseShim<U>)
+			onRejected?: (reason?: Error) => (U | PromiseShim<U>)
 		): PromiseShim<U> => {
 			return new PromiseShim<U>((
 				resolve: (value?: U) => void,
@@ -308,14 +312,10 @@ export class PromiseShim<T> implements Thenable<T> {
 	 */
 	private resolvedValue: any;
 
-	catch<U>(onRejected: (reason?: any) => (U | Thenable<U>)): PromiseShim<U> {
-		return this.then<U>(null, onRejected);
-	}
-
-	then<U>(
+	then: <U>(
 		onFulfilled?: (value?: T) => (U | Thenable<U>),
-		onRejected?: (reason?: any) => (U | Thenable<U>)
-	): PromiseShim<U> { return null; }
+		onRejected?: (reason?: Error) => (U | Thenable<U>)
+	) => PromiseShim<U>;
 }
 
 /**
@@ -327,6 +327,11 @@ let PromiseConstructor = has('promise') ? global.Promise : PromiseShim;
  * PlatformPromise is a very thin wrapper around either a native promise implementation or PromiseShim.
  */
 export default class Promise<T> implements Thenable<T> {
+	/**
+	 * Points to the promise constructor this platform should use.
+	 */
+	static PromiseConstructor = has('promise') ? global.Promise : PromiseShim;
+
 	/**
 	 * Converts an iterable object containing promises into a single promise that resolves to a new iterable object
 	 * containing the fulfilled values of all the promises in the iterable, in the same order as the Promises in the
@@ -348,7 +353,7 @@ export default class Promise<T> implements Thenable<T> {
 	 * });
 	 */
 	static all<T>(items: (T | Thenable<T>)[]): Promise<T[]> {
-		return this.copy(PromiseConstructor.all(unwrapPromises(items)));
+		return this.copy(Promise.PromiseConstructor.all(unwrapPromises(items)));
 	}
 
 	/**
@@ -370,14 +375,14 @@ export default class Promise<T> implements Thenable<T> {
 	 * });
 	 */
 	static race<T>(items: (T | Thenable<T>)[]): Promise<T> {
-		return this.copy(PromiseConstructor.race(unwrapPromises(items)));
+		return this.copy(Promise.PromiseConstructor.race(unwrapPromises(items)));
 	}
 
 	/**
 	 * Creates a new promise that is rejected with the given error.
 	 */
 	static reject<T>(reason: Error): Promise<any> {
-		return this.copy(PromiseConstructor.reject(reason));
+		return this.copy(Promise.PromiseConstructor.reject(reason));
 	}
 
 	/**
@@ -390,7 +395,7 @@ export default class Promise<T> implements Thenable<T> {
 		if (value instanceof Promise) {
 			return value;
 		}
-		return this.copy(PromiseConstructor.resolve(value));
+		return this.copy(Promise.PromiseConstructor.resolve(value));
 	}
 
 	/**
@@ -398,7 +403,7 @@ export default class Promise<T> implements Thenable<T> {
 	 */
 	protected static copy<U>(other: Promise<U>): Promise<U> {
 		let promise = Object.create(this.prototype, {
-			promise: { value: other instanceof PromiseConstructor ? other : other.promise }
+			promise: { value: other instanceof Promise.PromiseConstructor ? other : other.promise }
 		});
 
 		if (other instanceof Promise && other._state !== State.Pending) {
@@ -428,21 +433,22 @@ export default class Promise<T> implements Thenable<T> {
 	 * successfully, or the `reject` function when the operation fails.
 	 */
 	constructor(executor: Executor<T>) {
-		// Create resolver that verifies that the the resolution value isn't this promise. Since any incoming promise
+		// Wrap the executor to verify that the the resolution value isn't this promise. Since any incoming promise
 		// should be wrapped, the native resolver can't automatically detect self-resolution.
-		let createResolve = (resolve: (value?: T | Thenable<T>) => void, reject: (reason?: any) => void) => {
-			return (value: any) => {
-				if (value === this) {
-					reject(new TypeError('Cannot chain a promise to itself'));
+		this.promise = new Promise.PromiseConstructor(<Executor<T>> ((resolve, reject) => {
+			executor(
+				(value?: T | Thenable<T>): void => {
+					if (value === this) {
+						reject(new TypeError('Cannot chain a promise to itself'));
+					}
+					else {
+						resolve(value);
+					}
+				},
+				(reason?: Error): void => {
+					reject(reason);
 				}
-				else {
-					resolve(value);
-				}
-			};
-		};
-
-		this.promise = new PromiseConstructor(<Executor<T>> ((resolve, reject) => {
-			executor(createResolve(resolve, reject), reject);
+			);
 		}));
 
 		this._state = State.Pending;

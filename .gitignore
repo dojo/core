@@ -11,3 +11,4 @@ tests/typings/dist/
 html-report
 coverage-final.json
 /_build
+coverage-final.json
