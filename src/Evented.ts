@@ -1,13 +1,13 @@
 import { Handle, EventObject } from './interfaces';
 import { createCompositeHandle } from './lang';
-import aspect from './aspect';
+import * as aspect from './aspect';
 
 export default class Evented {
 	emit(data: EventObject): boolean {
 		var type = '__on' + data.type;
 		var method: Function = (<any> this)[type];
 		if (method) {
-			return method.apply(this, data);
+			return method.call(this, data);
 		}
 	};
 
@@ -20,6 +20,6 @@ export default class Evented {
 				writable: true
 			});
 		}
-		return aspect(this, '__on' + type, listener);
+		return aspect.on(this, '__on' + type, listener);
 	};
 }

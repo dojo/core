@@ -56,6 +56,7 @@ function createCommonTests(args: any) {
 		},
 
 		'.emit return value'() {
+<<<<<<< HEAD
 			var returnValue = emit(target, { type: testEventName, cancelable: false });
 			assert.ok(returnValue);
 			assert.propertyVal(returnValue, 'cancelable', false);
@@ -73,6 +74,25 @@ function createCommonTests(args: any) {
 				}
 			});
 			assert.isFalse(emit(target, { type: testEventName, cancelable: true }));
+=======
+			// var returnValue = emit(target, { type: testEventName, cancelable: false });
+			// assert.ok(returnValue);
+			// assert.propertyVal(returnValue, 'cancelable', false);
+			//
+			// returnValue = emit(target, { type: testEventName, cancelable: true });
+			// assert.ok(returnValue);
+			// assert.propertyVal(returnValue, 'cancelable', true);
+			//
+			// testOn(target, testEventName, function (event: CustomEvent) {
+			// 	if ('preventDefault' in event) {
+			// 		event.preventDefault();
+			// 	}
+			// 	else {
+			// 		event.cancelable = false;
+			// 	}
+			// });
+			// assert.isFalse(emit(target, { type: testEventName, cancelable: true }));
+>>>>>>> on tests for using Evented
 		},
 
 		'on - multiple event names'() {
@@ -80,7 +100,11 @@ function createCommonTests(args: any) {
 				emittedEventType: string,
 				emittedEvent: CustomEvent;
 
+<<<<<<< HEAD
 			testOn(target, 'test1, test2', function (actualEvent: CustomEvent) {
+=======
+			testOn(target, ['test1', 'test2'], function (actualEvent: CustomEvent) {
+>>>>>>> on tests for using Evented
 				listenerCallCount++;
 				if (emittedEventType in actualEvent) {
 					assert.strictEqual(actualEvent.type, emittedEventType);
@@ -101,9 +125,21 @@ function createCommonTests(args: any) {
 
 		'on - multiple handlers'() {
 			var order: any[] = [];
+<<<<<<< HEAD
 			testOn(target, 'a, b', function (event: CustomEvent) {
 				order.push(1 + event.type);
 			});
+=======
+			var customEvent = function (target: any, listener: any) {
+				return on(target, 'custom', listener);
+			};
+			on(target, ['a', 'b'], function (event) {
+				order.push(1 + event.type);
+			});
+			on(target, [ 'a', customEvent ], function (event) {
+				order.push(2 + event.type);
+			});
+>>>>>>> on tests for using Evented
 			emit(target, { type: 'a' });
 			emit(target, { type: 'b' });
 			emit(target, { type: 'custom' });
@@ -133,6 +169,7 @@ function createCommonTests(args: any) {
 	};
 }
 
+<<<<<<< HEAD
 // var suite = {
 // 	name: 'dojo/on',
 //
@@ -157,5 +194,25 @@ function createCommonTests(args: any) {
 // 		assert.isTrue(threwError);
 // 	}
 // };
+=======
+var suite = {
+	name: 'on',
+
+	common: {
+		'object events': createCommonTests({
+			eventName: 'test',
+			createTarget: function () {
+				return new Evented();
+			}
+		})
+	},
+
+	'cannot target non-emitter': function () {
+		assert.throws(function () {
+			testOn({}, 'test', function () {});
+		});
+	}
+};
+>>>>>>> on tests for using Evented
 
 // registerSuite(suite);

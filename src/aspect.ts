@@ -157,6 +157,6 @@ export function before(target: any, methodName: string, advice: (...originalArgs
 	return advise(getDispatcher(target, methodName), 'before', advice);
 }
 
-export default function on(target: any, methodName: string, advice: (...originalArgs: any[]) => any): Handle {
+export function on(target: any, methodName: string, advice: (...originalArgs: any[]) => any): Handle {
 	return advise(getDispatcher(target, methodName), 'after', advice, true);
 }
