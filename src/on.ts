@@ -46,11 +46,11 @@ export default function on(target: any, type: any, listener: EventListener, capt
 
 	if (target.addEventListener && target.removeEventListener) {
 		target.addEventListener(type, listener, false);
-		return util.createHandle(function () { target.removeEventListener(type, listener, false); });
+		return createHandle(function () { target.removeEventListener(type, listener, false); });
 	}
 	else if (target.on && target.removeListener) {
 		target.on(type, listener);
-		return util.createHandle(function () { target.removeListener(type, listener); });
+		return createHandle(function () { target.removeListener(type, listener); });
 	}
 	else if (target.on) {
 		return target.on(type, listener);
