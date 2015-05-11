@@ -2,7 +2,7 @@ import Promise from 'src/Promise';
 import { Source } from 'src/streams/ReadableStream';
 import ReadableStreamController from 'src/streams/ReadableStreamController';
 
-let resolved = Promise.resolve();
+const resolved = Promise.resolve();
 
 /**
  * A seekable array source
@@ -41,11 +41,13 @@ export default class ArraySource<T> implements Source<T> {
 	}
 
 	pull(controller: ReadableStreamController<T>): Promise<void> {
-		controller.enqueue(this.data[this.currentPosition]);
 		this.currentPosition += 1;
 
 		if (this.currentPosition === this.data.length) {
 			controller.close();
+		}
+		else {
+			controller.enqueue(this.data[this.currentPosition - 1]);
 		}
 
 		return resolved;

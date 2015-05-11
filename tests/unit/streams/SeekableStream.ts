@@ -21,16 +21,11 @@ registerSuite({
 		let stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: 1 }));
 		let reader = stream.getReader();
 
-		return reader.currentPosition.then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 0);
+		assert.strictEqual(reader.currentPosition, 0);
 
-			return reader.read();
-		}).then((result: ReadResult<string>) => {
+		return reader.read().then((result: ReadResult<string>) => {
 			assert.strictEqual(result.value, data[0]);
-
-			return reader.currentPosition;
-		}).then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 1);
+			assert.strictEqual(reader.currentPosition, 1);
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
@@ -48,16 +43,11 @@ registerSuite({
 		let stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: 1}));
 		let reader = stream.getReader();
 
-		return reader.currentPosition.then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 0);
+		assert.strictEqual(reader.currentPosition, 0);
 
-			return reader.seek(1);
-		}).then((seekPosition: number) => {
+		return reader.seek(1).then((seekPosition: number) => {
 			assert.strictEqual(seekPosition, 1);
-
-			return reader.currentPosition;
-		}).then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 1);
+			assert.strictEqual(reader.currentPosition, 1);
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
@@ -67,10 +57,7 @@ registerSuite({
 			return reader.seek(2);
 		}).then((seekPosition: number) => {
 			assert.strictEqual(seekPosition, 2);
-
-			return reader.currentPosition;
-		}).then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 2);
+			assert.strictEqual(reader.currentPosition, 2);
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
@@ -80,10 +67,7 @@ registerSuite({
 			return reader.seek(0);
 		}).then((seekPosition: number) => {
 			assert.strictEqual(seekPosition, 0);
-
-			return reader.currentPosition;
-		}).then((currentPosition: number) => {
-			assert.strictEqual(currentPosition, 0);
+			assert.strictEqual(reader.currentPosition, 0);
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {

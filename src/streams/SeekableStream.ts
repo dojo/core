@@ -1,23 +1,9 @@
 import Promise from '../Promise';
 import ReadableStream, { Source } from './ReadableStream';
-//import ReadableStreamReader from './ReadableStreamReader';
-//import ReadableStreamController from './ReadableStreamController';
 import SeekableStreamReader from './SeekableStreamReader';
-import { Strategy } from './interfaces';
 
 export default class SeekableStream<T> extends ReadableStream<T> {
-	//protected _currentPosition: number;
-	//protected _currentPositionPromise: Promise<number>;
-	//_reader: SeekableStreamReader<T>;
-
-	/*constructor(underlyingSource: Source<T>, strategy: Strategy<T>) {
-		super(underlyingSource, strategy);
-		this._currentPosition = 0;
-	}*/
-
-	/*get currentPosition(): Promise<number> {
-		return this._currentPositionPromise || Promise.resolve(this._currentPosition);
-	}*/
+	_reader: SeekableStreamReader<T>;
 
 	getReader(): SeekableStreamReader<T> {
 		if (!this.readable || !this.seek) {
@@ -32,17 +18,17 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 			return this._underlyingSource.seek(this._controller, position);
 		}
 		else {
-			// TODO: move forward to position?
-			return Promise.resolve(5);
+			if (this._reader) {
+				if (position < this._reader.currentPosition) {
+					return Promise.reject(new Error('Stream source is not seekable; cannot seek backwards'));
+				}
+			}
 		}
-	}
 
-/*	_pull(): void {
-		super._pull();
-		if (this._pullingPromise) {
-			this._currentPositionPromise = this._pullingPromise.then(() => {
-				this._currentPosition +=
-				})
-		}
-	}*/
+		// TODO: figure out if anything needs to be done here
+		// (I think all logic is already covered in SeekableStreamReader.seek)
+		console.warn('SeekableStream#seek: why are you here?');
+
+		return Promise.resolve(position);
+	}
 }
