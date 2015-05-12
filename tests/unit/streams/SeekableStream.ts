@@ -3,24 +3,32 @@ import * as registerSuite from 'intern!object';
 import ArraySource from 'src/streams/ArraySource';
 import CountQueuingStrategy from 'src/streams/CountQueuingStrategy';
 import Promise from 'src/Promise';
+import { State } from 'src/streams/ReadableStream';
 import { ReadResult } from 'src/streams/ReadableStreamReader';
 import SeekableStream from 'src/streams/SeekableStream';
+import SeekableStreamReader from 'src/streams/SeekableStreamReader';
 
-let asyncTimeout = 1000;
+const asyncTimeout = 1000;
+let data: string[];
+let source: ArraySource<string>;
+let stream: SeekableStream<string>;
+let reader: SeekableStreamReader<string>;
 
 registerSuite({
 	name: 'SeekableStream',
 
-	read() {
-		let data = [
+	beforeEach() {
+		data = [
 			'test1',
 			'test2',
 			'test3'
 		];
-		let source = new ArraySource<string>(data);
-		let stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: 1 }));
-		let reader = stream.getReader();
+		source = new ArraySource<string>(data);
+		stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: Infinity }));
+		reader = stream.getReader();
+	},
 
+	read() {
 		assert.strictEqual(reader.currentPosition, 0);
 
 		return reader.read().then((result: ReadResult<string>) => {
@@ -34,15 +42,6 @@ registerSuite({
 	},
 
 	seek() {
-		let data = [
-			'test1',
-			'test2',
-			'test3'
-		];
-		let source = new ArraySource<string>(data);
-		let stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: 1}));
-		let reader = stream.getReader();
-
 		assert.strictEqual(reader.currentPosition, 0);
 
 		return reader.seek(1).then((seekPosition: number) => {
@@ -51,7 +50,6 @@ registerSuite({
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
-			console.log(result.value);
 			assert.strictEqual(result.value, data[1]);
 
 			return reader.seek(2);
@@ -61,7 +59,6 @@ registerSuite({
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
-			console.log(result.value);
 			assert.strictEqual(result.value, data[2]);
 
 			return reader.seek(0);
@@ -71,8 +68,24 @@ registerSuite({
 
 			return reader.read();
 		}).then((result: ReadResult<string>) => {
-			console.log(result.value);
 			assert.strictEqual(result.value, data[0]);
 		});
+	},
+
+	preventClose: {
+		enabled() {
+			return reader.read().then(function (result: ReadResult<string>) {
+				assert.notStrictEqual(stream.state, State.Closed);
+			});
+		},
+
+		disabled() {
+			stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: Infinity }), false);
+			reader = stream.getReader();
+
+			return reader.read().then(function (result: ReadResult<string>) {
+				assert.strictEqual(stream.state, State.Closed);
+			});
+		}
 	}
 });

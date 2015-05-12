@@ -1,9 +1,17 @@
+import { Strategy } from './interfaces';
 import Promise from '../Promise';
 import ReadableStream, { Source } from './ReadableStream';
 import SeekableStreamReader from './SeekableStreamReader';
 
 export default class SeekableStream<T> extends ReadableStream<T> {
+	preventClose: boolean;
 	_reader: SeekableStreamReader<T>;
+
+	constructor(underlyingSource: Source<T>, strategy: Strategy<T> = {}, preventClose: boolean = true) {
+		super(underlyingSource, strategy);
+
+		this.preventClose = preventClose;
+	}
 
 	getReader(): SeekableStreamReader<T> {
 		if (!this.readable || !this.seek) {
@@ -13,22 +21,22 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 		return new SeekableStreamReader(this);
 	}
 
+	_requestClose(): void {
+		if (!this.preventClose) {
+			super._requestClose();
+		}
+	}
+
 	seek(position: number): Promise<number> {
 		if (this._underlyingSource.seek) {
 			return this._underlyingSource.seek(this._controller, position);
 		}
 		else {
-			if (this._reader) {
-				if (position < this._reader.currentPosition) {
-					return Promise.reject(new Error('Stream source is not seekable; cannot seek backwards'));
-				}
+			if (this._reader && position < this._reader.currentPosition) {
+				return Promise.reject(new Error('Stream source is not seekable; cannot seek backwards'));
 			}
 		}
 
-		// TODO: figure out if anything needs to be done here
-		// (I think all logic is already covered in SeekableStreamReader.seek)
-		console.warn('SeekableStream#seek: why are you here?');
-
-		return Promise.resolve(position);
+		return Promise.reject(new Error('Stream is not in a seekable state'));
 	}
 }

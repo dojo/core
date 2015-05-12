@@ -41,12 +41,11 @@ export default class ArraySource<T> implements Source<T> {
 	}
 
 	pull(controller: ReadableStreamController<T>): Promise<void> {
-		this.currentPosition += 1;
-
-		if (this.currentPosition === this.data.length) {
+		if (this.currentPosition >= this.data.length) {
 			controller.close();
 		}
 		else {
+			this.currentPosition += 1;
 			controller.enqueue(this.data[this.currentPosition - 1]);
 		}
 
