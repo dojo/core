@@ -1,6 +1,6 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import * as sinon from 'sinon';
+import sinon = require('sinon');
 import * as aspect from 'src/aspect';
 
 var slice = Array.prototype.slice;

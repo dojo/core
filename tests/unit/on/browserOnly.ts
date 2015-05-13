@@ -5,7 +5,7 @@ import on, { emit } from 'src/on';
 
 function createTarget() {
 	var element = document.createElement('div');
-	document.appendChild(element);
+	document.body.appendChild(element);
 	return element;
 }
 
@@ -24,12 +24,14 @@ registerSuite({
 
 	'.emit return value'() {
 		var target = createTarget();
-		assert.isFalse(emit(target, { type: 'test' }));
-
-		var handle = on(target, 'test', function (event) {
-			event.preventDefault();
-		});
 		assert.isTrue(emit(target, { type: 'test' }));
+
+		var handle = on(target, 'test', function (evt) {
+			evt.preventDefault();
+		});
+
+		assert.isTrue(emit(target, { type: 'test', cancelable: false }));
+		assert.isFalse(emit(target, { type: 'test', cancelable: true }));
 
 		destroyTarget(target);
 		handle.destroy();
