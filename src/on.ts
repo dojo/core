@@ -5,17 +5,17 @@ import Evented from './Evented';
 // Only used for Evented and EventEmitter, as EventTarget uses EventListener
 type EventCallback = (event: {}) => void;
 
-interface ExtensionEvent {
+export interface ExtensionEvent {
 	(target: any, listener: EventCallback): Handle;
 }
 
-interface EventTarget {
+export interface EventTarget {
 	addEventListener(event: string, listener: EventListener, capture?: boolean): Handle;
 	removeEventListener(event: string, listener: EventListener, capture?: boolean): void;
 }
 
-interface EventEmitter {
-    on(event: string, listener: EventCallback): EventEmitter;
+export interface EventEmitter {
+	on(event: string, listener: EventCallback): EventEmitter;
 	removeListener(event: string, listener: EventCallback): EventEmitter;
 }
 
@@ -25,18 +25,17 @@ export default function on(target: EventTarget, type: [string|ExtensionEvent], l
 
 export default function on(target: EventEmitter, type: string, listener: EventCallback): Handle;
 export default function on(target: EventEmitter, type: ExtensionEvent, listener: EventCallback): Handle;
-export default function on(target: EventEmitter, type: [string|ExtensionEvent], listener: EventCallback): Handle;
 
 export default function on(target: Evented, type: string, listener: EventCallback): Handle;
 export default function on(target: Evented, type: ExtensionEvent, listener: EventCallback): Handle;
 export default function on(target: Evented, type: [string|ExtensionEvent], listener: EventCallback): Handle;
 
-export default function on(target: any, type: any, listener: EventListener, capture?: boolean): Handle {
+export default function on(target: any, type: any, listener: any, capture?: boolean): Handle {
 	if (type.call) {
 		return type.call(this, target, listener, capture);
 	}
 
-	if (!!type.shift) {
+	if (Array.isArray(type)) {
 		var handles: Handle[] = type.map(function (type: string): Handle {
 			return on(target, type, listener, capture);
 		});
@@ -45,8 +44,11 @@ export default function on(target: any, type: any, listener: EventListener, capt
 	}
 
 	if (target.addEventListener && target.removeEventListener) {
-		target.addEventListener(type, listener, false);
-		return createHandle(function () { target.removeEventListener(type, listener, false); });
+		const callback = function () {
+			listener.apply(this, arguments);
+		}
+		target.addEventListener(type, callback, capture);
+		return createHandle(function () { target.removeEventListener(type, callback, capture); });
 	}
 	else if (target.on && target.removeListener) {
 		target.on(type, listener);
@@ -64,6 +66,7 @@ export default function on(target: any, type: any, listener: EventListener, capt
 export function emit(target: EventTarget, event: EventObject): boolean;
 export function emit(target: EventEmitter, event: EventObject): boolean;
 export function emit(target: Evented, event: EventObject): boolean;
+
 export function emit(target: any, event: any): boolean {
 	if (target.emit && target.removeListener) {
 		return target.emit(event.type, event);

@@ -1,7 +1,7 @@
 import { PropertyEvent, Observer } from './observers/interfaces';
 import * as ObjectObserver from './observers/ObjectObserver';
 import has from './has';
-import { Handle, EventObject } from './interfaces';
+import { Handle } from './interfaces';
 
 var slice = Array.prototype.slice;
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -226,7 +226,7 @@ export function createHandle(destructor: () => void): Handle {
 
 export function createCompositeHandle(...handles: Handle[]): Handle {
 	return createHandle(function () {
-		for (var i = 0, handle: Handle; (handle = handles[i]); ++i) {
+		for (let handle of handles) {
 			handle.destroy();
 		}
 	});
