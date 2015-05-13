@@ -304,8 +304,8 @@ registerSuite({
 	},
 
 	'.createHandle'() {
-		var count = 0;
-		var handle = lang.createHandle(function(): void {
+		let count = 0;
+		const handle = lang.createHandle(function(): void {
 			count++;
 		});
 
@@ -317,11 +317,11 @@ registerSuite({
 	},
 
 	'.createCompositeHandle'() {
-		var count = 0;
+		let count = 0;
 		function destructor(): void {
 			count++;
 		}
-		var handle = lang.createCompositeHandle(
+		const handle = lang.createCompositeHandle(
 			lang.createHandle(destructor),
 			lang.createHandle(destructor)
 		);

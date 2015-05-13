@@ -20,7 +20,7 @@ interface Dispatcher {
 let nextId = 0;
 
 function advise(dispatcher: Dispatcher, type: string, advice: Function, receiveArguments?: boolean): Handle {
-	var previous = (<any> dispatcher)[type];
+	let previous = (<any> dispatcher)[type];
 	let advised: Advised = {
 		id: nextId++,
 		advice: advice,
@@ -74,15 +74,15 @@ function advise(dispatcher: Dispatcher, type: string, advice: Function, receiveA
 
 function getDispatcher(target: any, methodName: string): Dispatcher {
 	const existing = target[methodName];
-	var dispatcher: Dispatcher;
+	let dispatcher: Dispatcher;
 
 	if (!existing || existing.target !== target) {
 		// no dispatcher
 		target[methodName] = dispatcher = <Dispatcher> function (): any {
-			var executionId = nextId;
-			var args = arguments;
-			var results: any;
-			var before = dispatcher.before;
+			let executionId = nextId;
+			let args = arguments;
+			let results: any;
+			let before = dispatcher.before;
 
 			while (before) {
 				args = before.advice.apply(this, args) || args;
@@ -93,10 +93,10 @@ function getDispatcher(target: any, methodName: string): Dispatcher {
 				results = dispatcher.around.advice(this, args);
 			}
 
-			var after = dispatcher.after;
+			let after = dispatcher.after;
 			while (after && after.id < executionId) {
 				if (after.receiveArguments) {
-					var newResults = after.advice.apply(this, args);
+					let newResults = after.advice.apply(this, args);
 					results = newResults === undefined ? results : newResults;
 				}
 				else {
@@ -132,9 +132,9 @@ export function after(target: any, methodName: string, advice: (originalReturn: 
 }
 
 export function around(target: any, methodName: string, advice: (previous: Function) => Function): Handle {
-	var dispatcher = getDispatcher(target, methodName);
-	var previous = dispatcher.around;
-	var advised = advice(function (): any {
+	let dispatcher = getDispatcher(target, methodName);
+	let previous = dispatcher.around;
+	let advised = advice(function (): any {
 		return previous.advice(this, arguments);
 	});
 

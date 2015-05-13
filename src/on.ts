@@ -20,6 +20,36 @@ export interface EventEmitter {
 	removeListener(event: string, listener: EventCallback): EventEmitter;
 }
 
+export function emit(target: EventTarget, event: EventObject): boolean;
+export function emit(target: EventEmitter, event: EventObject): boolean;
+export function emit(target: Evented, event: EventObject): boolean;
+
+export function emit(target: any, event: any): boolean {
+	if (target.dispatchEvent && target.ownerDocument && target.ownerDocument.createEvent) {
+		let nativeEvent = target.ownerDocument.createEvent('HTMLEvents');
+		nativeEvent.initEvent(event.type, Boolean(event.bubbles), Boolean(event.cancelable));
+
+		for (let key in event) {
+			if (!(key in nativeEvent)) {
+				nativeEvent[key] = event[key];
+			}
+		}
+
+		return target.dispatchEvent(nativeEvent);
+	}
+
+	if (target.emit && target.removeListener) {
+		return target.emit(event.type, event);
+	}
+
+	if (target.emit && target.on) {
+		target.emit(event);
+		return false;
+	}
+
+	throw new Error('Target must be an event emitter');
+}
+
 export default function on(target: EventTarget, type: string, listener: EventListener, capture?: boolean): Handle;
 export default function on(target: EventTarget, type: ExtensionEvent, listener: EventListener, capture?: boolean): Handle;
 export default function on(target: EventTarget, type: (string | ExtensionEvent)[], listener: EventListener, capture?: boolean): Handle;
@@ -38,7 +68,7 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 	}
 
 	if (Array.isArray(type)) {
-		var handles: Handle[] = type.map(function (type: string): Handle {
+		let handles: Handle[] = type.map(function (type: string): Handle {
 			return on(target, type, listener, capture);
 		});
 
@@ -64,34 +94,4 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 	}
 
 	throw new TypeError('Unknown event emitter object');
-}
-
-export function emit(target: EventTarget, event: EventObject): boolean;
-export function emit(target: EventEmitter, event: EventObject): boolean;
-export function emit(target: Evented, event: EventObject): boolean;
-
-export function emit(target: any, event: any): boolean {
-	if (target.dispatchEvent && target.ownerDocument && target.ownerDocument.createEvent) {
-		var nativeEvent = target.ownerDocument.createEvent('HTMLEvents');
-		nativeEvent.initEvent(event.type, Boolean(event.bubbles), Boolean(event.cancelable));
-
-		for (var key in event) {
-			if (!(key in nativeEvent)) {
-				nativeEvent[key] = event[key];
-			}
-		}
-
-		return target.dispatchEvent(nativeEvent);
-	}
-
-	if (target.emit && target.removeListener) {
-		return target.emit(event.type, event);
-	}
-
-	if (target.emit && target.on) {
-		target.emit(event);
-		return false;
-	}
-
-	throw new Error('Target must be an event emitter');
 }

@@ -23,10 +23,10 @@ registerSuite({
 	}),
 
 	'emit return value'() {
-		var target = createTarget();
+		const target = createTarget();
 		assert.isTrue(emit(target, { type: 'test' }));
 
-		var handle = on(target, 'test', function (evt) {
+		const handle = on(target, 'test', function (evt) {
 			evt.preventDefault();
 		});
 

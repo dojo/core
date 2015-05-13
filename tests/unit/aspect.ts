@@ -3,9 +3,9 @@ import assert = require('intern/chai!assert');
 import sinon = require('sinon');
 import * as aspect from 'src/aspect';
 
-var slice = Array.prototype.slice;
-var obj: any;
-var methodSpy: any;
+const slice = Array.prototype.slice;
+let obj: any;
+let methodSpy: any;
 
 function createBeforeSpy() {
 	return sinon.spy(function (a: number) {
@@ -25,7 +25,7 @@ registerSuite({
 
 		'.before': {
 			'return value passed as arguments'() {
-				var aspectSpy = createBeforeSpy();
+				let aspectSpy = createBeforeSpy();
 
 				aspect.before(obj, 'method', aspectSpy);
 
@@ -39,8 +39,8 @@ registerSuite({
 			},
 
 			'multiple aspect.before()'() {
-				var aspectSpy1 = createBeforeSpy();
-				var aspectSpy2 = createBeforeSpy();
+				const aspectSpy1 = createBeforeSpy();
+				const aspectSpy2 = createBeforeSpy();
 
 				aspect.before(obj, 'method', aspectSpy1);
 				aspect.before(obj, 'method', aspectSpy2);
@@ -57,8 +57,8 @@ registerSuite({
 
 		'.after': {
 			'overriding return value from original method'() {
-				var expected = 'override!';
-				var aspectSpy = sinon.stub().returns(expected);
+				const expected = 'override!';
+				const aspectSpy = sinon.stub().returns(expected);
 
 				aspect.after(obj, 'method', aspectSpy);
 				assert.equal(obj.method(0), expected);
@@ -66,8 +66,8 @@ registerSuite({
 			},
 
 			'multiple aspect.after()'() {
-				var aspectStub1 = sinon.stub();
-				var aspectStub2 = sinon.stub();
+				const aspectStub1 = sinon.stub();
+				const aspectStub2 = sinon.stub();
 
 				aspect.after(obj, 'method', aspectStub1);
 				aspect.after(obj, 'method', aspectStub2);
@@ -78,8 +78,8 @@ registerSuite({
 			},
 
 			'provides the original arguments to the aspect method'() {
-				var expected = 'expected';
-				var aspectStub = sinon.stub().returns(expected);
+				const expected = 'expected';
+				const aspectStub = sinon.stub().returns(expected);
 
 				aspect.after(obj, 'method', aspectStub);
 				assert.equal(obj.method(0), expected);
@@ -91,9 +91,9 @@ registerSuite({
 
 		'.around': {
 			'single around'() {
-				var expected = 5;
-				var aroundFunction = sinon.stub().returns(expected);
-				var aspectStub = sinon.stub().returns(aroundFunction);
+				const expected = 5;
+				const aroundFunction = sinon.stub().returns(expected);
+				const aspectStub = sinon.stub().returns(aroundFunction);
 
 				aspect.around(obj, 'method', aspectStub);
 
@@ -112,8 +112,8 @@ registerSuite({
 
 		'handle.destroy()': {
 			'prevents aspect from being called'() {
-				var aspectSpy = createBeforeSpy();
-				var handle = aspect.before(obj, 'method', aspectSpy);
+				const aspectSpy = createBeforeSpy();
+				const handle = aspect.before(obj, 'method', aspectSpy);
 
 				obj.method(0);
 				assert.notEqual(obj.method, methodSpy);
@@ -126,9 +126,9 @@ registerSuite({
 			},
 
 			'can remove an aspect from the middle of a list'() {
-				var aspectSpy1 = createBeforeSpy();
-				var aspectSpy2 = createBeforeSpy();
-				var handle = aspect.before(obj, 'method', aspectSpy1);
+				const aspectSpy1 = createBeforeSpy();
+				const aspectSpy2 = createBeforeSpy();
+				const handle = aspect.before(obj, 'method', aspectSpy1);
 
 				aspect.before(obj, 'method', aspectSpy2);
 				handle.destroy();
@@ -140,10 +140,10 @@ registerSuite({
 			},
 
 			'removing a aspect stub'() {
-				var obj: any = {};
-				var aspectSpy = sinon.stub();
+				const obj: any = {};
+				const aspectSpy = sinon.stub();
 				aspect.before(obj, 'method', sinon.stub());
-				var handle = aspect.before(obj, 'method', aspectSpy);
+				const handle = aspect.before(obj, 'method', aspectSpy);
 
 				handle.destroy();
 				obj.method(0);
@@ -151,9 +151,9 @@ registerSuite({
 			},
 
 			'removing the first of multiple aspects'() {
-				var aroundFunction = sinon.stub();
-				var aspectStub = sinon.stub().returns(aroundFunction);
-				var handle = aspect.around(obj, 'method', aspectStub);
+				const aroundFunction = sinon.stub();
+				const aspectStub = sinon.stub().returns(aroundFunction);
+				const handle = aspect.around(obj, 'method', aspectStub);
 
 				handle.destroy();
 				obj.method(0);

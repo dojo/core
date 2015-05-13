@@ -4,7 +4,7 @@ import assert = require('intern/chai!assert');
 import on, { emit } from 'src/on';
 
 function createTarget() {
-	var events = require('events');
+	const events = require('events');
 	return new events.EventEmitter();
 }
 
@@ -17,10 +17,10 @@ registerSuite({
 	}),
 
 	'emit return value'() {
-		var target = createTarget();
+		const target = createTarget();
 		assert.isFalse(emit(target, { type: 'test' }));
 
-		var handle = on(target, 'test', function () {});
+		const handle = on(target, 'test', function () {});
 		assert.isTrue(emit(target, { type: 'test' }));
 
 		handle.destroy();

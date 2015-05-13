@@ -9,7 +9,7 @@ registerSuite({
 
 	'cannot target non-emitter': function () {
 		assert.throws(function () {
-			on(<any>{}, 'test', function () {});
+			on(<any> {}, 'test', function () {});
 		});
 	},
 
@@ -21,10 +21,10 @@ registerSuite({
 	}),
 
 	'emit return value'() {
-		var target = new Evented();
+		const target = new Evented();
 		assert.isFalse(emit(target, { type: 'test' }));
 
-		var handle = on(target, 'test', function () {});
+		const handle = on(target, 'test', function () {});
 		assert.isFalse(emit(target, { type: 'test' }));
 
 		handle.destroy();

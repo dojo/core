@@ -1,9 +1,6 @@
-import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import on, { emit } from 'src/on';
-import {Handle} from 'src/interfaces';
-import Evented from 'src/Evented';
-import has from 'src/has';
+import { Handle } from 'src/interfaces';
 
 var handles: Handle[] = [];
 function testOn(...args: any[]) {
