@@ -6,6 +6,15 @@ import SeekableStream from './SeekableStream';
 export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 	protected _currentPosition: number = 0;
 	protected _ownerReadableStream: SeekableStream<T>;
+	protected _strategy: Strategy<T>;
+
+	constructor(stream: SeekableStream<T>) {
+		super(stream);
+
+		if (stream.strategy) {
+			this._strategy = stream.strategy;
+		}
+	}
 
 	get currentPosition(): number | Promise<number> {
 		// TODO: I don't think there's any need for this to be a promise
@@ -19,8 +28,8 @@ export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 				let chunkSize = 1;
 
 				try {
-					if (this._ownerReadableStream.strategy && this._ownerReadableStream.strategy.size) {
-						chunkSize = this._ownerReadableStream.strategy.size(result.value);
+					if (this._strategy && this._strategy.size) {
+						chunkSize = this._strategy.size(result.value);
 					}
 				}
 				catch (error) {
@@ -52,9 +61,9 @@ export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 			let chunkSize = 1;
 			let chunk = this._ownerReadableStream.queue.dequeue();
 
-			if (this._ownerReadableStream.strategy && this._ownerReadableStream.strategy.size) {
+			if (this._strategy && this._strategy.size) {
 				try {
-					chunkSize = this._ownerReadableStream.strategy.size(chunk);
+					chunkSize = this._strategy.size(chunk);
 				}
 				catch (error) {
 					return Promise.reject(error);

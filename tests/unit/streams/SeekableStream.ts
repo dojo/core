@@ -19,9 +19,9 @@ registerSuite({
 
 	beforeEach() {
 		data = [
+			'test0',
 			'test1',
-			'test2',
-			'test3'
+			'test2'
 		];
 		source = new ArraySource<string>(data);
 		stream = new SeekableStream<string>(source, new CountQueuingStrategy({ highWaterMark: Infinity }));
