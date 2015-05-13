@@ -57,26 +57,6 @@ export default function createCommonTests(args: any) {
 			assert.strictEqual(listenerCallCount, 2);
 		},
 
-		'.emit return value'() {
-			// var returnValue = emit(target, { type: testEventName, cancelable: false });
-			// assert.ok(returnValue);
-			// assert.propertyVal(returnValue, 'cancelable', false);
-			//
-			// returnValue = emit(target, { type: testEventName, cancelable: true });
-			// assert.ok(returnValue);
-			// assert.propertyVal(returnValue, 'cancelable', true);
-			//
-			// testOn(target, testEventName, function (event: CustomEvent) {
-			// 	if ('preventDefault' in event) {
-			// 		event.preventDefault();
-			// 	}
-			// 	else {
-			// 		event.cancelable = false;
-			// 	}
-			// });
-			// assert.isFalse(emit(target, { type: testEventName, cancelable: true }));
-		},
-
 		'on - multiple event names'() {
 			var listenerCallCount = 0,
 				emittedEventType: string,

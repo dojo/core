@@ -3,7 +3,7 @@ import { createCompositeHandle } from './lang';
 import { on } from './aspect';
 
 export default class Evented {
-	emit(data: EventObject): boolean {
+	emit(data: EventObject): void {
 		const type = '__on' + data.type;
 		const method: Function = (<any> this)[type];
 		if (method) {

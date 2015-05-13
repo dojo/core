@@ -1,7 +1,7 @@
 import common from './common';
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import on from 'src/on';
+import on, { emit } from 'src/on';
 import Evented from 'src/Evented';
 
 registerSuite({
@@ -18,7 +18,17 @@ registerSuite({
 		createTarget: function () {
 			return new Evented();
 		}
-	})
+	}),
+
+	'.emit return value'() {
+		var target = new Evented();
+		assert.isFalse(emit(target, { type: 'test' }));
+
+		var handle = on(target, 'test', function () {});
+		assert.isFalse(emit(target, { type: 'test' }));
+		
+		handle.destroy();
+	}
 });
 
 import 'dojo/has!host-node?./nodeOnly:./browserOnly';

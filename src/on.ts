@@ -10,7 +10,8 @@ export interface ExtensionEvent {
 }
 
 export interface EventTarget {
-	addEventListener(event: string, listener: EventListener, capture?: boolean): Handle;
+	accessKey?: string;
+	addEventListener(event: string, listener: EventListener, capture?: boolean): void;
 	removeEventListener(event: string, listener: EventListener, capture?: boolean): void;
 }
 
@@ -64,7 +65,6 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 	throw new TypeError('Unknown event emitter object');
 }
 
-// TODO: What should this return type signature be? Boolean for cancel? The event object itself?
 export function emit(target: EventTarget, event: EventObject): boolean;
 export function emit(target: EventEmitter, event: EventObject): boolean;
 export function emit(target: Evented, event: EventObject): boolean;
@@ -82,13 +82,14 @@ export function emit(target: any, event: any): boolean {
 
 		return target.dispatchEvent(nativeEvent);
 	}
-	
+
 	if (target.emit && target.removeListener) {
 		return target.emit(event.type, event);
 	}
 
 	if (target.emit && target.on) {
-		return target.emit(event);
+		target.emit(event);
+		return false;
 	}
 
 	throw new Error('Target must be an event emitter');
