@@ -21,7 +21,7 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 		return new SeekableStreamReader(this);
 	}
 
-	_requestClose(): void {
+	requestClose(): void {
 		if (!this.preventClose) {
 			super.requestClose();
 		}
