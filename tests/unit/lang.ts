@@ -303,5 +303,32 @@ registerSuite({
 		assert.equal(new (<any> Sentence)('The quick brown fox').finish('the lazy dog'),
 			'The quick brown fox ' + ending,
 			'A function passed to `lang.partial` should inherit its context.');
+	},
+
+	'.createHandle'() {
+		var count = 0;
+		var handle = lang.createHandle(function(): void {
+			count++;
+		});
+
+		handle.destroy();
+		assert.strictEqual(count, 1);
+
+		handle.destroy();
+		assert.strictEqual(count, 1, 'destroy should be a no-op on subsequent calls');
+	},
+
+	'.createCompositeHandle'() {
+		var count = 0;
+		function destructor(): void {
+			count++;
+		}
+		var handle = lang.createCompositeHandle(
+			lang.createHandle(destructor),
+			lang.createHandle(destructor)
+		);
+
+		handle.destroy();
+		assert.strictEqual(count, 2, 'both destructors in the composite handle should have been called');
 	}
 });

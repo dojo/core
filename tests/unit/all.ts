@@ -14,3 +14,6 @@ import './async/Task';
 import './async/timing';
 import './queue';
 import './Scheduler';
+import './on/all';
+import './Evented';
+import './aspect';
