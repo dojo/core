@@ -8,6 +8,12 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 	preventClose: boolean;
 	reader: SeekableStreamReader<T>;
 
+	/**
+	 * @param preventClose (default=true) Prevent the stream from closing when it reaches the end.
+	 * If true, the stream will not close when requestClose is called on the controller (which is typically done by the
+	 * source when it reaches its end). This allows for re-seeking in a stream that has already been read to the end.
+	 * The stream can be closed by calling ReadableStream#close.
+	 */
 	constructor(underlyingSource: Source<T>, strategy: Strategy<T> = {}, preventClose: boolean = true) {
 		super(underlyingSource, strategy);
 

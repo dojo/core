@@ -1,5 +1,6 @@
 import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
+
 import ArraySource from 'src/streams/ArraySource';
 import CountQueuingStrategy from 'src/streams/CountQueuingStrategy';
 import Promise from 'src/Promise';
@@ -9,6 +10,7 @@ import SeekableStream from 'src/streams/SeekableStream';
 import SeekableStreamReader from 'src/streams/SeekableStreamReader';
 
 const asyncTimeout = 1000;
+
 let data: string[];
 let source: ArraySource<string>;
 let stream: SeekableStream<string>;
