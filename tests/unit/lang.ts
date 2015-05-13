@@ -328,5 +328,7 @@ registerSuite({
 
 		handle.destroy();
 		assert.strictEqual(count, 2, 'both destructors in the composite handle should have been called');
+		handle.destroy();
+		assert.strictEqual(count, 2, 'destructors are not called after handle destruction');
 	}
 });
