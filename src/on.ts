@@ -45,17 +45,18 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 		return createCompositeHandle.apply(null, handles);
 	}
 
+	const callback = function () {
+		listener.apply(this, arguments);
+	}
+
 	if (target.addEventListener && target.removeEventListener) {
-		const callback = function () {
-			listener.apply(this, arguments);
-		}
 		target.addEventListener(type, callback, capture);
 		return createHandle(function () { target.removeEventListener(type, callback, capture); });
 	}
 
 	if (target.on && target.removeListener) {
-		target.on(type, listener);
-		return createHandle(function () { target.removeListener(type, listener); });
+		target.on(type, callback);
+		return createHandle(function () { target.removeListener(type, callback); });
 	}
 
 	if (target.on) {

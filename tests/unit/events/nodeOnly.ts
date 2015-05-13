@@ -9,14 +9,14 @@ function createTarget() {
 }
 
 registerSuite({
-	name: 'on',
+	name: 'events - EventEmitter',
 
-	'node events': common({
+	'common cases': common({
 		eventName: 'test',
 		createTarget: createTarget
 	}),
 
-	'.emit return value'() {
+	'emit return value'() {
 		var target = createTarget();
 		assert.isFalse(emit(target, { type: 'test' }));
 

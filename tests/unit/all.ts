@@ -13,6 +13,6 @@ import './async/iteration';
 import './async/timing';
 import './queue';
 import './Scheduler';
-import './on/all';
+import './events/all';
 import './Evented';
 import './aspect';

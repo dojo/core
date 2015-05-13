@@ -5,7 +5,7 @@ import on, { emit } from 'src/on';
 import Evented from 'src/Evented';
 
 registerSuite({
-	name: 'on',
+	name: 'events - Evented',
 
 	'cannot target non-emitter': function () {
 		assert.throws(function () {
@@ -13,20 +13,20 @@ registerSuite({
 		});
 	},
 
-	'object events': common({
+	'common cases': common({
 		eventName: 'test',
 		createTarget: function () {
 			return new Evented();
 		}
 	}),
 
-	'.emit return value'() {
+	'emit return value'() {
 		var target = new Evented();
 		assert.isFalse(emit(target, { type: 'test' }));
 
 		var handle = on(target, 'test', function () {});
 		assert.isFalse(emit(target, { type: 'test' }));
-		
+
 		handle.destroy();
 	}
 });

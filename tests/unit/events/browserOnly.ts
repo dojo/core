@@ -14,15 +14,15 @@ function destroyTarget(target: HTMLElement) {
 }
 
 registerSuite({
-	name: 'on',
+	name: 'events - EvenTarget',
 
-	'DOM events': common({
+	'common cases': common({
 		eventName: 'test',
 		createTarget: createTarget,
 		destroyTarget: destroyTarget
 	}),
 
-	'.emit return value'() {
+	'emit return value'() {
 		var target = createTarget();
 		assert.isTrue(emit(target, { type: 'test' }));
 
