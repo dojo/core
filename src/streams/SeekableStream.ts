@@ -23,13 +23,13 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 
 	_requestClose(): void {
 		if (!this.preventClose) {
-			super._requestClose();
+			super.requestClose();
 		}
 	}
 
 	seek(position: number): Promise<number> {
 		if (this._underlyingSource.seek) {
-			return this._underlyingSource.seek(this._controller, position);
+			return this._underlyingSource.seek(this.controller, position);
 		}
 		else {
 			if (this._reader && position < this._reader.currentPosition) {
@@ -38,5 +38,9 @@ export default class SeekableStream<T> extends ReadableStream<T> {
 		}
 
 		return Promise.reject(new Error('Stream is not in a seekable state'));
+	}
+
+	get strategy() {
+		return this._strategy;
 	}
 }

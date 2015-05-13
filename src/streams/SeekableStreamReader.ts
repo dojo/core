@@ -6,24 +6,11 @@ import SeekableStream from './SeekableStream';
 export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 	protected _currentPosition: number = 0;
 	protected _ownerReadableStream: SeekableStream<T>;
-	protected _strategy: Strategy<T>;
-
-	constructor(stream: SeekableStream<T>) {
-		super(stream);
-
-		/** Keep a reference to the strategy because we might need it (in the 'read' method) after the stream has been
-			closed and the reference to '_ownerReadableStream' removed
-			TODO: should this instead delay '_release()'?
-		*/
-		if (stream._strategy) {
-			this._strategy = stream._strategy;
-		}
-	}
 
 	get currentPosition(): number | Promise<number> {
 		// TODO: I don't think there's any need for this to be a promise
 		//return Promise.resolve(this._currentPosition);
-        return this._currentPosition;
+		return this._currentPosition;
 	}
 
 	read(): Promise<ReadResult<T>> {
@@ -32,8 +19,8 @@ export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 				let chunkSize = 1;
 
 				try {
-					if (this._strategy && this._strategy.size) {
-						chunkSize = this._strategy.size(result.value);
+					if (this._ownerReadableStream.strategy && this._ownerReadableStream.strategy.size) {
+						chunkSize = this._ownerReadableStream.strategy.size(result.value);
 					}
 				}
 				catch (error) {
@@ -57,17 +44,17 @@ export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 		}
 
 		if (position < this._currentPosition) {
-			this._ownerReadableStream._queue.empty();
+			this._ownerReadableStream.queue.empty();
 		}
 
 		// Drain the queue of any items prior to the desired seek position
-		while (position > this._currentPosition && this._ownerReadableStream._queue.length) {
+		while (position > this._currentPosition && this._ownerReadableStream.queue.length) {
 			let chunkSize = 1;
-			let chunk = this._ownerReadableStream._queue.dequeue();
+			let chunk = this._ownerReadableStream.queue.dequeue();
 
-			if (this._strategy && this._strategy.size) {
+			if (this._ownerReadableStream.strategy && this._ownerReadableStream.strategy.size) {
 				try {
-					chunkSize = this._strategy.size(chunk);
+					chunkSize = this._ownerReadableStream.strategy.size(chunk);
 				}
 				catch (error) {
 					return Promise.reject(error);
@@ -78,7 +65,7 @@ export default class SeekableStreamReader<T> extends ReadableStreamReader<T> {
 		}
 
 		// If there's anything left in the queue, we don't need to seek in the source, we can read from the queue
-		if (this._ownerReadableStream._queue.length) {
+		if (this._ownerReadableStream.queue.length) {
 			return Promise.resolve(this._currentPosition);
 		}
 
