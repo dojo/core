@@ -75,6 +75,23 @@ registerSuite({
 			});
 		},
 
+		'within queue'() {
+			// Wait for the stream to start to allow the queue to fill up
+			return stream.started.then(function () {
+				let numCallsToPull = 0;
+
+				source.pull = function () {
+					numCallsToPull += 1;
+					return Promise.resolve();
+				};
+
+				return reader.seek(2).then(function () {
+					assert.strictEqual(reader.currentPosition, 2, 'Stream should seek ahead');
+					assert.strictEqual(numCallsToPull, 0, 'Stream source\'s pull method should not be called');
+				});
+			});
+		},
+
 		'with non-seekable source: forward'() {
 			source.seek = undefined;
 
