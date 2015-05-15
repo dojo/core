@@ -5,7 +5,7 @@ import Promise from '../../Promise';
 import { Source } from '../ReadableStream';
 import ReadableStreamController from '../ReadableStreamController';
 
-export default class EventedStreamSource<Event> implements Source<Event> {
+export default class EventedStreamSource implements Source<Event> {
 	protected _controller: ReadableStreamController<Event>;
 	protected _target: Evented | HTMLElement;
 	protected _events: string[];
@@ -63,7 +63,8 @@ export default class EventedStreamSource<Event> implements Source<Event> {
 
 	cancel(reason?: any): Promise<void> {
 		while (this._handles.length) {
-			this._handles.shift().remove();
+			// TODO: is it Handle.destroy? or Handle.remove()?
+			this._handles.shift().destroy();
 		}
 
 		if (this._pullPromise) {
