@@ -55,6 +55,7 @@
 		"./src/streams/SizeQueue.ts",
 		"./src/streams/TransformStream.ts",
 		"./src/streams/WritableStream.ts",
+		"./src/streams/adapters/EventedStreamSource.ts",
 		"./src/streams/adapters/ReadableNodeStreamSource.ts",
 		"./src/streams/adapters/WritableNodeStreamSink.ts",
 		"./src/streams/interfaces.d.ts",
