@@ -7,18 +7,26 @@ import ReadableStreamController from '../ReadableStreamController';
 
 export default class EventedStreamSource<Event> implements Source<Event> {
 	protected _controller: ReadableStreamController<Event>;
-	protected _emitter: Evented | HTMLElement;
+	protected _target: Evented | HTMLElement;
 	protected _events: string[];
-	// TODO: use IHandle
+	// TODO: use Handle
 	protected _handles: any[];
 	protected _pullPromise: Promise<void>;
 	protected _queue: Event[];
 	protected _rejectPullPromise: (error: Error) => void;
 	protected _resolvePullPromise: () => void;
 
-	constructor(kwArgs: KwArgs) {
-		this._emitter = kwArgs.emitter;
-		this._events = kwArgs.events;
+	constructor(target: Evented | HTMLElement, type: string | string[]) {
+		this._target = target;
+
+		// TODO: remove casts when tsc is fixed
+		if (typeof type === 'string') {
+			this._events = [ <string> type ];
+		}
+		else {
+			this._events = <string[]> type;
+		}
+
 		this._handles = [];
 		this._queue = [];
 	}
@@ -26,7 +34,7 @@ export default class EventedStreamSource<Event> implements Source<Event> {
 	start(controller: ReadableStreamController<Event>): Promise<void> {
 		this._controller = controller;
 		this._events.forEach(function (eventName: string) {
-			this._handles.push(on(this._emitter, eventName, this._handleEvent.bind(this)));
+			this._handles.push(on(this._target, eventName, this._handleEvent.bind(this)));
 		});
 
 		return Promise.resolve();
@@ -75,10 +83,4 @@ export default class EventedStreamSource<Event> implements Source<Event> {
 			this._queue.push(event);
 		}
 	}
-}
-
-export interface KwArgs {
-	emitter: Evented | HTMLElement;
-	// TODO: accept string and convert to array
-	events: string[];
 }
