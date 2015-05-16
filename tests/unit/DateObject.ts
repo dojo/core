@@ -1,6 +1,6 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import DateObject, { IntervalDescriptor } from 'src/DateObject';
+import DateObject from 'src/DateObject';
 
 var date: Date;
 var object: DateObject;
@@ -334,61 +334,61 @@ registerSuite({
 			const SECONDS_IN_AN_HOUR = 3600;
 			const SECONDS_IN_A_DAY = 24 * SECONDS_IN_AN_HOUR;
 
-			assert.strictEqual(now.difference(aSecondAgo, IntervalDescriptor.Second), -1);
-			assert.strictEqual(now.difference(aMinuteAgo, IntervalDescriptor.Second), -60);
-			assert.strictEqual(now.difference(anHourAgo, IntervalDescriptor.Second), -SECONDS_IN_AN_HOUR);
-			assert.strictEqual(now.difference(aDayAgo, IntervalDescriptor.Second), -SECONDS_IN_A_DAY);
-			assert.strictEqual(now.difference(aMonthAgo, IntervalDescriptor.Second), -30 * SECONDS_IN_A_DAY);
-			assert.strictEqual(now.difference(aYearAgo, IntervalDescriptor.Second), -365 * SECONDS_IN_A_DAY);
+			assert.strictEqual(now.differenceInSeconds(aSecondAgo), -1);
+			assert.strictEqual(now.differenceInSeconds(aMinuteAgo), -60);
+			assert.strictEqual(now.differenceInSeconds(anHourAgo), -SECONDS_IN_AN_HOUR);
+			assert.strictEqual(now.differenceInSeconds(aDayAgo), -SECONDS_IN_A_DAY);
+			assert.strictEqual(now.differenceInSeconds(aMonthAgo), -30 * SECONDS_IN_A_DAY);
+			assert.strictEqual(now.differenceInSeconds(aYearAgo), -365 * SECONDS_IN_A_DAY);
 		},
 
 		minutes: function () {
 			const MINUTES_IN_A_DAY = 60 * 24;
 
-			assert.strictEqual(now.difference(aSecondAgo, IntervalDescriptor.Minute), 0);
-			assert.strictEqual(now.difference(aMinuteAgo, IntervalDescriptor.Minute), -1);
-			assert.strictEqual(now.difference(anHourAgo, IntervalDescriptor.Minute), -60);
-			assert.strictEqual(now.difference(aDayAgo, IntervalDescriptor.Minute), -MINUTES_IN_A_DAY);
-			assert.strictEqual(now.difference(aMonthAgo, IntervalDescriptor.Minute), -30 * MINUTES_IN_A_DAY);
-			assert.strictEqual(now.difference(aYearAgo, IntervalDescriptor.Minute), -365 * MINUTES_IN_A_DAY);
+			assert.strictEqual(now.differenceInMinutes(aSecondAgo), 0);
+			assert.strictEqual(now.differenceInMinutes(aMinuteAgo), -1);
+			assert.strictEqual(now.differenceInMinutes(anHourAgo), -60);
+			assert.strictEqual(now.differenceInMinutes(aDayAgo), -MINUTES_IN_A_DAY);
+			assert.strictEqual(now.differenceInMinutes(aMonthAgo), -30 * MINUTES_IN_A_DAY);
+			assert.strictEqual(now.differenceInMinutes(aYearAgo), -365 * MINUTES_IN_A_DAY);
 		},
 
 		hours: function () {
-			assert.strictEqual(now.difference(aSecondAgo, IntervalDescriptor.Hour), 0);
-			assert.strictEqual(now.difference(aMinuteAgo, IntervalDescriptor.Hour), 0);
-			assert.strictEqual(now.difference(anHourAgo, IntervalDescriptor.Hour), -1);
-			assert.strictEqual(now.difference(aDayAgo, IntervalDescriptor.Hour), -24);
-			assert.strictEqual(now.difference(aMonthAgo, IntervalDescriptor.Hour), -30 * 24);
-			assert.strictEqual(now.difference(aYearAgo, IntervalDescriptor.Hour), -365 * 24);
+			assert.strictEqual(now.differenceInHours(aSecondAgo), 0);
+			assert.strictEqual(now.differenceInHours(aMinuteAgo), 0);
+			assert.strictEqual(now.differenceInHours(anHourAgo), -1);
+			assert.strictEqual(now.differenceInHours(aDayAgo), -24);
+			assert.strictEqual(now.differenceInHours(aMonthAgo), -30 * 24);
+			assert.strictEqual(now.differenceInHours(aYearAgo), -365 * 24);
 		},
 
 		days: function () {
-			assert.strictEqual(now.difference(aSecondAgo, IntervalDescriptor.Day), 0);
-			assert.strictEqual(now.difference(aMinuteAgo, IntervalDescriptor.Day), 0);
-			assert.strictEqual(now.difference(anHourAgo, IntervalDescriptor.Day), 0);
-			assert.strictEqual(now.difference(aDayAgo, IntervalDescriptor.Day), -1);
-			assert.strictEqual(now.difference(aMonthAgo, IntervalDescriptor.Day), -30);
-			assert.strictEqual(now.difference(aYearAgo, IntervalDescriptor.Day), -365);
+			assert.strictEqual(now.differenceInDays(aSecondAgo), 0);
+			assert.strictEqual(now.differenceInDays(aMinuteAgo), 0);
+			assert.strictEqual(now.differenceInDays(anHourAgo), 0);
+			assert.strictEqual(now.differenceInDays(aDayAgo), -1);
+			assert.strictEqual(now.differenceInDays(aMonthAgo), -30);
+			assert.strictEqual(now.differenceInDays(aYearAgo), -365);
 		},
 
 		months: {
 			'same months': function () {
 				var noDifference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.difference(new DateObject({ year: 2000, month: 1, dayOfMonth: 30 }), IntervalDescriptor.Month);
+					.differenceInMonths(new DateObject({ year: 2000, month: 1, dayOfMonth: 30 }));
 
 				assert.strictEqual(noDifference, 0);
 			},
 
 			'a month difference': function () {
 				var monthDifference = new DateObject({ year: 2000, month: 1 })
-					.difference(new DateObject({ year: 2000, month: 2 }), IntervalDescriptor.Month);
+					.differenceInMonths(new DateObject({ year: 2000, month: 2 }));
 
 				assert.strictEqual(monthDifference, 1);
 			},
 
 			'greater than a year': function () {
 				var difference = new DateObject({ year: 2000, month: 1 })
-					.difference(new DateObject({ year: 2001, month: 2 }), IntervalDescriptor.Month);
+					.differenceInMonths(new DateObject({ year: 2001, month: 2 }));
 
 				assert.strictEqual(difference, 13);
 			}
@@ -397,14 +397,14 @@ registerSuite({
 		years: {
 			'same year': function () {
 				var difference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.difference(new DateObject({ year: 2000, month: 12, dayOfMonth: 31 }), IntervalDescriptor.Year);
+					.differenceInYears(new DateObject({ year: 2000, month: 12, dayOfMonth: 31 }));
 
 				assert.strictEqual(difference, 0);
 			},
 
 			'different years': function () {
 				var difference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.difference(new DateObject({ year: 2001, month: 1, dayOfMonth: 1 }), IntervalDescriptor.Year);
+					.differenceInYears(new DateObject({ year: 2001, month: 1, dayOfMonth: 1 }));
 
 				assert.strictEqual(difference, 1);
 			}

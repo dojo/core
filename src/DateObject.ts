@@ -35,13 +35,6 @@ export interface BasicDate extends DateValues {
 	year: number;
 }
 
-/**
- * Enumeration naming various interval units
- */
-export enum IntervalDescriptor {
-	Year, Month, Day, Hour, Minute, Second, Millisecond
-}
-
 var operationOrder = [ 'year', 'month', 'dayOfMonth', 'hours', 'minutes', 'seconds', 'milliseconds' ];
 var days = [ null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 var MILLISECONDS_IN_SECOND = 1000;
@@ -305,23 +298,32 @@ export default class DateObject implements BasicDate {
 		return left.compare(right);
 	}
 
-	difference(value: DateObject, interval:IntervalDescriptor = IntervalDescriptor.Millisecond): number {
-		switch (interval) {
-		case IntervalDescriptor.Millisecond:
-			return value.time - this.time;
-		case IntervalDescriptor.Second:
-			return Math.round((value.time - this.time) / MILLISECONDS_IN_SECOND);
-		case IntervalDescriptor.Minute:
-			return Math.round((value.time - this.time) / MILLISECONDS_IN_MINUTE);
-		case IntervalDescriptor.Hour:
-			return Math.round((value.time - this.time) / MILLISECONDS_IN_HOUR);
-		case IntervalDescriptor.Day:
-			return Math.round((value.time - this.time) / MILLISECONDS_IN_DAY);
-		case IntervalDescriptor.Month:
-			return value.month - this.month + (MONTHS_IN_YEAR * (value.year - this.year));
-		case IntervalDescriptor.Year:
-			return  value.year - this.year;
-		}
+	difference(value: DateObject): number {
+		return value.time - this.time;
+	}
+
+	differenceInSeconds(value: DateObject): number {
+		return Math.round((value.time - this.time) / MILLISECONDS_IN_SECOND);
+	}
+
+	differenceInMinutes(value: DateObject): number {
+		return Math.round((value.time - this.time) / MILLISECONDS_IN_MINUTE);
+	}
+
+	differenceInHours(value: DateObject): number {
+		return Math.round((value.time - this.time) / MILLISECONDS_IN_HOUR);
+	}
+
+	differenceInDays(value: DateObject): number {
+		return Math.round((value.time - this.time) / MILLISECONDS_IN_DAY);
+	}
+
+	differenceInMonths(value: DateObject): number {
+		return value.month - this.month + (MONTHS_IN_YEAR * (value.year - this.year));
+	}
+
+	differenceInYears(value: DateObject): number {
+		return  value.year - this.year;
 	}
 
 	toString(): string {
