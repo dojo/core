@@ -64,6 +64,12 @@ registerSuite({
 			var expected = days * Duration.DAY + hours * Duration.HOUR + minutes * Duration.MINUTE + seconds * Duration.SECOND + milliseconds;
 			var duration = new Duration(milliseconds, seconds, minutes, hours, days);
 			assert.strictEqual(duration.time, expected);
+		},
+
+		'negative duration': function () {
+			var time = -100 - Duration.MINUTE * 30 - Duration.DAY;
+			var duration = new Duration(time);
+			assertDuration(duration, -100, 0, -30, 0, -1);
 		}
 	},
 

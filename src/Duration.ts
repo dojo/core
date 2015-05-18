@@ -1,5 +1,9 @@
 var unitValues = [1, 1000, 60000, 3600000, 86400000];
 
+function convertUnits(time: number, unitMilliseconds: number) {
+	return (time > 0 ? 1 : -1) * Math.floor(Math.abs(time) / unitMilliseconds);
+}
+
 export default class Duration {
 	public static SECOND = unitValues[1];
 	public static MINUTE = unitValues[2];
@@ -21,18 +25,18 @@ export default class Duration {
 	}
 
 	get seconds(): number {
-		return Math.floor(this.time % Duration.MINUTE / Duration.SECOND);
+		return convertUnits(this.time % Duration.MINUTE, Duration.SECOND);
 	}
 
 	get minutes(): number {
-		return Math.floor(this.time % Duration.HOUR / Duration.MINUTE);
+		return convertUnits(this.time % Duration.HOUR, Duration.MINUTE);
 	}
 
 	get hours(): number {
-		return Math.floor(this.time % Duration.DAY / Duration.HOUR);
+		return convertUnits(this.time % Duration.DAY, Duration.HOUR);
 	}
 
 	get days(): number {
-		return Math.floor(this.time / Duration.DAY);
+		return convertUnits(this.time, Duration.DAY);
 	}
 }
