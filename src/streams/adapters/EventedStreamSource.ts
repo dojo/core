@@ -33,8 +33,9 @@ export default class EventedStreamSource implements Source<Event> {
 
 	start(controller: ReadableStreamController<Event>): Promise<void> {
 		this._controller = controller;
-		this._events.forEach(function (eventName: string) {
-			this._handles.push(on(this._target, eventName, this._handleEvent.bind(this)));
+		this._events.forEach((eventName: string) => {
+			// TODO: remove cast
+			this._handles.push(on(<any> this._target, eventName, this._handleEvent.bind(this)));
 		});
 
 		return Promise.resolve();
@@ -42,7 +43,6 @@ export default class EventedStreamSource implements Source<Event> {
 
 	pull(controller: ReadableStreamController<Event>): Promise<void> {
 		if (this._pullPromise) {
-			// TODO: is this correct behavior?
 			return this._pullPromise;
 		}
 
@@ -68,8 +68,10 @@ export default class EventedStreamSource implements Source<Event> {
 		}
 
 		if (this._pullPromise) {
-			// TODO: is this correct logic for cancellation?
 			this._rejectPullPromise(new Error('Source has been canceled'));
+			this._pullPromise = undefined;
+			this._rejectPullPromise = undefined;
+			this._resolvePullPromise = undefined;
 		}
 
 		return Promise.resolve();
@@ -79,6 +81,9 @@ export default class EventedStreamSource implements Source<Event> {
 		if (this._pullPromise) {
 			this._controller.enqueue(event);
 			this._resolvePullPromise();
+			this._pullPromise = undefined;
+			this._rejectPullPromise = undefined;
+			this._resolvePullPromise = undefined;
 		}
 		else {
 			this._queue.push(event);

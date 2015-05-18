@@ -19,13 +19,20 @@ registerSuite({
 		emitter = new Evented();
 		source = new EventedStreamSource(emitter, 'testEvent');
 		stream = new ReadableStream<Event>(source);
-		reader = stream.getReader();;
+		reader = stream.getReader();
+
+		return stream.started;
 	},
 
 	start() {
-		emitter.emit('testEvent');
-		reader.read().then(function (result: ReadResult<Event>) {
-			console.dir(event);
+		var testEvent = {
+			test: 'value'
+		};
+		emitter.emit('testEvent', testEvent);
+
+		return reader.read().then(function (result: ReadResult<Event>) {
+			assert.strictEqual(result.value, testEvent,
+				'Event read from stream should be the same as the event emitted by emitter');
 		});
 	}
 });
