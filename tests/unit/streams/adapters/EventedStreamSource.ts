@@ -25,14 +25,48 @@ registerSuite({
 	},
 
 	start() {
-		var testEvent = {
+		let testEvent = {
 			test: 'value'
 		};
+
 		emitter.emit('testEvent', testEvent);
 
 		return reader.read().then(function (result: ReadResult<Event>) {
 			assert.strictEqual(result.value, testEvent,
 				'Event read from stream should be the same as the event emitted by emitter');
 		});
+	},
+
+	'event array'() {
+		let testEvent = {
+			test: 'value'
+		};
+
+		source = new EventedStreamSource(emitter, [ 'apple', 'orange' ]);
+		stream = new ReadableStream<Event>(source);
+		reader = stream.getReader();
+
+		emitter.emit('apple', testEvent);
+		emitter.emit('orange', testEvent);
+
+		return reader.read().then(function (result: ReadResult<Event>) {
+			assert.strictEqual(result.value, testEvent);
+
+			return reader.read().then(function (result: ReadResult<Event>) {
+				assert.strictEqual(result.value, testEvent);
+			});
+		});
+	},
+
+	cancel() {
+		let enqueueCallCount = 0;
+
+		stream.controller.enqueue = function (chunk: Event) {
+			enqueueCallCount += 1;
+		};
+
+		source.cancel();
+		emitter.emit('testEvent', {});
+		assert.strictEqual(enqueueCallCount, 0, 'Canceled source should not call controller.enqueue');
 	}
 });

@@ -39,7 +39,7 @@ export default class EventedStreamSource implements Source<Event> {
 	cancel(reason?: any): Promise<void> {
 		while (this._handles.length) {
 			// TODO: is it Handle.destroy? or Handle.remove()?
-			this._handles.shift().destroy();
+			this._handles.shift().remove();
 		}
 
 		return Promise.resolve();
