@@ -28,6 +28,12 @@ export interface PipeOptions {
 }
 
 
+/**
+ * The Source interface defines the methods a module can implement to create a source for a `ReadableStream`.
+ *
+ * The Stream API provides a consistent stream API while `ReadableStream.Source` and `WritableStream.Sink` implementors
+ * provide the logic to connect a stream to specific data sources & sinks.
+ */
 export interface Source<T> {
 
 	/**
