@@ -106,7 +106,7 @@ export default class WritableStream<T> {
 	protected _queue: SizeQueue<Record<T>>;
 	protected _writing: boolean;
 
-	constructor(underlyingSink: Sink<T>, strategy: Strategy<T> = {}) {
+	constructor(underlyingSink: Sink<T> = {}, strategy: Strategy<T> = {}) {
 		this._underlyingSink = underlyingSink;
 
 		this._closedPromise = new Promise<void>((resolve, reject) => {
@@ -123,7 +123,9 @@ export default class WritableStream<T> {
 		this._strategy = util.normalizeStrategy(strategy);
 		this._syncStateWithQueue();
 
-		this._startedPromise = util.invokeOrNoop(this._underlyingSink, 'start', [ this._error.bind(this) ]).then(() => {
+		this._startedPromise = Promise.resolve(
+			util.invokeOrNoop(this._underlyingSink, 'start', [ this._error.bind(this) ])
+		).then(() => {
 			this._started = true;
 			this._startedPromise = undefined;
 		}, (error: Error) => {
@@ -286,13 +288,13 @@ export default class WritableStream<T> {
 	 */
 	close(): Promise<void> {
 		// 4.2.4.5-2
-		if (this.state === State.Closed ||
-			this.state === State.Closing
-		) {
-			return Promise.reject(new TypeError('Must be a WritableStream'));
+		if (this.state === State.Closed) {
+			return Promise.reject(new TypeError('Stream is already closed'));
 		}
-
-		if (this.state === State.Errored) {
+		else if (this.state === State.Closing) {
+			return Promise.reject(new TypeError('Stream is already closing'));
+		}
+		else if (this.state === State.Errored) {
 			// 4.2.4.5-3
 			return Promise.reject(this._storedError);
 		}
@@ -303,9 +305,7 @@ export default class WritableStream<T> {
 		}
 
 		this._state = State.Closing;
-
 		this._queue.enqueue({ close: true }, 0);
-
 		this._advanceQueue();
 
 		return this._closedPromise;
@@ -321,10 +321,10 @@ export default class WritableStream<T> {
 	write(chunk: T): Promise<void> {
 		// 4.2.4.6-2
 		if (this.state === State.Closed) {
-			return Promise.reject(new TypeError('Stream is already closed'));
+			return Promise.reject(new TypeError('Stream is closed'));
 		}
 		else if (this.state === State.Closing) {
-			return Promise.reject(new TypeError('Stream is already closing'));
+			return Promise.reject(new TypeError('Stream is closing'));
 		}
 		else if (this.state === State.Errored) {
 			// 4.2.4.6-3
