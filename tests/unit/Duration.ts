@@ -139,5 +139,79 @@ registerSuite({
 		'masks hours': function () {
 			assertDuration(new Duration(100, 10, 5, 20, 28), 100, 10, 5, 20, 28);
 		},
+	},
+
+	add: {
+		'returned object is new Duration': function () {
+			var left = new Duration();
+			var right = new Duration();
+			var sum = left.add(right);
+
+			assert.notEqual(left, sum);
+			assert.notEqual(right, sum);
+		},
+
+		'addition': function () {
+			var left = new Duration(100, 2);
+			var right = new Duration(59 * Duration.MINUTE);
+			var sum = left.add(right);
+
+			assert.strictEqual(sum.time, 100 + 2 * Duration.SECOND + 59 * Duration.MINUTE);
+		},
+
+		'subtraction': function () {
+			var left = new Duration(100, 2);
+			var right = new Duration(-59 * Duration.MINUTE);
+			var sum = left.add(right);
+
+			assert.strictEqual(sum.time, 100 + 2 * Duration.SECOND - 59 * Duration.MINUTE);
+		}
+	},
+
+	difference: {
+		'zero value': function () {
+			var left = new Duration(100);
+			var diff = left.difference(left);
+
+			assert.strictEqual(diff.time, 0);
+		},
+
+		'positive value': function () {
+			var left = new Duration();
+			var right = new Duration(100);
+			var diff = left.difference(right);
+
+			assert.strictEqual(diff.time, 100);
+		},
+
+		'negative value': function () {
+			var left = new Duration(100);
+			var right = new Duration();
+			var diff = left.difference(right);
+
+			assert.strictEqual(diff.time, -100);
+		}
+	},
+
+	'compare': {
+		'less than': function () {
+			var left = new Duration();
+			var right = new Duration(100);
+
+			assert.isTrue(left.compare(right) < 0);
+		},
+
+		'greater than': function () {
+			var left = new Duration(100);
+			var right = new Duration();
+
+			assert.isTrue(left.compare(right) > 0);
+		},
+
+		'equal': function () {
+			var left = new Duration();
+
+			assert.strictEqual(left.compare(left), 0);
+		}
 	}
 });

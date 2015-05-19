@@ -39,4 +39,16 @@ export default class Duration {
 	get days(): number {
 		return convertUnits(this.time, Duration.DAY);
 	}
+
+	add(value: Duration): Duration {
+		return new Duration(this.time + value.time);
+	}
+
+	difference(value: Duration): Duration {
+		return new Duration(value.time - this.time);
+	}
+
+	compare(value: Duration): number {
+		return this.time - value.time;
+	}
 }
