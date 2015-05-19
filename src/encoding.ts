@@ -8,7 +8,7 @@ function normalizeEncodingArgs(data: any, alternateCodec: any): [ string, ByteBu
 			return (codec || alternateCodec).decode(this);
 		},
 		toJSON: function (): string {
-			return JSON.stringify(this);
+			return JSON.stringify(Array.prototype.slice.call(this));
 		},
 		length: data.length
 	}];
@@ -20,7 +20,7 @@ function validateDecodingArgs(data: any) {
 	}
 
 	if (data.length == null) {
-		throw new TypeError();
+		throw new TypeError('Argument must have a length property');
 	}
 
 	return true;
@@ -45,7 +45,7 @@ function decodeUtf8EncodedCodePoint(codePoint: number, validationRange: number[]
 
 	if (codePoint > 0xFFFF) {
 		codePoint = codePoint - 0x010000;
-		encoded += String.fromCharCode(codePoint >>> 10 & 0x03FF | 0xD800);
+		encoded += String.fromCharCode(codePoint >>> 0x10 & 0x03FF | 0xD800);
 		codePoint = 0xDC00 | codePoint & 0x03FF;
 	}
 
