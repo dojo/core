@@ -158,6 +158,43 @@ registerSuite({
 				assert.strictEqual(stream.state, State.Errored, 'Stream should be in errored state');
 				assert.strictEqual(error, testError, 'sink.close error should propagate to stream.close');
 			});
+		},
+
+		'already closing stream'() {
+			stream.close();
+			assert.strictEqual(stream.state, State.Closing, 'Stream should be in closing state');
+
+			return stream.close().then(function () {
+				assert.fail(null, null, 'Method should not resolve on stream that is already closing');
+			}, function (error: Error) {
+				assert.strictEqual(stream.state, State.Closing, 'Stream should be in closing state');
+			});
+		},
+
+		'already closed stream'() {
+			return stream.close().then( function () {
+				assert.strictEqual(stream.state, State.Closed, 'Stream should be in closed state');
+
+				return stream.close().then(function () {
+					assert.fail(null, null, 'Method should not resolve on stream that is already closed');
+				}, function (error: Error) {
+					assert.strictEqual(stream.state, State.Closed, 'Stream should be in closed state');
+				});
+			});
+		},
+
+		'returns existing error from errored stream'() {
+			let testError = new Error('Stream.close test error');
+
+			stream.abort(testError);
+			assert.strictEqual(stream.state, State.Errored);
+
+			return stream.close().then(function () {
+				throw new Error('Method should not resolve on stream that is errored');
+			}, function (error: Error) {
+				assert.strictEqual(error, testError,
+					'Method should reject with same error as error passed to \'abort\'');
+			});
 		}
 	},
 
@@ -267,6 +304,29 @@ registerSuite({
 				}),
 				dfd.callback(function () {})
 			);
+		},
+
+		'closed stream'() {
+			return stream.close().then(function () {
+				assert.strictEqual(stream.state, State.Closed, 'Stream should be in closed state');
+
+				return stream.write('abc').then(function () {
+					assert.fail(null, null, 'Write operation on closed stream should not succeed');
+				}, function (error: Error) {
+					assert.strictEqual(stream.state, State.Closed, 'Stream should be in closed state');
+				});
+			})
+		},
+
+		'errored stream'() {
+			stream.abort(new Error('Abort for test'));
+			assert.strictEqual(stream.state, State.Errored, 'Stream should be in errored state');
+
+			return stream.write('abc').then(function () {
+				assert.fail(null, null, 'Write operation on errored stream should not succeed');
+			}, function (error: Error) {
+				assert.strictEqual(stream.state, State.Errored, 'Stream should be in errored state');
+			});
 		}
 	},
 
