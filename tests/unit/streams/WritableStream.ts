@@ -320,16 +320,6 @@ registerSuite({
 			sink.abort = undefined;
 			sink.close = dfd.callback(function () {});
 			stream.abort('abc');
-		},
-
-		'reject if not writable stream'() {
-			let dfd = this.async(ASYNC_TIMEOUT);
-			stream.abort.call({}).then(
-				dfd.rejectOnError(function () {
-					assert.fail();
-				}),
-				dfd.callback(function () {})
-			);
 		}
 	}
 });
