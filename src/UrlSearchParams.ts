@@ -1,16 +1,16 @@
 import { duplicate } from './lang';
 
 /**
- * A object with string keys and string or string array values that describes a query string.
+ * Object with string keys and string or string array values that describes a query string.
  */
 type ParamList = { [key: string]: string | string[] };
 
 /**
- * Parse a query string, returning a ParamList object.
+ * Parses a query string, returning a ParamList object.
  */
 function parseQueryString(input: string): ParamList {
 	const query = <{ [key: string]: string[] }> {};
-	input.split('&').forEach(entry => {
+	for (const entry of input.split('&')) {
 		let [ key, value ] = entry.split('=');
 		key = key ? decodeURIComponent(key) : '';
 		value = value ? decodeURIComponent(value) : '';
@@ -21,16 +21,16 @@ function parseQueryString(input: string): ParamList {
 		else {
 			query[key] = [ value ];
 		}
-	});
+	}
 	return query;
 }
 
 /**
- * An class that represents a URL query search parameters.
+ * Represents a set of URL query search parameters.
  */
 export default class UrlSearchParams {
 	/**
-	 * Construct a new UrlSearchParams from a query string, an object of parameters and values, or anoter
+	 * Constructs a new UrlSearchParams from a query string, an object of parameters and values, or another
 	 * UrlSearchParams.
 	 */
 	constructor(input?: string | ParamList | UrlSearchParams) {
@@ -38,12 +38,12 @@ export default class UrlSearchParams {
 
 		if (input instanceof UrlSearchParams) {
 			// Copy the incoming UrlSearchParam's internal list
-			list = <ParamList> duplicate(input.list);
+			list = <ParamList> duplicate(input._list);
 		}
 		else if (typeof input === 'object') {
 			// Copy the incoming object, assuming its property values are either arrays or strings
 			list = {};
-			for (var key in input) {
+			for (const key in input) {
 				const value = (<ParamList> input)[key];
 
 				if (Array.isArray(value)) {
@@ -65,83 +65,82 @@ export default class UrlSearchParams {
 			list = {};
 		}
 
-		Object.defineProperty(this, 'list', { value: list });
+		Object.defineProperty(this, '_list', { value: list });
 	}
 
 	/**
-	 * The internal list maps property keys to arrays of values. The value for any property that has been set will be an
-	 * array containing at least one item. Properties that have been deleted will have a value of 'undefined'.
+	 * Maps property keys to arrays of values. The value for any property that has been set will be an array containing
+	 * at least one item. Properties that have been deleted will have a value of 'undefined'.
 	 */
-	private list: { [key: string]: string[] };
+	protected _list: { [key: string]: string[] };
 
 	/**
-	 * Append a new value to the set of values for a key.
+	 * Appends a new value to the set of values for a key.
 	 */
 	append(key: string, value: string): void {
 		if (!this.has(key)) {
 			this.set(key, value);
 		}
 		else {
-			this.list[key].push(value);
+			this._list[key].push(value);
 		}
 	}
 
 	/**
-	 * Delete all values for a key.
+	 * Deletes all values for a key.
 	 */
 	delete(key: string): void {
-		this.list[key] = undefined;
+		this._list[key] = undefined;
 	}
 
 	/**
-	 * Get the first value associated with a key.
+	 * Returns the first value associated with a key.
 	 */
 	get(key: string): string {
 		if (!this.has(key)) {
 			return null;
 		}
-		return this.list[key][0];
+		return this._list[key][0];
 	}
 
 	/**
-	 * Get all the values associated with a key.
+	 * Returns all the values associated with a key.
 	 */
 	getAll(key: string): string[] {
 		if (!this.has(key)) {
 			return null;
 		}
-		return this.list[key];
+		return this._list[key];
 	}
 
 	/**
-	 * Return true if a key has been set to any value.
+	 * Returns true if a key has been set to any value, false otherwise.
 	 */
 	has(key: string): boolean {
-		return Array.isArray(this.list[key]);
+		return Array.isArray(this._list[key]);
 	}
 
 	/**
-	 * Set the value associated with a key.
+	 * Sets the value associated with a key.
 	 */
 	set(key: string, value: string): void {
-		this.list[key] = [ value ];
+		this._list[key] = [ value ];
 	}
 
 	/**
-	 * Return this objects data as an encoded query string.
+	 * Returns this objects data as an encoded query string.
 	 */
 	toString(): string {
 		const query = <string[]> [];
 
-		for (let key in this.list) {
+		for (const key in this._list) {
 			if (!this.has(key)) {
 				continue;
 			}
 
-			const values = this.list[key];
+			const values = this._list[key];
 			const encodedKey = encodeURIComponent(key);
-			for (let i = 0; i < values.length; i++) {
-				const value = values[i];
+			for (const value of values) {
 				query.push(encodedKey + (value ? ('=' + encodeURIComponent(value)) : ''));
 			}
 		}

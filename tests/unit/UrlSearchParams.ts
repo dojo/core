@@ -126,5 +126,20 @@ registerSuite({
 		for (let key in params) {
 			assert.notEqual(key, 'list');
 		}
+	},
+
+	'no data sharing'() {
+		const params1 = new UrlSearchParams({ foo: [ 'bar', 'baz' ], bar: 'foo' });
+		const params2 = new UrlSearchParams(params1);
+
+		assert.deepEqual(params1.getAll('foo'), params2.getAll('foo'));
+		assert.deepEqual(params1.getAll('bar'), params2.getAll('bar'));
+
+		params1.append('foo', 'qux');
+		assert.strictEqual(params1.get('foo'), params2.get('foo'));
+		assert.notDeepEqual(params1.getAll('foo'), params2.getAll('foo'));
+
+		params1.set('bar', 'qux');
+		assert.notEqual(params1.get('bar'), params2.get('bar'));
 	}
 });
