@@ -1,6 +1,7 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import DateObject from 'src/DateObject';
+import DateObject, { BasicDate } from 'src/DateObject';
+import Duration from 'src/Duration';
 
 var date: Date;
 var object: DateObject;
@@ -12,6 +13,19 @@ const anHourAgo = now.add({ hours: - 1 });
 const aDayAgo = now.add({ dayOfMonth: - 1 });
 const aMonthAgo = now.add({ dayOfMonth: -30 });
 const aYearAgo = now.add({ dayOfMonth: -365 });
+
+function assertBasicDateEqual(left: BasicDate, right: BasicDate): void {
+	assert.strictEqual(left.isLeapYear, right.isLeapYear);
+	assert.strictEqual(left.daysInMonth, right.daysInMonth);
+	assert.strictEqual(left.year, right.year);
+	assert.strictEqual(left.month, right.month);
+	assert.strictEqual(left.dayOfMonth, right.dayOfMonth);
+	assert.strictEqual(left.hours, right.hours);
+	assert.strictEqual(left.minutes, right.minutes);
+	assert.strictEqual(left.seconds, right.seconds);
+	assert.strictEqual(left.milliseconds, right.milliseconds);
+	assert.strictEqual(left.dayOfWeek, right.dayOfWeek);
+}
 
 registerSuite({
 	name: 'DateObject',
@@ -138,9 +152,79 @@ registerSuite({
 			assert.strictEqual(object.timezoneOffset, date.getTimezoneOffset());
 		},
 
-		utc: function () {
-			// TODO implement
+		utc: {
+			'basic': function () {
+				var date = new Date(1979, 2, 20, 7, 20, 12, 123);
+				var obj = new DateObject(date);
+				var utc = obj.utc;
+
+				assertBasicDateEqual(obj.add(Duration.MINUTE * date.getTimezoneOffset()), utc);
+			},
+
+			'leap year': function () {
+				var date = new Date(2012, 1, 29, 7, 20, 12, 123);
+				var obj = new DateObject(date);
+				var utc = obj.utc;
+
+				assertBasicDateEqual(obj.add(Duration.MINUTE * date.getTimezoneOffset()), utc);
+			},
+
+			'setters': (function () {
+				function assertChange(property: string, value: number = 2) {
+					var date = new DateObject();
+					var time = date.time;
+					var expected: number = (<number> (<any> date.utc)[property]) + value;
+					(<any> date.utc)[property] = expected;
+
+					assert.strictEqual((<any> date.utc)[property], expected);
+					assert.notEqual(date.time, time);
+				}
+
+				return {
+					'year': function () {
+						assertChange('year');
+					},
+
+					'month': function () {
+						assertChange('month');
+					},
+
+					'dayOfMonth': function () {
+						assertChange('dayOfMonth');
+					},
+
+					'hours': function () {
+						assertChange('hours');
+					},
+
+					'minutes': function () {
+						assertChange('minutes');
+					},
+
+					'seconds': function () {
+						assertChange('seconds');
+					},
+
+					'milliseconds': function () {
+						assertChange('milliseconds');
+					}
+				}
+			})(),
+
+			'toString': function () {
+				var date = new DateObject(Date.UTC(1979, 2, 20));
+				assert.strictEqual(date.utc.toString(), 'Tue, 20 Mar 1979 00:00:00 GMT');
+			}
 		}
+	},
+
+	'parse': function () {
+		var date = DateObject.parse('Tue, 20 Mar 1979 00:00:00');
+		assertBasicDateEqual(date, new DateObject(new Date(1979, 2, 20)));
+	},
+
+	'now': function () {
+		assert.closeTo(DateObject.now().time, Date.now(), 100);
 	},
 
 	'.to* methods': function () {
@@ -157,59 +241,75 @@ registerSuite({
 		assert.strictEqual(object.toJSON(), date.toJSON());
 	},
 
-	'.add': function () {
-		var object1: DateObject;
-		var object2: DateObject;
+	'.add': {
+		'DateLike': function () {
+			var object1: DateObject;
+			var object2: DateObject;
 
-		// year
-		object1 = new DateObject({ year: 2005, month: 12, dayOfMonth: 27 });
-		object2 = object1.add({ year: 1 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2006, 11, 27));
+			// year
+			object1 = new DateObject({ year: 2005, month: 12, dayOfMonth: 27 });
+			object2 = object1.add({ year: 1 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2006, 11, 27));
 
-		object1 = new DateObject({ year: 2005, month: 12, dayOfMonth: 27 });
-		object2 = object1.add({ year: -1 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2004, 11, 27));
+			object1 = new DateObject({ year: 2005, month: 12, dayOfMonth: 27 });
+			object2 = object1.add({ year: -1 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2004, 11, 27));
 
-		object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
-		object2 = object1.add({ year: 1 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2001, 1, 28));
+			object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
+			object2 = object1.add({ year: 1 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2001, 1, 28));
 
-		object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
-		object2 = object1.add({ year: 5 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2005, 1, 28));
+			object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
+			object2 = object1.add({ year: 5 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2005, 1, 28));
 
-		object1 = new DateObject({ year: 1900, month: 12, dayOfMonth: 31 });
-		object2 = object1.add({ year: 30 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(1930, 11, 31));
+			object1 = new DateObject({ year: 1900, month: 12, dayOfMonth: 31 });
+			object2 = object1.add({ year: 30 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(1930, 11, 31));
 
-		object1 = new DateObject({ year: 1995, month: 12, dayOfMonth: 31 });
-		object2 = object1.add({ year: 35 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2030, 11, 31));
+			object1 = new DateObject({ year: 1995, month: 12, dayOfMonth: 31 });
+			object2 = object1.add({ year: 35 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2030, 11, 31));
 
-		// month
-		object1 = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 });
-		object2 = object1.add({ month: 1 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2000, 1, 1));
+			// month
+			object1 = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 });
+			object2 = object1.add({ month: 1 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2000, 1, 1));
 
-		object1 = new DateObject({ year: 2000, month: 1, dayOfMonth: 31 });
-		object2 = object1.add({ month: 1 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2000, 1, 29));
+			object1 = new DateObject({ year: 2000, month: 1, dayOfMonth: 31 });
+			object2 = object1.add({ month: 1 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2000, 1, 29));
 
-		object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
-		object2 = object1.add({ month: 12 });
-		assert.notStrictEqual(object1, object2);
-		assert.strictEqual(+object2, +new Date(2001, 1, 28));
+			object1 = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
+			object2 = object1.add({ month: 12 });
+			assert.notStrictEqual(object1, object2);
+			assert.strictEqual(+object2, +new Date(2001, 1, 28));
 
-		// TODO: test multiple at once
+			// TODO: test multiple at once
+		},
+
+		'number': function () {
+			var date = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
+
+			assert.strictEqual(date.add(100).time, date.time + 100);
+		},
+
+		'Duration': function () {
+			var date = new DateObject({ year: 2000, month: 2, dayOfMonth: 29 });
+			var duration = new Duration(100);
+
+			assert.strictEqual(date.add(duration).time, date.time + 100);
+		}
 	},
+
 
 	'isLeapYear': function () {
 		var date = new DateObject({
@@ -316,98 +416,22 @@ registerSuite({
 	})(),
 
 	difference: {
-		milliseconds: function () {
-			const MILLISECONDS_IN_SECOND = 1000;
-			const MILLISECONDS_IN_MINUTE = 60 * MILLISECONDS_IN_SECOND;
-			const MILLISECONDS_IN_HOUR = 60 * MILLISECONDS_IN_MINUTE;
-			const MILLISECONDS_IN_DAY = 24 * MILLISECONDS_IN_HOUR;
-
-			assert.strictEqual(now.difference(aSecondAgo), -MILLISECONDS_IN_SECOND);
-			assert.strictEqual(now.difference(aMinuteAgo), -MILLISECONDS_IN_MINUTE);
-			assert.strictEqual(now.difference(anHourAgo), -MILLISECONDS_IN_HOUR);
-			assert.strictEqual(now.difference(aDayAgo), -MILLISECONDS_IN_DAY);
-			assert.strictEqual(now.difference(aMonthAgo), -30 * MILLISECONDS_IN_DAY);
-			assert.strictEqual(now.difference(aYearAgo), -365 * MILLISECONDS_IN_DAY);
+		'number': function () {
+			assert.strictEqual(now.difference(aSecondAgo.time).time, -Duration.SECOND);
+			assert.strictEqual(now.difference(aMinuteAgo.time).time, -Duration.MINUTE);
+			assert.strictEqual(now.difference(anHourAgo.time).time, -Duration.HOUR);
+			assert.strictEqual(now.difference(aDayAgo.time).time, -Duration.DAY);
+			assert.strictEqual(now.difference(aMonthAgo.time).time, -30 * Duration.DAY);
+			assert.strictEqual(now.difference(aYearAgo.time).time, -365 * Duration.DAY);
 		},
 
-		seconds: function () {
-			const SECONDS_IN_AN_HOUR = 3600;
-			const SECONDS_IN_A_DAY = 24 * SECONDS_IN_AN_HOUR;
-
-			assert.strictEqual(now.differenceInSeconds(aSecondAgo), -1);
-			assert.strictEqual(now.differenceInSeconds(aMinuteAgo), -60);
-			assert.strictEqual(now.differenceInSeconds(anHourAgo), -SECONDS_IN_AN_HOUR);
-			assert.strictEqual(now.differenceInSeconds(aDayAgo), -SECONDS_IN_A_DAY);
-			assert.strictEqual(now.differenceInSeconds(aMonthAgo), -30 * SECONDS_IN_A_DAY);
-			assert.strictEqual(now.differenceInSeconds(aYearAgo), -365 * SECONDS_IN_A_DAY);
-		},
-
-		minutes: function () {
-			const MINUTES_IN_A_DAY = 60 * 24;
-
-			assert.strictEqual(now.differenceInMinutes(aSecondAgo), 0);
-			assert.strictEqual(now.differenceInMinutes(aMinuteAgo), -1);
-			assert.strictEqual(now.differenceInMinutes(anHourAgo), -60);
-			assert.strictEqual(now.differenceInMinutes(aDayAgo), -MINUTES_IN_A_DAY);
-			assert.strictEqual(now.differenceInMinutes(aMonthAgo), -30 * MINUTES_IN_A_DAY);
-			assert.strictEqual(now.differenceInMinutes(aYearAgo), -365 * MINUTES_IN_A_DAY);
-		},
-
-		hours: function () {
-			assert.strictEqual(now.differenceInHours(aSecondAgo), 0);
-			assert.strictEqual(now.differenceInHours(aMinuteAgo), 0);
-			assert.strictEqual(now.differenceInHours(anHourAgo), -1);
-			assert.strictEqual(now.differenceInHours(aDayAgo), -24);
-			assert.strictEqual(now.differenceInHours(aMonthAgo), -30 * 24);
-			assert.strictEqual(now.differenceInHours(aYearAgo), -365 * 24);
-		},
-
-		days: function () {
-			assert.strictEqual(now.differenceInDays(aSecondAgo), 0);
-			assert.strictEqual(now.differenceInDays(aMinuteAgo), 0);
-			assert.strictEqual(now.differenceInDays(anHourAgo), 0);
-			assert.strictEqual(now.differenceInDays(aDayAgo), -1);
-			assert.strictEqual(now.differenceInDays(aMonthAgo), -30);
-			assert.strictEqual(now.differenceInDays(aYearAgo), -365);
-		},
-
-		months: {
-			'same months': function () {
-				var noDifference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.differenceInMonths(new DateObject({ year: 2000, month: 1, dayOfMonth: 30 }));
-
-				assert.strictEqual(noDifference, 0);
-			},
-
-			'a month difference': function () {
-				var monthDifference = new DateObject({ year: 2000, month: 1 })
-					.differenceInMonths(new DateObject({ year: 2000, month: 2 }));
-
-				assert.strictEqual(monthDifference, 1);
-			},
-
-			'greater than a year': function () {
-				var difference = new DateObject({ year: 2000, month: 1 })
-					.differenceInMonths(new DateObject({ year: 2001, month: 2 }));
-
-				assert.strictEqual(difference, 13);
-			}
-		},
-
-		years: {
-			'same year': function () {
-				var difference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.differenceInYears(new DateObject({ year: 2000, month: 12, dayOfMonth: 31 }));
-
-				assert.strictEqual(difference, 0);
-			},
-
-			'different years': function () {
-				var difference = new DateObject({ year: 2000, month: 1, dayOfMonth: 1 })
-					.differenceInYears(new DateObject({ year: 2001, month: 1, dayOfMonth: 1 }));
-
-				assert.strictEqual(difference, 1);
-			}
+		'DateObject': function () {
+			assert.strictEqual(now.difference(aSecondAgo).time, -Duration.SECOND);
+			assert.strictEqual(now.difference(aMinuteAgo).time, -Duration.MINUTE);
+			assert.strictEqual(now.difference(anHourAgo).time, -Duration.HOUR);
+			assert.strictEqual(now.difference(aDayAgo).time, -Duration.DAY);
+			assert.strictEqual(now.difference(aMonthAgo).time, -30 * Duration.DAY);
+			assert.strictEqual(now.difference(aYearAgo).time, -365 * Duration.DAY);
 		}
 	}
 });

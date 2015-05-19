@@ -1,7 +1,9 @@
+import Duration from './Duration';
+
 /**
  * Describes some interval of time used in date calculations
  */
-export interface Interval {
+export interface DateLike {
 	dayOfMonth?: number;
 	hours?: number;
 	milliseconds?: number;
@@ -14,7 +16,7 @@ export interface Interval {
 /**
  * Minimal values needed to describe a date with optional values taken from Interval to define a more specific date
  */
-export interface DateValues extends Interval {
+export interface DateValues extends DateLike {
 	month: number;
 	year: number;
 }
@@ -37,11 +39,6 @@ export interface BasicDate extends DateValues {
 
 var operationOrder = [ 'year', 'month', 'dayOfMonth', 'hours', 'minutes', 'seconds', 'milliseconds' ];
 var days = [ null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-var MILLISECONDS_IN_SECOND = 1000;
-var MILLISECONDS_IN_MINUTE = 60000;
-var MILLISECONDS_IN_HOUR = 3600000;
-var MILLISECONDS_IN_DAY = 86400000;
-var MONTHS_IN_YEAR = 12;
 
 function isLeapYear(year: number): boolean {
 	var date = new Date(year, 1, 29);
@@ -259,19 +256,45 @@ export default class DateObject implements BasicDate {
 		return this._date.getTimezoneOffset();
 	}
 
-	add(value: Interval): DateObject {
+	add(value: number): DateObject;
+	add(value: Duration): DateObject;
+	add(value: DateLike): DateObject;
+	add(value: any): DateObject {
 		var result = new DateObject(this);
 
-		// perform from year -> milliseconds in case the year
-		// and month operations cause an overshoot
-		operationOrder.forEach((property: string): void => {
-			if (!(property in value)) {
-				return;
-			}
+		if (value instanceof Duration) {
+			result.time += (<Duration> value).time;
+		}
+		else if (typeof value === 'object') {
+			// Anything date-like may have year and month values that need to be handled
+			// as dates rather than durations to avoid overshoots
+			operationOrder.forEach((property: string): void => {
+				if (!(property in value)) {
+					return;
+				}
 
-			(<any> result)[property] += (<any> value)[property];
-		});
+				(<any> result)[property] += (<any> value)[property];
+			});
+		}
+		else if (typeof value === 'number') {
+			result.time += (<number> value);
+		}
+		else {
+			// Attempt to put value into a DateObject and translate to a time
+			result.time += new DateObject((<any> value)).time;
+		}
+
 		return result;
+	}
+
+	difference(value: number): Duration;
+	difference(value: DateObject): Duration;
+	difference(value: any): Duration {
+		if (value.time) {
+			return new Duration(value.time - this.time);
+		}
+
+		return new Duration((<number> value) - this.time);
 	}
 
 	compare(value: DateObject): number {
@@ -296,34 +319,6 @@ export default class DateObject implements BasicDate {
 		right._date.setFullYear(0, 0, 0);
 
 		return left.compare(right);
-	}
-
-	difference(value: DateObject): number {
-		return value.time - this.time;
-	}
-
-	differenceInSeconds(value: DateObject): number {
-		return Math.round((value.time - this.time) / MILLISECONDS_IN_SECOND);
-	}
-
-	differenceInMinutes(value: DateObject): number {
-		return Math.round((value.time - this.time) / MILLISECONDS_IN_MINUTE);
-	}
-
-	differenceInHours(value: DateObject): number {
-		return Math.round((value.time - this.time) / MILLISECONDS_IN_HOUR);
-	}
-
-	differenceInDays(value: DateObject): number {
-		return Math.round((value.time - this.time) / MILLISECONDS_IN_DAY);
-	}
-
-	differenceInMonths(value: DateObject): number {
-		return value.month - this.month + (MONTHS_IN_YEAR * (value.year - this.year));
-	}
-
-	differenceInYears(value: DateObject): number {
-		return  value.year - this.year;
 	}
 
 	toString(): string {
