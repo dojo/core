@@ -195,6 +195,14 @@ registerSuite({
 				assert.strictEqual(error, testError,
 					'Method should reject with same error as error passed to \'abort\'');
 			});
+		},
+
+		'reject if context is wrong'() {
+			return stream.close.call({}).then(function () {
+				assert.fail(null, null, 'Method should not resolve when called in wrong context');
+			}, function (error: Error) {
+				assert.instanceOf(error, Error, 'Promise should reject with an Error');
+			});
 		}
 	},
 
@@ -327,6 +335,14 @@ registerSuite({
 			}, function (error: Error) {
 				assert.strictEqual(stream.state, State.Errored, 'Stream should be in errored state');
 			});
+		},
+
+		'reject if context is wrong'() {
+			return stream.write.call({}).then(function () {
+				assert.fail(null, null, 'Method should not resolve when called in wrong context');
+			}, function (error: Error) {
+				assert.instanceOf(error, Error, 'Promise should reject with an Error');
+			});
 		}
 	},
 
@@ -382,14 +398,12 @@ registerSuite({
 			stream.abort('abc');
 		},
 
-		'reject if not writable stream'() {
-			let dfd = this.async(ASYNC_TIMEOUT);
-			stream.abort.call({}).then(
-				dfd.rejectOnError(function () {
-					assert.fail();
-				}),
-				dfd.callback(function () {})
-			);
+		'reject if context is wrong'() {
+			return stream.abort.call({}).then(function () {
+				assert.fail(null, null, 'Method should not resolve when called in wrong context');
+			}, function (error: Error) {
+				assert.instanceOf(error, Error, 'Promise should reject with an Error');
+			});
 		}
 	}
 });
