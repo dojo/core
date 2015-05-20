@@ -110,6 +110,40 @@ registerSuite({
 			buffer = Utf8.encode(1);
 			assert.strictEqual(buffer.length, 1);
 			assert.strictEqual(buffer[0], 49);
+
+			assert.throws(function () {
+				Utf8.encode('𐌆');
+			});
+
+			buffer = Utf8.encode('\u0000');
+			let bufferArray = [0];
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], bufferArray[i]);
+			};
+
+			buffer = Utf8.encode('\\');
+			bufferArray = [0x5C];
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], bufferArray[i]);
+			};
+
+			buffer = Utf8.encode('');
+			bufferArray = [0xC2, 0x80];
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], bufferArray[i]);
+			};
+
+			buffer = Utf8.encode('ⰼ');
+			bufferArray = [0xE2, 0xB0, 0xBC];
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], bufferArray[i]);
+			};
+
+			buffer = Utf8.encode('𐐁');
+			bufferArray = [0xF0, 0x90, 0x90, 0x81];
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], bufferArray[i]);
+			};
 		},
 
 		'.decode()'() {
@@ -124,7 +158,25 @@ registerSuite({
 				});
 			}
 
+			assert.strictEqual(Utf8.decode([0]), '\u0000');
+			assert.strictEqual(Utf8.decode([0x5C]), '\\');
+			assert.strictEqual(Utf8.decode([0xC2, 0x80]), '');
+			assert.strictEqual(Utf8.decode([0xE2, 0xB0, 0xBC]), 'ⰼ');
+			assert.strictEqual(Utf8.decode([0xF0, 0x9D, 0x8C, 0x86]), '𐌆');
+
 			assert.strictEqual(Utf8.decode(undefined), '');
+
+			assert.throws(function () {
+				Utf8.decode([0xFFFFFF]);
+			});
+
+			assert.throws(function () {
+				Utf8.decode([0xFFFFFFFF]);
+			});
+
+			assert.throws(function () {
+				Utf8.decode([0x1FFFF]);
+			});
 		}
 	},
 

@@ -110,6 +110,7 @@ export class Ascii {
  * Utf8 codec that provides facilities for encoding a string (or string coerced object)
  * into an Utf8 encoded byte buffer as well as decoding an Utf8 encoded byte buffer
  * into a string.
+ * Inspired by the work of: https://github.com/mathiasbynens/utf8.js
  */
 export class Utf8 {
 	/**
@@ -133,7 +134,7 @@ export class Utf8 {
 			 * http://en.wikipedia.org/wiki/Universal_Character_Set_characters
 			 */
 			if (encodedChar > 0xD800 && encodedChar < 0xDBFF) {
-				let lowSurrogate = data.charCodeAt(i++);
+				let lowSurrogate = data.charCodeAt(++i);
 				if (lowSurrogate >= 0xDC00 && lowSurrogate < 0xDFFF) {
 					encodedChar = 0x010000 + (encodedChar - 0xD800) * 0x0400 + (lowSurrogate - 0xDC00);
 				}
@@ -225,6 +226,9 @@ export class Utf8 {
 				let encodedByte = ((byte1 & 0x1F) << 0x0C) | (byte2 << 0x0C) | (byte3 << 0x06) | byte4;
 				decoded += decodeUtf8EncodedCodePoint(encodedByte, [0x010000, 0x10FFFF]);
 			}
+			else {
+				validateUtf8EncodedCodePoint(byte1);
+			}
 		}
 
 		return decoded;
@@ -284,6 +288,7 @@ export class Hex {
  * Base64 codec that provides facilities for encoding a string (or string coerced object)
  * into an Base64 encoded byte buffer as well as decoding an Base64 encoded byte buffer
  * into a string.
+ * Adapted from http://www.nczonline.net/blog/2009/12/08/computer-science-in-javascript-base64-encoding/
  */
 export class Base64 {
 	/**
