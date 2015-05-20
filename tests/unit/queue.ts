@@ -7,8 +7,8 @@ registerSuite({
 	name: 'queue functions',
 
 	'.queueTask()': function () {
-		let parts: string[] = [];
-		let dfd = this.async(300);
+		const dfd = this.async(300);
+		const parts: string[] = [];
 
 		function a() {
 			queueTask(function () {
@@ -35,8 +35,8 @@ registerSuite({
 	},
 
 	'.queueTask() => handle.destroy()': function () {
+		const dfd = this.async(100);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];
@@ -59,8 +59,8 @@ registerSuite({
 			this.skip('browser required.');
 		}
 
-		let parts: string[] = [];
-		let dfd = this.async(300);
+		const dfd = this.async(300);
+		const parts: string[] = [];
 
 		function a() {
 			queueAnimationTask(function () {
@@ -91,8 +91,8 @@ registerSuite({
 			this.skip('browser required.');
 		}
 
+		const dfd = this.async(100);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];
@@ -111,8 +111,8 @@ registerSuite({
 	},
 
 	'.queueMicroTask()': function () {
-		let parts: string[] = [];
-		let dfd = this.async(300);
+		const dfd = this.async(300);
+		const parts: string[] = [];
 
 		function a() {
 			queueTask(function () {
@@ -142,8 +142,8 @@ registerSuite({
 	},
 
 	'.queueMicroTask() => handle.destroy()': function () {
+		const dfd = this.async(100);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];
