@@ -133,7 +133,7 @@ export const queueAnimationTask = (function () {
 		return queueTask;
 	}
 
-	return function (callback: (...args: any[]) => any): Handle {
+	function queueAnimationTask(callback: (...args: any[]) => any): Handle {
 		const item: QueueItem = {
 			isActive: true,
 			callback: callback
@@ -143,6 +143,12 @@ export const queueAnimationTask = (function () {
 		return getQueueHandle(item, function () {
 			cancelAnimationFrame(rafId);
 		});
+	}
+
+	// TODO: Use aspect.before when it is available.
+	return has('microtasks') ? queueAnimationTask : function (callback: (...args: any[]) => any): Handle {
+		checkMicroTaskQueue();
+		return queueAnimationTask(callback);
 	};
 })();
 

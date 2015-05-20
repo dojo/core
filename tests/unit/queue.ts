@@ -118,6 +118,9 @@ registerSuite({
 			queueTask(function () {
 				parts.push('queueTask 1');
 			});
+			queueAnimationTask(function () {
+				parts.push('queueAnimationTask 1');
+			});
 			queueMicroTask(function () {
 				parts.push('queueMicroTask');
 			});
@@ -136,8 +139,12 @@ registerSuite({
 
 		c();
 		setTimeout(dfd.callback(function () {
-			assert.equal(parts.join(','), 'start,end,queueMicroTask,queueTask 1,queueTask 2',
-				'queueMicroTask should be executed at the end of the current event loop.');
+			const actual = parts.join(',');
+			// Different browsers implement rAF differently, so there's no way to predict exactly
+			// when in the macrotask queue any callback registered with queueAnimationTask will be
+			// executed. As a result, the following just tests that queueMicroTask executes its
+			// callbacks before either queueTask or queueAnimationTask.
+			assert.equal(actual.indexOf('start,end,queueMicroTask'), 0);
 		}), 300);
 	},
 
