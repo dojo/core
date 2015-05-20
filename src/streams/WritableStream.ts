@@ -18,6 +18,8 @@ interface Record<T> {
  */
 export enum State { Closed, Closing, Errored, Waiting, Writable }
 
+// This function is basically a context check to protect against calling WritableStream methods with incorrect context
+// (as one might accidentally do when passing a method as callback)
 function isWritableStream(x: any): boolean {
 	return Object.prototype.hasOwnProperty.call(x, '_underlyingSink');
 }
@@ -75,13 +77,7 @@ export default class WritableStream<T> {
 	 * @returns A promise that is resolved when the stream is closed, or is rejected if the stream errors.
 	 */
 	get closed(): Promise<void> {
-		if (isWritableStream(this)) {
-			return this._closedPromise;
-		}
-		else {
-			// 4.2.4.1-1
-			return Promise.reject(new TypeError('Must be a WritableStream'));
-		}
+		return this._closedPromise;
 	}
 
 	/**
@@ -90,26 +86,14 @@ export default class WritableStream<T> {
 	 * performed.
 	 */
 	get ready(): Promise<void> {
-		if (isWritableStream(this)) {
-			return this._readyPromise;
-		}
-		else {
-			// 4.2.4.2-1
-			return Promise.reject(new TypeError('Must be a WritableStream'));
-		}
+		return this._readyPromise;
 	}
 
 	/**
 	 * @returns The stream's current @State
 	 */
 	get state(): State {
-		if (isWritableStream(this)) {
-			return this._state;
-		}
-		else {
-			// 4.2.4.3-1
-			throw new TypeError('Must be a WritableStream');
-		}
+		return this._state;
 	}
 
 	protected _advancing: boolean;
@@ -284,17 +268,18 @@ export default class WritableStream<T> {
 	 * state. Any un-written data that is queued will be discarded.
 	 */
 	abort(reason: any): Promise<void> {
+		// 4.2.4.4-1
 		if (!isWritableStream(this)) {
-			// 4.2.4.4-1
-			return Promise.reject(new TypeError('Must be a WritableStream'));
+			return Promise.reject(
+				new Error('WritableStream method called in context of object that is not a WritableStream instance')
+			);
 		}
 
 		if (this.state === State.Closed) {
 			// 4.2.4.4-2
 			return Promise.resolve();
 		}
-
-		if (this.state === State.Errored) {
+		else if (this.state === State.Errored) {
 			// 4.2.4.4-3
 			return Promise.reject(this._storedError);
 		}
@@ -316,7 +301,9 @@ export default class WritableStream<T> {
 	close(): Promise<void> {
 		// 4.2.4.5-1
 		if (!isWritableStream(this)) {
-			return Promise.reject(new TypeError('Must be a WritableStream'));
+			return Promise.reject(
+				new Error('WritableStream method called in context of object that is not a WritableStream instance')
+			);
 		}
 
 		// 4.2.4.5-2
@@ -353,7 +340,9 @@ export default class WritableStream<T> {
 	write(chunk: T): Promise<void> {
 		// 4.2.4.6-1
 		if (!isWritableStream(this)) {
-			return Promise.reject(new TypeError('Must be a WritableStream'));
+			return Promise.reject(
+				new Error('WritableStream method called in context of object that is not a WritableStream instance')
+			);
 		}
 
 		// 4.2.4.6-2
@@ -363,8 +352,7 @@ export default class WritableStream<T> {
 		else if (this.state === State.Closing) {
 			return Promise.reject(new TypeError('Stream is closing'));
 		}
-
-		if (this.state === State.Errored) {
+		else if (this.state === State.Errored) {
 			// 4.2.4.6-3
 			return Promise.reject(this._storedError);
 		}
