@@ -18,6 +18,10 @@ interface Record<T> {
  */
 export enum State { Closed, Closing, Errored, Waiting, Writable }
 
+function isWritableStream(x: any): boolean {
+	return Object.prototype.hasOwnProperty.call(x, '_underlyingSink');
+}
+
 /**
  * The Sink interface defines the methods a module can implement to create a target sink for a `WritableStream`.
  *
@@ -71,7 +75,13 @@ export default class WritableStream<T> {
 	 * @returns A promise that is resolved when the stream is closed, or is rejected if the stream errors.
 	 */
 	get closed(): Promise<void> {
-		return this._closedPromise;
+		if (isWritableStream(this)) {
+			return this._closedPromise;
+		}
+		else {
+			// 4.2.4.1-1
+			return Promise.reject(new TypeError('Must be a WritableStream'));
+		}
 	}
 
 	/**
@@ -80,14 +90,26 @@ export default class WritableStream<T> {
 	 * performed.
 	 */
 	get ready(): Promise<void> {
-		return this._readyPromise;
+		if (isWritableStream(this)) {
+			return this._readyPromise;
+		}
+		else {
+			// 4.2.4.2-1
+			return Promise.reject(new TypeError('Must be a WritableStream'));
+		}
 	}
 
 	/**
 	 * @returns The stream's current @State
 	 */
 	get state(): State {
-		return this._state;
+		if (isWritableStream(this)) {
+			return this._state;
+		}
+		else {
+			// 4.2.4.3-1
+			throw new TypeError('Must be a WritableStream');
+		}
 	}
 
 	protected _advancing: boolean;
@@ -262,6 +284,11 @@ export default class WritableStream<T> {
 	 * state. Any un-written data that is queued will be discarded.
 	 */
 	abort(reason: any): Promise<void> {
+		if (!isWritableStream(this)) {
+			// 4.2.4.4-1
+			return Promise.reject(new TypeError('Must be a WritableStream'));
+		}
+
 		if (this.state === State.Closed) {
 			// 4.2.4.4-2
 			return Promise.resolve();
@@ -287,6 +314,11 @@ export default class WritableStream<T> {
 	 * may have un-writted data queued; until the data has been written the stream will remain in the "closing" state.
 	 */
 	close(): Promise<void> {
+		// 4.2.4.5-1
+		if (!isWritableStream(this)) {
+			return Promise.reject(new TypeError('Must be a WritableStream'));
+		}
+
 		// 4.2.4.5-2
 		if (this.state === State.Closed) {
 			return Promise.reject(new TypeError('Stream is already closed'));
@@ -319,6 +351,11 @@ export default class WritableStream<T> {
 	 * @returns A promise that will be fulfilled when the chunk has been written to the underlying sink.
 	 */
 	write(chunk: T): Promise<void> {
+		// 4.2.4.6-1
+		if (!isWritableStream(this)) {
+			return Promise.reject(new TypeError('Must be a WritableStream'));
+		}
+
 		// 4.2.4.6-2
 		if (this.state === State.Closed) {
 			return Promise.reject(new TypeError('Stream is closed'));
@@ -326,7 +363,8 @@ export default class WritableStream<T> {
 		else if (this.state === State.Closing) {
 			return Promise.reject(new TypeError('Stream is closing'));
 		}
-		else if (this.state === State.Errored) {
+
+		if (this.state === State.Errored) {
 			// 4.2.4.6-3
 			return Promise.reject(this._storedError);
 		}
