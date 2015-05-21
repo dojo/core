@@ -102,7 +102,6 @@ module.exports = function (grunt) {
 
 		intern: {
 			options: {
-				grep: grunt.option('grep') || '.*',
 				runType: 'runner',
 				config: '<%= devDirectory %>/tests/intern'
 			},
@@ -220,6 +219,14 @@ module.exports = function (grunt) {
 					'dev'
 				]
 			}
+		}
+	});
+
+	// Set some Intern-specific options if specified on the command line.
+	[ 'suites', 'functionalSuites', 'grep' ].forEach(function (option) {
+		var value = grunt.option(option);
+		if (value) {
+			grunt.config('intern.options.' + option, value);
 		}
 	});
 
