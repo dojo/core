@@ -1,26 +1,27 @@
-import Evented = require('dojo/Evented');
-import on = require('dojo/on');
-
+import Evented from '../../Evented';
+import { Handle } from '../../interfaces';
+import on, { EventEmitter, EventTarget, ExtensionEvent } from '../../on';
 import Promise from '../../Promise';
 import { Source } from '../ReadableStream';
 import ReadableStreamController from '../ReadableStreamController';
 
+type EventTargetTypes = Evented | EventEmitter | EventTarget;
+type EventTypes = Array<ExtensionEvent | string> | ExtensionEvent | string;
+
 export default class EventedStreamSource implements Source<Event> {
 	protected _controller: ReadableStreamController<Event>;
-	protected _target: Evented | HTMLElement;
-	protected _events: string[];
-	// TODO: use Handle
-	protected _handles: any[];
+	protected _target: EventTargetTypes;
+	protected _events: Array<ExtensionEvent | string>;
+	protected _handles: Handle[];
 
-	constructor(target: Evented | HTMLElement, type: string | string[]) {
+	constructor(target: EventTargetTypes, type: EventTypes) {
 		this._target = target;
 
-		// TODO: remove type assertions when tsc is fixed
-		if (typeof type === 'string') {
-			this._events = [ <string> type ];
+		if (Array.isArray(type)) {
+			this._events = <any> type;
 		}
 		else {
-			this._events = <string[]> type;
+			this._events = [ <any> type ];
 		}
 
 		this._handles = [];
@@ -29,7 +30,6 @@ export default class EventedStreamSource implements Source<Event> {
 	start(controller: ReadableStreamController<Event>): Promise<void> {
 		this._controller = controller;
 		this._events.forEach((eventName: string) => {
-			// TODO: remove type assertion
 			this._handles.push(on(<any> this._target, eventName, this._handleEvent.bind(this)));
 		});
 
@@ -38,8 +38,7 @@ export default class EventedStreamSource implements Source<Event> {
 
 	cancel(reason?: any): Promise<void> {
 		while (this._handles.length) {
-			// TODO: is it Handle.destroy? or Handle.remove()?
-			this._handles.shift().remove();
+			this._handles.shift().destroy();
 		}
 
 		return Promise.resolve();

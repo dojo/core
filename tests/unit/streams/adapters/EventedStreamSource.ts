@@ -1,16 +1,19 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 
+import Evented from 'src/Evented';
 import ReadableStream from 'src/streams/ReadableStream';
 import ReadableStreamReader, { ReadResult } from 'src/streams/ReadableStreamReader';
 import EventedStreamSource from 'src/streams/adapters/EventedStreamSource';
-
-import Evented = require('dojo/Evented');
 
 let emitter: Evented;
 let stream: ReadableStream<Event>;
 let source: EventedStreamSource;
 let reader: ReadableStreamReader<Event>;
+let testEvent = {
+	type: 'testEvent',
+	test: 'value'
+};
 
 registerSuite({
 	name: 'EventedStreamSource',
@@ -25,11 +28,7 @@ registerSuite({
 	},
 
 	start() {
-		let testEvent = {
-			test: 'value'
-		};
-
-		emitter.emit('testEvent', testEvent);
+		emitter.emit(testEvent);
 
 		return reader.read().then(function (result: ReadResult<Event>) {
 			assert.strictEqual(result.value, testEvent,
@@ -38,7 +37,12 @@ registerSuite({
 	},
 
 	'event array'() {
-		let testEvent = {
+		let appleEvent = {
+			type: 'apple',
+			test: 'value'
+		};
+		let orangeEvent = {
+			type: 'orange',
 			test: 'value'
 		};
 
@@ -46,14 +50,14 @@ registerSuite({
 		stream = new ReadableStream<Event>(source);
 		reader = stream.getReader();
 
-		emitter.emit('apple', testEvent);
-		emitter.emit('orange', testEvent);
+		emitter.emit(appleEvent);
+		emitter.emit(orangeEvent);
 
 		return reader.read().then(function (result: ReadResult<Event>) {
-			assert.strictEqual(result.value, testEvent);
+			assert.strictEqual(result.value, appleEvent);
 
 			return reader.read().then(function (result: ReadResult<Event>) {
-				assert.strictEqual(result.value, testEvent);
+				assert.strictEqual(result.value, orangeEvent);
 			});
 		});
 	},
@@ -66,7 +70,7 @@ registerSuite({
 		};
 
 		source.cancel();
-		emitter.emit('testEvent', {});
+		emitter.emit(testEvent);
 		assert.strictEqual(enqueueCallCount, 0, 'Canceled source should not call controller.enqueue');
 	}
 });
