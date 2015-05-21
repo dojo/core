@@ -19,3 +19,4 @@ import './Scheduler';
 import './string';
 import './UrlSearchParams';
 import './WeakMap';
+import 'dojo/has!host-browser?./dom/all';
