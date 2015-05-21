@@ -142,7 +142,6 @@ export default class ReadableStream<T> {
 		this.controller = new ReadableStreamController(this);
 		this._strategy = util.normalizeStrategy(strategy);
 		this.queue = new SizeQueue<T>();
-
 		this._startedPromise = new Promise<void>((resolveStarted) => {
 			const startResult = util.invokeOrNoop(this._underlyingSource, 'start', [ this.controller ]);
 			Promise.resolve(startResult).then(
@@ -355,14 +354,15 @@ export default class ReadableStream<T> {
 				this.pullScheduled = false;
 				this.pull();
 			});
+
 			return;
 		}
 
 		this._pullingPromise = util.promiseInvokeOrNoop(this._underlyingSource, 'pull', [ this.controller ]);
 		this._pullingPromise.then(() => {
 			this._pullingPromise = undefined;
-		}, (e) => {
-			this.error(e);
+		}, (error: Error) => {
+			this.error(error);
 		});
 	}
 
