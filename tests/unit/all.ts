@@ -15,6 +15,8 @@ import './on/all';
 import './Promise';
 import './queue';
 import './Scheduler';
+import './Duration';
 import './string';
 import './UrlSearchParams';
 import './WeakMap';
+import './DateObject';
