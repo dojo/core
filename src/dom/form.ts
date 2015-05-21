@@ -1,4 +1,4 @@
-const EXCLUDED_TAGS = /\b(?:file|submit|image|reset|button)\b/i;
+const EXCLUDED_TAGS = /\b(?:file|submit|image|reset|button)\b/;
 
 type FormValue = { [ key: string ]: any };
 
@@ -10,7 +10,7 @@ export function fromObject(form: HTMLFormElement, object: FormValue): void {
 	const elements = form.elements;
 	for (let i = 0; i < elements.length; i++) {
 		const element = <HTMLInputElement> elements[i];
-		const type = element.type.toLowerCase();
+		const type = element.type;
 		const name = element.name;
 
 		if (!name || EXCLUDED_TAGS.test(type) || element.disabled) {
@@ -68,10 +68,10 @@ export function fromObject(form: HTMLFormElement, object: FormValue): void {
 }
 
 /**
- * Gets the value for a form field.
+ * Gets the value of a form field.
  */
 function getValue(field: HTMLInputElement): string | string[] {
-	const type = field.type.toLowerCase();
+	const type = field.type;
 	let value: string | string[];
 
 	if (type === 'radio' || type === 'checkbox') {
@@ -80,13 +80,14 @@ function getValue(field: HTMLInputElement): string | string[] {
 		}
 	}
 	else if (field.multiple) {
-		// For fields with the multiple attribute set, gather the values of all descendant <option> elements that are
+		// For fields with the 'multiple' attribute set, gather the values of all descendant <option> elements that are
 		// selected.
 		const values = <string[]> [];
 		const elements = [ field.firstElementChild ];
 		while (elements.length > 0) {
 			for (let element = elements.pop(); element; element = element.nextElementSibling) {
-				if (element.tagName.toLowerCase() === 'option') {
+				// tagName in HTML will always contain the canonical uppercase form
+				if (element.tagName === 'OPTION') {
 					const optionElement = <HTMLOptionElement> element;
 					if (optionElement.selected) {
 						values.push(optionElement.value);
@@ -103,7 +104,9 @@ function getValue(field: HTMLInputElement): string | string[] {
 				}
 			}
 		}
-		value = values;
+		if (values.length > 0) {
+			value = values;
+		}
 	}
 	else {
 		value = field.value;
@@ -113,14 +116,19 @@ function getValue(field: HTMLInputElement): string | string[] {
 }
 
 /**
- * Sets the value for a form field in a value object.
+ * Stores the value of a form field in a value object.
  */
-function setValue(object: FormValue, name: string, value: string | string[]) {
-	if (value === null) {
+function storeFieldValue(object: FormValue, field: HTMLInputElement) {
+	const value = getValue(field);
+
+	// Ignore null or undefined values
+	if (value == null) {
 		return;
 	}
 
+	const name = field.name;
 	const current = object[name];
+
 	if (typeof current === 'string') {
 		object[name] = [ current, value ];
 	}
@@ -138,13 +146,11 @@ function setValue(object: FormValue, name: string, value: string | string[]) {
 export function toObject(form: HTMLFormElement): FormValue {
 	const value: FormValue = {};
 	const elements = form.elements;
+
 	for (let i = 0; i < elements.length; i++) {
 		const element = <HTMLInputElement> elements[i];
 		if (element.name && !EXCLUDED_TAGS.test(element.type) && !element.disabled) {
-			const fieldValue = getValue(element);
-			if (fieldValue) {
-				setValue(value, element.name, fieldValue);
-			}
+			storeFieldValue(value, element);
 		}
 	}
 

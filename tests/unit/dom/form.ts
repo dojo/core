@@ -15,8 +15,10 @@ const value1 = {
 	blah: 'blah'
 };
 const value1_set = <FormValue> {
-	blah: 'blargh'
+	blah: 'blargh',
+	cb: 'blah'
 };
+
 const value2 = {
 	blah: 'blah',
 	multi: [ 'thud', 'thonk' ],
@@ -28,18 +30,23 @@ const value2_set = <FormValue> {
 	multi: [ 'blah', 'thonk' ],
 	single: 'thonk',
 };
+
 const value3 = {
 	spaces: 'string with spaces'
 };
 const value3_set = <FormValue> {
-	spaces: 'fewer words'
+	spaces: 'fewer words',
+	multi: 'blah'
 };
+
 const value4 = {
 	action: 'Form with input named action'
 };
+
 const value5 = {
 	'blåh': 'bláh'
 };
+
 const value6 = {
 	cb_group: 'foo',
 	radio_group: 'bam'
@@ -53,7 +60,7 @@ const value6_2 = {
 	radio_group: 'baz'
 };
 const value6_set = <FormValue> {
-	cb_group: [ 'boo' ],
+	cb_group: [ 'boo', 'bar', 'baz' ],
 	radio_group: 'baz'
 }
 
@@ -65,27 +72,28 @@ registerSuite({
 			<form id="f1" style="border: 1px solid black;">
 				<input id="blah" type="text" name="blah" value="blah">
 				<input id="no_value" type="text" name="no_value" value="blah" disabled>
+				<input id="cb" type="checkbox" name="cb" value="blah">
 				<input  id="no_value2" type="button" name="no_value2" value="blah">
 			</form>
 		`;
 		form2.innerHTML = `
 			<form id="f2" style="border: 1px solid black;">
-				<input id="blah" type="text" name="blah" value="blah">
+				<input id="blah" type="TEXT" name="blah" value="blah">
 				<input id="no_value" type="text" name="no_value" value="blah" disabled>
-				<input id="no_value2" type="button" name="no_value2" value="blah">
+				<input id="no_value2" type="BUTTON" name="no_value2" value="blah">
 				<select id="single" type="select" name="single">
+					<option value="blah">blah</option>
+					<option value="thud" selected>thud</option>
+					<option value="thonk">thonk</option>
+				</select>
+				<select id="multi" type="SELECT" multiple name="multi">
 					<optgroup label="Stuff">
 						<option value="blah">blah</option>
 						<option value="thud" selected>thud</option>
 					</optgroup>
 					<optgroup label="Other Stuff">
-						<option value="thonk">thonk</option>
+						<option value="thonk" selected>thonk</option>
 					</optgroup>
-				</select>
-				<select id="multi" type="select" multiple name="multi">
-					<option value="blah">blah</option>
-					<option value="thud" selected>thud</option>
-					<option value="thonk" selected>thonk</option>
 				</select>
 				<textarea id="textarea" name="textarea">textarea_value</textarea>
 				<button id="button1" name="button1" value="buttonValue1">This is a button that should not be in formToObject.</button>
@@ -95,6 +103,10 @@ registerSuite({
 		form3.innerHTML = `
 			<form id="f3" style="border: 1px solid black;">
 				<input id="spaces" type="hidden" name="spaces" value="string with spaces">
+				<select id="multi" type="select" multiple name="multi">
+					<option value="blah">blah</option>
+					<option value="thud">thud</option>
+				</select>
 			</form>
 		`;
 		form4.innerHTML = `
@@ -113,12 +125,14 @@ registerSuite({
 			<form id="f6" style="border: 1px solid black;">
 				<input id="checkbox1" type="checkbox" name="cb_group" value="foo" checked>
 				<input id="checkbox2" type="checkbox" name="cb_group" value="boo">
+				<input id="checkbox3" type="checkbox" name="cb_group" value="bar">
+				<input id="checkbox4" type="checkbox" name="cb_group" value="baz">
 				<input id="radio1" type="radio" name="radio_group" value="baz">
 				<input id="radio2" type="radio" name="radio_group" value="bam" checked>
 			</form>
 		`;
 	},
-	
+
 	'.fromObject'() {
 		form.fromObject(form1, value1_set);
 		assert.strictEqual(form1['blah'].value, value1_set['blah']);
@@ -139,6 +153,8 @@ registerSuite({
 		form.fromObject(form6, value6_set);
 		assert.isFalse(form6['checkbox1'].checked);
 		assert.isTrue(form6['checkbox2'].checked);
+		assert.isTrue(form6['checkbox3'].checked);
+		assert.isTrue(form6['checkbox4'].checked);
 		assert.isTrue(form6['radio1'].checked);
 		assert.isFalse(form6['radio2'].checked);
 	},
@@ -156,7 +172,13 @@ registerSuite({
 		form6['radio1'].checked = true;
 		assert.deepEqual(form.toObject(form6), value6_1);
 
+		form6['checkbox3'].checked = true;
+		form6['checkbox4'].checked = true;
+		assert.deepEqual(form.toObject(form6), value6_set);
+
 		form6['checkbox1'].checked = true;
+		form6['checkbox3'].checked = false;
+		form6['checkbox4'].checked = false;
 		assert.deepEqual(form.toObject(form6), value6_2);
 	}
 });
