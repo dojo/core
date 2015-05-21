@@ -4,11 +4,11 @@ import ReadableStreamController from '../ReadableStreamController';
 import { Readable } from 'stream';
 
 export type NodeSourceType = Buffer | string;
+
 export default class ReadableNodeStreamSource implements Source<NodeSourceType> {
 	protected _controller: ReadableStreamController<NodeSourceType>;
 	protected _isClosed: boolean;
 	protected _onClose: () => void;
-	protected _onData: (chunk: NodeSourceType) => void;
 	protected _onError: (error: Error) => void;
 	protected _nodeStream: Readable;
 
@@ -37,7 +37,6 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 
 	protected _removeListeners(): void {
 		this._nodeStream.removeListener('close', this._onClose);
-		this._nodeStream.removeListener('data', this._onData);
 		this._nodeStream.removeListener('end', this._onClose);
 		this._nodeStream.removeListener('error', this._onError);
 	}
@@ -57,7 +56,10 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 
 		const chunk = this._nodeStream.read();
 
-		if (chunk) {
+		if (chunk === null) {
+			this._handleClose();
+		}
+		else {
 			controller.enqueue(chunk);
 		}
 
@@ -69,11 +71,9 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 	start(controller: ReadableStreamController<NodeSourceType>): Promise<void> {
 		this._controller = controller;
 		this._onClose = this._handleClose.bind(this);
-		this._onData = this._controller.enqueue.bind(this._controller);
 		this._onError = this._handleError.bind(this);
 
 		this._nodeStream.on('close', this._onClose);
-		this._nodeStream.on('data', this._onData);
 		this._nodeStream.on('end', this._onClose);
 		this._nodeStream.on('error', this._onError);
 
