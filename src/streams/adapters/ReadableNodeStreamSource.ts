@@ -52,8 +52,6 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 			return Promise.reject(new Error('Stream is closed'));
 		}
 
-		this._nodeStream.pause();
-
 		const chunk = this._nodeStream.read();
 
 		if (chunk === null) {
@@ -62,8 +60,6 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 		else {
 			controller.enqueue(chunk);
 		}
-
-		this._nodeStream.resume();
 
 		return Promise.resolve();
 	}
