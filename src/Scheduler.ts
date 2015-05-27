@@ -35,12 +35,7 @@ export default class Scheduler {
 	 */
 	queueFunction: (callback: (...args: any[]) => any) => Handle;
 
-	protected _defer(callback: (...args: any[]) => void): Handle {
-		const item: QueueItem = {
-			isActive: true,
-			callback: callback
-		};
-
+	protected _defer(item: QueueItem): Handle {
 		if (!this._deferred) {
 			this._deferred = [];
 		}
@@ -94,15 +89,22 @@ export default class Scheduler {
 		this._queue = [];
 	}
 
-	schedule(callback: (...args: any[]) => void): Handle {
-		if (this._isProcessing && this.deferWhileProcessing) {
-			return this._defer(callback);
+	schedule(callback: QueueItem | ((...args: any[]) => void)): Handle {
+		let item: QueueItem;
+
+		if (typeof callback === 'function') {
+			item = {
+				isActive: true,
+				callback: <(...args: any[]) => void> callback
+			};
+		}
+		else {
+			item = <QueueItem> callback;
 		}
 
-		const item: QueueItem = {
-			isActive: true,
-			callback: callback
-		};
+		if (this._isProcessing && this.deferWhileProcessing) {
+			return this._defer(item);
+		}
 
 		this._schedule(item);
 
