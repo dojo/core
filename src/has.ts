@@ -77,3 +77,4 @@ add('weakmap', function () {
 	}
 	return false;
 });
+add('webcrypto', typeof global.SubtleCrypto !== 'undefined');
