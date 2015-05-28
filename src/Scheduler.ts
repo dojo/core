@@ -35,7 +35,12 @@ export default class Scheduler {
 	 */
 	queueFunction: (callback: (...args: any[]) => any) => Handle;
 
-	protected _defer(item: QueueItem): Handle {
+	protected _defer(callback: (...args: any[]) => void): Handle {
+		const item: QueueItem = {
+			isActive: true,
+			callback: callback
+		};
+
 		if (!this._deferred) {
 			this._deferred = [];
 		}
@@ -67,27 +72,17 @@ export default class Scheduler {
 
 			let item: QueueItem;
 			while (item = deferred.shift()) {
-				this._enqueue(item);
+				this._schedule(item);
 			}
 		}
 	}
 
-	protected _enqueue(item: QueueItem): void {
+	protected _schedule(item: QueueItem): void {
 		if (!this._task) {
 			this._task = this.queueFunction(this._boundDispatch);
 		}
 
 		this._queue.push(item);
-	}
-
-	protected _schedule(item: QueueItem): Handle {
-		if (this._isProcessing && this.deferWhileProcessing) {
-			return this._defer(item);
-		}
-
-		this._enqueue(item);
-
-		return getQueueHandle(item);
 	}
 
 	constructor(kwArgs?: KwArgs) {
@@ -100,9 +95,17 @@ export default class Scheduler {
 	}
 
 	schedule(callback: (...args: any[]) => void): Handle {
-		return this._schedule({
+		if (this._isProcessing && this.deferWhileProcessing) {
+			return this._defer(callback);
+		}
+
+		const item: QueueItem = {
 			isActive: true,
-			callback: <(...args: any[]) => void> callback
-		});
+			callback: callback
+		};
+
+		this._schedule(item);
+
+		return getQueueHandle(item);
 	}
 }
