@@ -2,7 +2,8 @@ import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import Map from 'src/Map';
 
-var map: Map<any, any>;
+let map: Map<any, any>;
+let mapArgs: any[];
 
 registerSuite({
 	name: 'Map',
@@ -30,7 +31,7 @@ registerSuite({
 			assert.doesNotThrow(function () {
 				map = new Map<number, string>({
 					length: 1,
-					0: [1337, 'bar']
+					0: [ 3, 'bar' ]
 				});
 			});
 		}
@@ -51,14 +52,14 @@ registerSuite({
 
 		'object key'() {
 			map = new Map<{}, string>();
-			var object = Object.create(null);
+			let object = Object.create(null);
 			map.set(object, 'abc');
 			assert.strictEqual(map.get(object), 'abc');
 		},
 
 		'array key'() {
 			map = new Map<any[], string>();
-			var array = new Array();
+			let array: any[] = [];
 			map.set(array, 'abc');
 			assert.strictEqual(map.get(array), 'abc');
 		},
@@ -77,9 +78,16 @@ registerSuite({
 		},
 
 		'key exists'() {
-			map = new Map<number, string>([[1337, 'abc']]);
-			map.set(1337, 'def');
-			assert.strictEqual(map.get(1337), 'def');
+			map = new Map<number, string>([[ 3, 'abc' ]]);
+			map.set(3, 'def');
+			assert.strictEqual(map.get(3), 'def');
+		},
+
+		'size updates'() {
+			map = new Map<string, string>();
+			assert.strictEqual(map.size, 0);
+			map.set('foo', 'bar');
+			assert.strictEqual(map.size, 1);
 		}
 	},
 
@@ -97,20 +105,20 @@ registerSuite({
 		},
 
 		'key not found'() {
-			assert.isUndefined(map.get(1337));
+			assert.isUndefined(map.get(3));
 		}
 	},
 
 	'delete': {
 		before() {
 			map = new Map<number, string>([
-				[1337, 'abc']
+				[ 3, 'abc' ]
 			]);
 		},
 
 		'key found'() {
-			assert.isTrue(map.delete(1337));
-			assert.isUndefined(map.get(1337));
+			assert.isTrue(map.delete(3));
+			assert.isUndefined(map.get(3));
 		},
 
 		'key not found'() {
@@ -121,12 +129,12 @@ registerSuite({
 	has: {
 		before() {
 			map = new Map<number, string>([
-				[1337, 'abc']
+				[ 3, 'abc' ]
 			]);
 		},
 
 		'key found'() {
-			assert.isTrue(map.has(1337));
+			assert.isTrue(map.has(3));
 		},
 
 		'key not found'() {
@@ -144,41 +152,48 @@ registerSuite({
 
 		'nonempty map'() {
 			map = new Map<number, string>([
-				[1337, 'abc']
+				[ 3, 'abc' ]
 			]);
 			map.clear();
-			assert.isFalse(map.has(1337));
+			assert.isFalse(map.has(3));
 			assert.strictEqual(map.size, 0);
 		}
 	},
 
-	keys() {
-		function foo() {}
-		var object = Object.create(null);
-		var array = new Array();
-		map = new Map<any, any>([
-			[0, 0],
-			['1', 1],
-			[object, 2],
-			[array, 3],
-			[foo, 4]
-		]);
-		assert.deepEqual(map.keys(), [
-			0, '1', object, array, foo
-		]);
+	keys: {
+		'empty map'() {
+			map = new Map<void, void>();
+			assert.deepEqual(map.keys(), []);
+		},
+
+		'nonempty map'(){
+			function foo() { }
+			let object = Object.create(null);
+			let array = new Array();
+			map = new Map<any, any>([
+				[0, 0],
+				['1', 1],
+				[object, 2],
+				[array, 3],
+				[foo, 4]
+			]);
+			assert.deepEqual(map.keys(), [
+				0, '1', object, array, foo
+			]);
+		},
 	},
 
 	values() {
 		function foo() {}
-		var object = Object.create(null);
-		var array = new Array();
-		map = new Map<any, any>([
-			[0, 0],
-			[1, '1'],
-			[2, object],
-			[3, array],
-			[4, foo],
-			[5, undefined]
+		let object = Object.create(null);
+		let array = new Array();
+		map = new Map<number, any>([
+			[ 0, 0 ],
+			[ 1, '1' ],
+			[ 2, object ],
+			[ 3, array ],
+			[ 4, foo ],
+			[ 5, undefined ]
 		]);
 		assert.deepEqual(map.values(), [
 			0, '1', object, array, foo, undefined
@@ -193,14 +208,14 @@ registerSuite({
 
 		'nonempty map'() {
 			map = new Map<number, string>([
-				[1, 'a'],
-				[2, 'b'],
-				[3, 'c']
+				[ 1, 'a' ],
+				[ 2, 'b' ],
+				[ 3, 'c' ]
 			]);
 			assert.deepEqual(map.entries(), [
-				[1, 'a'],
-				[2, 'b'],
-				[3, 'c']
+				[ 1, 'a' ],
+				[ 2, 'b' ],
+				[ 3, 'c' ]
 			]);
 		}
 	},
@@ -208,16 +223,17 @@ registerSuite({
 	iteration: {
 		before() {
 			function foo() {}
-			var object = Object.create(null);
-			var array = new Array();
-			map = new Map<any, any>([
+			let object = Object.create(null);
+			let array = new Array();
+			mapArgs = [
 				[0, 0],
 				[1, '1'],
 				[2, object],
 				[3, array],
 				[4, foo],
 				[5, undefined]
-			]);
+			]
+			map = new Map<number, any>(mapArgs);
 		},
 
 		'callback arguments'() {
@@ -229,11 +245,11 @@ registerSuite({
 		},
 
 		'times executed'() {
-			var counter = 0;
+			let counter = 0;
 			map.forEach(function (key, value, mapInstance) {
 				counter++;
 			});
-			assert.strictEqual(counter, 6);
+			assert.strictEqual(counter, mapArgs.length);
 		}
 	}
 });
