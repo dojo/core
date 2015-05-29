@@ -1,29 +1,15 @@
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-function normalizeEncodingArgs(data: any, alternateCodec: any): [ string, ByteBuffer ]{
+function normalizeEncodingArgs(data: any, alternateCodec: any): [ string, number[] ] {
 	data = String(data);
 
-	return [ data, <ByteBuffer> {
-		toString: function (codec?: any): string {
-			return (codec || alternateCodec).decode(this);
-		},
-		toJSON: function (): string {
-			return JSON.stringify(Array.prototype.slice.call(this));
-		},
-		length: data.length
-	}];
+	let buffer = <number[]> [];
+
+	return [ data, buffer];
 }
 
 function validateDecodingArgs(data: any) {
-	if (data == null) {
-		return false;
-	}
-
-	if (data.length == null) {
-		throw new TypeError('Argument must have a length property');
-	}
-
-	return true;
+	return data == null ? false : true;
 }
 
 function validateUtf8EncodedCodePoint(codePoint: number): void {
@@ -54,13 +40,6 @@ function decodeUtf8EncodedCodePoint(codePoint: number, validationRange: number[]
 	return encoded;
 }
 
-export interface ByteBuffer {
-	[index: number]: number;
-	toString?: (codec?: any) => string;
-	toJSON?: () => string;
-	length: number;
-}
-
 /**
  * Ascii codec that provides facilities for encoding a string (or string coerced object)
  * into an Ascii encoded byte buffer as well as decoding an Ascii encoded byte buffer
@@ -73,8 +52,8 @@ export class Ascii {
 	 * @param data
 	 * Any object that is either a string or can be coerced into a string
 	 */
-	static encode(data: any): ByteBuffer {
-		let buffer: ByteBuffer;
+	static encode(data: any): number[] {
+		let buffer: number[];
 
 		[ data, buffer ] = normalizeEncodingArgs(data, Ascii);
 
@@ -91,7 +70,7 @@ export class Ascii {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: ByteBuffer): string {
+	static decode(data: number[]): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -119,8 +98,8 @@ export class Utf8 {
 	 * @param data
 	 * Any object that is either a string or can be coerced into a string
 	 */
-	static encode(data: any): ByteBuffer {
-		let buffer: ByteBuffer;
+	static encode(data: any): number[] {
+		let buffer: number[];
 
 		[ data, buffer ] = normalizeEncodingArgs(data, Utf8);
 
@@ -178,7 +157,7 @@ export class Utf8 {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: ByteBuffer): string {
+	static decode(data: number[]): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -247,15 +226,15 @@ export class Hex {
 	 * @param data
 	 * Any object that is either a string or can be coerced into a string
 	 */
-	static encode(data: any): ByteBuffer {
-		let buffer: ByteBuffer;
+	static encode(data: any): number[] {
+		let buffer: number[];
 
 		[ data, buffer ] = normalizeEncodingArgs(data, Hex);
 
-		for (let i = 0, length = data.length; i < length; i++) {
-			let encodedChar = parseInt(data.charCodeAt(i).toString(16), 16);
+		for (let i = 0, length = data.length; i < length; i+=2) {
+			let encodedChar = parseInt(data.substr(i, 2), 16);
 
-			buffer[i] = encodedChar;
+			buffer.push(encodedChar);
 		}
 
 		return buffer;
@@ -267,7 +246,7 @@ export class Hex {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: ByteBuffer): string {
+	static decode(data: number[]): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -275,9 +254,7 @@ export class Hex {
 		let decoded = '';
 
 		for (let i = 0, length = data.length; i < length; i++) {
-			let decodedChar = String.fromCharCode(data[i]);
-
-			decoded += decodedChar;
+			decoded += parseInt('' + data[i], 10).toString(16).toUpperCase();
 		}
 
 		return decoded;
@@ -288,7 +265,6 @@ export class Hex {
  * Base64 codec that provides facilities for encoding a string (or string coerced object)
  * into an Base64 encoded byte buffer as well as decoding an Base64 encoded byte buffer
  * into a string.
- * Adapted from http://www.nczonline.net/blog/2009/12/08/computer-science-in-javascript-base64-encoding/
  */
 export class Base64 {
 	/**
@@ -297,44 +273,33 @@ export class Base64 {
 	 * @param data
 	 * Any object that is either a string or can be coerced into a string
 	 */
-	static encode(data: any): ByteBuffer {
-		let buffer: ByteBuffer;
+	static encode(data: any): number[] {
+		let buffer: number[];
 
 		[ data, buffer ] = normalizeEncodingArgs(data, Base64);
 
-		let position = 0;
+		data = data.replace(/=+$/, '');
 
-		for (let i = 0, length = data.length; i < length; i++) {
-			let charCode = data.charCodeAt(i);
-
-			if (charCode < 0x00 || charCode > 0x00FF) {
-				throw new Error('String contains characters that are out of range');
+		for (let i = 0, length = data.length; i < length;) {
+			let encoded = BASE64_KEYSTR.indexOf(data[i]) << 18;
+			if (i <= length) {
+				encoded |= BASE64_KEYSTR.indexOf(data[i++]) << 12;
+			}
+			if (i <= length) {
+				encoded |= BASE64_KEYSTR.indexOf(data[i++]) << 6;
+			}
+			if (i <= length) {
+				encoded |= BASE64_KEYSTR.indexOf(data[i++]);
 			}
 
-			let mod3 = i % 3;
-
-			if (mod3 === 0) {
-				buffer[position++] = BASE64_KEYSTR.charCodeAt(charCode >> 0x02);
-			}
-			else if (mod3 === 1) {
-				let lastCode = data.charCodeAt(i - 1);
-				buffer[position++] = BASE64_KEYSTR.charCodeAt(((lastCode & 0x03) << 0x04) | (charCode >> 0x04));
-			}
-			else {
-				let lastCode = data.charCodeAt(i - 1);
-				buffer[position++] = BASE64_KEYSTR.charCodeAt(((lastCode & 0x0F) << 0x02) | (charCode >> 0x06));
-				buffer[position++] = BASE64_KEYSTR.charCodeAt(charCode & 0x3F);
-			}
+			buffer.push((encoded >>> 16) & 0xff);
+			buffer.push((encoded >>> 8) & 0xff);
+			buffer.push(encoded & 0xff);
 		}
 
-		if ((data.length - 1) % 3 === 0) {
-			buffer[position++] = BASE64_KEYSTR.charCodeAt((data.charCodeAt(data.length - 1) & 0x03) << 0x04);
+		while (buffer[buffer.length - 1] === 0) {
+			buffer.pop();
 		}
-		else {
-			buffer[position++] = BASE64_KEYSTR.charCodeAt((data.charCodeAt(data.length - 1) & 0x0F) << 0x02);
-		}
-
-		buffer.length = position;
 
 		return buffer;
 	}
@@ -345,33 +310,35 @@ export class Base64 {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: ByteBuffer): string {
+	static decode(data: number[]): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
 
 		let decoded = '';
+		let i = 0;
 
-		for (let i = 0, length = data.length; i < length; i++) {
-			let charCode = data[i];
+		for (let length = data.length - (data.length % 3); i < length;) {
+			let encoded = data[i++] << 16 | data[i++] << 8 | data[i++];
 
-			if (charCode < 0x00 || charCode > 0x00FF) {
-				throw new Error('Buffer out of range.');
-			}
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 18) & 0x3F);
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 12) & 0x3F);
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 6) & 0x3F);
+			decoded += BASE64_KEYSTR.charAt(encoded & 0x3F);
+		}
 
-			let charCodeIndex = BASE64_KEYSTR.indexOf(String.fromCharCode(charCode));
-			let previousCharCodeIndex = BASE64_KEYSTR.indexOf(String.fromCharCode(data[i - 1]));
-			let mod4 = i % 4;
-
-			if (mod4 === 1) {
-				decoded += String.fromCharCode(previousCharCodeIndex << 0x02 | charCodeIndex >> 0x04);
-			}
-			else if (mod4 === 2) {
-				decoded += String.fromCharCode((previousCharCodeIndex & 0x0F) << 0x04 | charCodeIndex >> 0x02);
-			}
-			else if (mod4 === 3) {
-				decoded += String.fromCharCode((previousCharCodeIndex & 0x03) << 0x06 | charCodeIndex);
-			}
+		if (data.length % 3 === 1) {
+			let encoded = data[i++] << 16;
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 18) & 0x3f);
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 12) & 0x3f);
+			decoded += '==';
+		}
+		else if (data.length % 3 === 2) {
+			let encoded = data[i++] << 16 | data[i++] << 8;
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 18) & 0x3f);
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 12) & 0x3f);
+			decoded += BASE64_KEYSTR.charAt((encoded >>> 6) & 0x3f);
+			decoded += '=';
 		}
 
 		return decoded;
