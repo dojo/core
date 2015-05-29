@@ -71,7 +71,7 @@ registerSuite({
 				assert.strictEqual(buffer[i], ASCII_BUFFER[i]);
 			}
 
-			buffer = Ascii.encode(1);
+			buffer = Ascii.encode('1');
 			assert.strictEqual(buffer.length, 1);
 			assert.strictEqual(buffer[0], 49);
 		},
@@ -101,7 +101,7 @@ registerSuite({
 				});
 			}
 
-			buffer = Utf8.encode(1);
+			buffer = Utf8.encode('1');
 			assert.strictEqual(buffer.length, 1);
 			assert.strictEqual(buffer[0], 49);
 

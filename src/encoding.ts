@@ -1,12 +1,5 @@
+type ByteBuffer = Uint8Array | Buffer | number[];
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-function normalizeEncodingArgs(data: any): [ string, number[] ] {
-	data = String(data);
-
-	let buffer = <number[]> [];
-
-	return [ data, buffer];
-}
 
 function validateDecodingArgs(data: any) {
 	return data == null ? false : true;
@@ -40,29 +33,32 @@ function decodeUtf8EncodedCodePoint(codePoint: number, validationRange: number[]
 	return encoded;
 }
 
+export interface Codec {
+	encode(data: string): number[];
+	decode(data: ByteBuffer): string;
+}
+
 /**
- * Ascii codec that provides facilities for encoding a string (or string coerced object)
+ * Ascii codec that provides facilities for encoding a string
  * into an Ascii encoded byte buffer as well as decoding an Ascii encoded byte buffer
  * into a string.
  */
-export class Ascii {
+export const Ascii: Codec = {
 	/**
-	 * Encode a string or string coerced object into an Ascii byte buffer
+	 * Encode a string into an Ascii byte buffer
 	 *
 	 * @param data
-	 * Any object that is either a string or can be coerced into a string
+	 * A text string to be encoded
 	 */
-	static encode(data: any): number[] {
-		let buffer: number[];
-
-		[ data, buffer ] = normalizeEncodingArgs(data);
+	encode(data: string): number[] {
+		let buffer = <number[]> [];
 
 		for (let i = 0, length = data.length; i < length; i++) {
 			buffer[i] = data.charCodeAt(i);
 		}
 
 		return buffer;
-	}
+	},
 
 	/**
 	 * Decode an Ascii encoded byte buffer into a string
@@ -70,7 +66,7 @@ export class Ascii {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: number[]): string {
+	decode(data: ByteBuffer): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -86,22 +82,20 @@ export class Ascii {
 }
 
 /**
- * Utf8 codec that provides facilities for encoding a string (or string coerced object)
+ * Utf8 codec that provides facilities for encoding a string
  * into an Utf8 encoded byte buffer as well as decoding an Utf8 encoded byte buffer
  * into a string.
  * Inspired by the work of: https://github.com/mathiasbynens/utf8.js
  */
-export class Utf8 {
+export const Utf8: Codec = {
 	/**
-	 * Encode a string or string coerced object into an Utf8 byte buffer
+	 * Encode a string into an Utf8 byte buffer
 	 *
 	 * @param data
-	 * Any object that is either a string or can be coerced into a string
+	 * A text string to be encoded
 	 */
-	static encode(data: any): number[] {
-		let buffer: number[];
-
-		[ data, buffer ] = normalizeEncodingArgs(data);
+	encode(data: string): number[] {
+		let buffer = <number[]> [];
 
 		let position = 0;
 
@@ -149,7 +143,7 @@ export class Utf8 {
 		buffer.length = position;
 
 		return buffer;
-	}
+	},
 
 	/**
 	 * Decode a Utf8 encoded byte buffer into a string
@@ -157,7 +151,7 @@ export class Utf8 {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: number[]): string {
+	decode(data: ByteBuffer): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -215,21 +209,19 @@ export class Utf8 {
 }
 
 /**
- * Hex codec that provides facilities for encoding a string (or string coerced object)
+ * Hex codec that provides facilities for encoding a string
  * into an Hex encoded byte buffer as well as decoding an Hex encoded byte buffer
  * into a string.
  */
-export class Hex {
+export const Hex: Codec = {
 	/**
-	 * Encode a string or string coerced object into an Hex byte buffer
+	 * Encode a string into an Hex byte buffer
 	 *
 	 * @param data
-	 * Any object that is either a string or can be coerced into a string
+	 * A Hex encoded string
 	 */
-	static encode(data: any): number[] {
-		let buffer: number[];
-
-		[ data, buffer ] = normalizeEncodingArgs(data);
+	encode(data: string): number[] {
+		let buffer = <number[]> [];
 
 		for (let i = 0, length = data.length; i < length; i+=2) {
 			let encodedChar = parseInt(data.substr(i, 2), 16);
@@ -238,7 +230,7 @@ export class Hex {
 		}
 
 		return buffer;
-	}
+	},
 
 	/**
 	 * Decode a Hex encoded byte buffer into a string
@@ -246,7 +238,7 @@ export class Hex {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: number[]): string {
+	decode(data: ByteBuffer): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
@@ -262,21 +254,19 @@ export class Hex {
 }
 
 /**
- * Base64 codec that provides facilities for encoding a string (or string coerced object)
+ * Base64 codec that provides facilities for encoding a string
  * into an Base64 encoded byte buffer as well as decoding an Base64 encoded byte buffer
  * into a string.
  */
-export class Base64 {
+export const Base64: Codec = {
 	/**
-	 * Encode a string or string coerced object into an Base64 byte buffer
+	 * Encode a string into an Base64 byte buffer
 	 *
 	 * @param data
-	 * Any object that is either a string or can be coerced into a string
+	 * A Base64 encoded String
 	 */
-	static encode(data: any): number[] {
-		let buffer: number[];
-
-		[ data, buffer ] = normalizeEncodingArgs(data);
+	encode(data: string): number[] {
+		let buffer = <number[]> [];
 
 		let length = data.length;
 		while(data[--length] === '=') { }
@@ -303,7 +293,7 @@ export class Base64 {
 		}
 
 		return buffer;
-	}
+	},
 
 	/**
 	 * Decode a Base64 encoded byte buffer into a string
@@ -311,7 +301,7 @@ export class Base64 {
 	 * @param data
 	 * The byte buffer to be decoded
 	 */
-	static decode(data: number[]): string {
+	decode(data: ByteBuffer): string {
 		if (!validateDecodingArgs(data)) {
 			return '';
 		}
