@@ -76,7 +76,6 @@ registerSuite({
 
 		'.decode()'() {
 			let decoded = ascii.decode(ASCII_BUFFER);
-			assert.lengthOf(decoded, ENCODED_STRING.length);
 			assert.strictEqual(decoded, ENCODED_STRING);
 
 			assert.strictEqual(ENCODED_STRING, ascii.decode(ascii.encode(ENCODED_STRING)));
@@ -128,7 +127,6 @@ registerSuite({
 
 		'.decode()'() {
 			let decoded = utf8.decode(UTF8_BUFFER);
-			assert.lengthOf(decoded, ENCODED_STRING.length);
 			assert.strictEqual(decoded, ENCODED_STRING);
 
 			assert.strictEqual(ENCODED_STRING, utf8.decode(utf8.encode(ENCODED_STRING)));
@@ -186,7 +184,6 @@ registerSuite({
 
 		'.decode()'() {
 			let decoded = base64.decode(BASE64_BUFFER);
-			assert.lengthOf(decoded, BASE64_STRING.length);
 			assert.strictEqual(decoded, BASE64_STRING);
 
 			assert.strictEqual(BASE64_STRING, base64.decode(base64.encode(BASE64_STRING)));
