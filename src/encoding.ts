@@ -1,9 +1,7 @@
+import {HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX, LOW_SURROGATE_MIN, LOW_SURROGATE_MAX} from './string';
+
 type ByteBuffer = Uint8Array | Buffer | number[];
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-const HIGH_SURROGATE_MIN = 0xD800;
-const HIGH_SURROGATE_MAX = 0xDBFF;
-const LOW_SURROGATE_MIN = 0xDC00;
-const LOW_SURROGATE_MAX = 0xDFFF;
 
 function validateDecodingArgs(data: any) {
 	return data == null ? false : true;

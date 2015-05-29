@@ -8,6 +8,10 @@ const escapeXmlMap: { [key: string]: string } = {
 	'"': '&quot;',
 	'\'': '&#39;'
 };
+export const HIGH_SURROGATE_MIN = 0xD800;
+export const HIGH_SURROGATE_MAX = 0xDBFF;
+export const LOW_SURROGATE_MIN = 0xDC00;
+export const LOW_SURROGATE_MAX = 0xDFFF;
 
 /**
  * Performs validation and padding operations used by padStart and padEnd.
@@ -67,11 +71,11 @@ export function codePointAt(text: string, position: number = 0) {
 
 	// Get the first code unit
 	const first = text.charCodeAt(position);
-	if (first >= 0xD800 && first <= 0xDBFF && length > position + 1) {
+	if (first >= HIGH_SURROGATE_MIN && first <= HIGH_SURROGATE_MAX && length > position + 1) {
 		// Start of a surrogate pair (high surrogate and there is a next code unit); check for low surrogate
 		// https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
 		const second = text.charCodeAt(position + 1);
-		if (second >= 0xDC00 && second <= 0xDFFF) {
+		if (second >= LOW_SURROGATE_MIN && second <= LOW_SURROGATE_MAX) {
 			return (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
 		}
 	}
