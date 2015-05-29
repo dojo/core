@@ -11,7 +11,7 @@ function validateUtf8EncodedCodePoint(codePoint: number): void {
 	}
 }
 
-function decodeUtf8EncodedCodePoint(codePoint: number, validationRange: number[] = [0, Infinity], checkSurrogate?: boolean): string {
+function decodeUtf8EncodedCodePoint(codePoint: number, validationRange: number[] = [ 0, Infinity ], checkSurrogate?: boolean): string {
 	if (codePoint < validationRange[0] || codePoint > validationRange[1]) {
 		throw Error('Invalid continuation byte');
 	}
@@ -43,7 +43,7 @@ export interface Codec {
  * into an Ascii encoded byte buffer as well as decoding an Ascii encoded byte buffer
  * into a string.
  */
-export const Ascii: Codec = {
+export const ascii: Codec = {
 	/**
 	 * Encode a string into an Ascii byte buffer
 	 *
@@ -87,7 +87,7 @@ export const Ascii: Codec = {
  * into a string.
  * Inspired by the work of: https://github.com/mathiasbynens/utf8.js
  */
-export const Utf8: Codec = {
+export const utf8: Codec = {
 	/**
 	 * Encode a string into an Utf8 byte buffer
 	 *
@@ -213,7 +213,7 @@ export const Utf8: Codec = {
  * into an Hex encoded byte buffer as well as decoding an Hex encoded byte buffer
  * into a string.
  */
-export const Hex: Codec = {
+export const hex: Codec = {
 	/**
 	 * Encode a string into an Hex byte buffer
 	 *
@@ -258,7 +258,7 @@ export const Hex: Codec = {
  * into an Base64 encoded byte buffer as well as decoding an Base64 encoded byte buffer
  * into a string.
  */
-export const Base64: Codec = {
+export const base64: Codec = {
 	/**
 	 * Encode a string into an Base64 byte buffer
 	 *
