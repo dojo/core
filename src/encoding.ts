@@ -107,12 +107,10 @@ export const utf8: Codec = {
 			 * http://en.wikipedia.org/wiki/Universal_Character_Set_characters
 			 */
 			if (encodedChar > HIGH_SURROGATE_MIN && encodedChar < HIGH_SURROGATE_MAX) {
-				let lowSurrogate = data.charCodeAt(++i);
+				let lowSurrogate = data.charCodeAt(i + 1);
 				if (lowSurrogate >= LOW_SURROGATE_MIN && lowSurrogate < LOW_SURROGATE_MAX) {
 					encodedChar = 0x010000 + (encodedChar - 0xD800) * 0x0400 + (lowSurrogate - 0xDC00);
-				}
-				else {
-					i--;
+					i++;
 				}
 			}
 
