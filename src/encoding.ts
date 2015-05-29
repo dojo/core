@@ -1,6 +1,6 @@
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-function normalizeEncodingArgs(data: any, alternateCodec: any): [ string, number[] ] {
+function normalizeEncodingArgs(data: any): [ string, number[] ] {
 	data = String(data);
 
 	let buffer = <number[]> [];
@@ -55,7 +55,7 @@ export class Ascii {
 	static encode(data: any): number[] {
 		let buffer: number[];
 
-		[ data, buffer ] = normalizeEncodingArgs(data, Ascii);
+		[ data, buffer ] = normalizeEncodingArgs(data);
 
 		for (let i = 0, length = data.length; i < length; i++) {
 			buffer[i] = data.charCodeAt(i);
@@ -101,7 +101,7 @@ export class Utf8 {
 	static encode(data: any): number[] {
 		let buffer: number[];
 
-		[ data, buffer ] = normalizeEncodingArgs(data, Utf8);
+		[ data, buffer ] = normalizeEncodingArgs(data);
 
 		let position = 0;
 
@@ -229,7 +229,7 @@ export class Hex {
 	static encode(data: any): number[] {
 		let buffer: number[];
 
-		[ data, buffer ] = normalizeEncodingArgs(data, Hex);
+		[ data, buffer ] = normalizeEncodingArgs(data);
 
 		for (let i = 0, length = data.length; i < length; i+=2) {
 			let encodedChar = parseInt(data.substr(i, 2), 16);
@@ -276,12 +276,13 @@ export class Base64 {
 	static encode(data: any): number[] {
 		let buffer: number[];
 
-		[ data, buffer ] = normalizeEncodingArgs(data, Base64);
+		[ data, buffer ] = normalizeEncodingArgs(data);
 
-		data = data.replace(/=+$/, '');
+		let length = data.length;
+		while(data[--length] === '=') { }
 
-		for (let i = 0, length = data.length; i < length;) {
-			let encoded = BASE64_KEYSTR.indexOf(data[i]) << 18;
+		for (let i = 0; i < length;) {
+			let encoded = BASE64_KEYSTR.indexOf(data[i++]) << 18;
 			if (i <= length) {
 				encoded |= BASE64_KEYSTR.indexOf(data[i++]) << 12;
 			}

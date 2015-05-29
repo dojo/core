@@ -195,12 +195,12 @@ registerSuite({
 
 	'Base64': {
 		'.encode()'() {
-			// let buffer = Base64.encode('ZmRhcw==');
-			// assert.strictEqual(buffer.length, BASE64_BUFFER.length);
+			let buffer = Base64.encode('ZmRhcw==');
+			assert.strictEqual(buffer.length, [102, 100, 97, 115].length);
 			//
-			// for (let i = 0, length = buffer.length; i < length; i++) {
-			// 	assert.strictEqual(buffer[i], BASE64_BUFFER[i]);
-			// }
+			for (let i = 0, length = buffer.length; i < length; i++) {
+				assert.strictEqual(buffer[i], [102, 100, 97, 115][i]);
+			}
 			//
 			// assert.throws(function () {
 			// 	Base64.encode(ENCODED_STRING);
@@ -213,9 +213,9 @@ registerSuite({
 		},
 
 		'.decode()'() {
-			// let decoded = Base64.decode(BASE64_BUFFER);
-			// assert.strictEqual(decoded.length, 'Hello There'.length);
-			// assert.strictEqual(decoded, 'Hello There');
+			let decoded = Base64.decode([102, 100, 97, 115]);
+			assert.strictEqual(decoded.length, 'ZmRhcw=='.length);
+			assert.strictEqual(decoded, 'ZmRhcw==');
 			//
 			// decoded = Base64.decode(BASE64_BUFFER.concat([120, 69]));
 			// assert.strictEqual(decoded.length, 'Hello There1'.length);
