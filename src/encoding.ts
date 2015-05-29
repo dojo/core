@@ -101,8 +101,6 @@ export const utf8: Codec = {
 	encode(data: string = ''): number[] {
 		let buffer: number[] = [];
 
-		let position = 0;
-
 		for (let i = 0, length = data.length; i < length; i++) {
 			let encodedChar = data.charCodeAt(i);
 
@@ -121,26 +119,26 @@ export const utf8: Codec = {
 			}
 
 			if (encodedChar < 0x80) {
-				buffer[position++] = encodedChar;
+				buffer.push(encodedChar);
 			}
 			else {
 				if (encodedChar < 0x800) {
-					buffer[position++] = ((encodedChar >> 0x06) & 0x1F) | 0xC0;
+					buffer.push(((encodedChar >> 0x06) & 0x1F) | 0xC0);
 				}
 				else if (encodedChar < 0x010000) {
 					if (encodedChar >= 0xD800 && encodedChar <= 0xDFFF) {
 						throw Error('Surrogate is not a scalar value');
 					}
 
-					buffer[position++] = ((encodedChar >> 0x0C) & 0x0F) | 0xE0;
-					buffer[position++] = ((encodedChar >> 0x06) & 0x3F) | 0x80;
+					buffer.push(((encodedChar >> 0x0C) & 0x0F) | 0xE0);
+					buffer.push(((encodedChar >> 0x06) & 0x3F) | 0x80);
 				}
 				else if (encodedChar < 0x200000) {
-					buffer[position++] = ((encodedChar >> 0x12) & 0x07) | 0xF0;
-					buffer[position++] = ((encodedChar >> 0x0C) & 0x3F) | 0x80;
-					buffer[position++] = ((encodedChar >> 0x06) & 0x3F) | 0x80;
+					buffer.push(((encodedChar >> 0x12) & 0x07) | 0xF0);
+					buffer.push(((encodedChar >> 0x0C) & 0x3F) | 0x80);
+					buffer.push(((encodedChar >> 0x06) & 0x3F) | 0x80);
 				}
-				buffer[position++] = (encodedChar & 0x3F) | 0x80;
+				buffer.push((encodedChar & 0x3F) | 0x80);
 			}
 		}
 
