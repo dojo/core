@@ -51,7 +51,7 @@ export const Ascii: Codec = {
 	 * A text string to be encoded
 	 */
 	encode(data: string): number[] {
-		let buffer = <number[]> [];
+		let buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i++) {
 			buffer[i] = data.charCodeAt(i);
@@ -95,7 +95,7 @@ export const Utf8: Codec = {
 	 * A text string to be encoded
 	 */
 	encode(data: string): number[] {
-		let buffer = <number[]> [];
+		let buffer: number[] = [];
 
 		let position = 0;
 
@@ -221,7 +221,7 @@ export const Hex: Codec = {
 	 * A Hex encoded string
 	 */
 	encode(data: string): number[] {
-		let buffer = <number[]> [];
+		let buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i+=2) {
 			let encodedChar = parseInt(data.substr(i, 2), 16);
@@ -266,7 +266,7 @@ export const Base64: Codec = {
 	 * A Base64 encoded String
 	 */
 	encode(data: string): number[] {
-		let buffer = <number[]> [];
+		let buffer: number[] = [];
 
 		let length = data.length;
 		while(data[--length] === '=') { }
