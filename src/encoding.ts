@@ -54,7 +54,7 @@ export const ascii: Codec = {
 	 * @param data
 	 * A text string to be encoded
 	 */
-	encode(data: string): number[] {
+	encode(data: string = ''): number[] {
 		let buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i++) {
@@ -98,7 +98,7 @@ export const utf8: Codec = {
 	 * @param data
 	 * A text string to be encoded
 	 */
-	encode(data: string): number[] {
+	encode(data: string = ''): number[] {
 		let buffer: number[] = [];
 
 		let position = 0;
@@ -143,8 +143,6 @@ export const utf8: Codec = {
 				buffer[position++] = (encodedChar & 0x3F) | 0x80;
 			}
 		}
-
-		buffer.length = position;
 
 		return buffer;
 	},
@@ -224,10 +222,10 @@ export const hex: Codec = {
 	 * @param data
 	 * A Hex encoded string
 	 */
-	encode(data: string): number[] {
+	encode(data: string = ''): number[] {
 		let buffer: number[] = [];
 
-		for (let i = 0, length = data.length; i < length; i+=2) {
+		for (let i = 0, length = data.length; i < length; i += 2) {
 			let encodedChar = parseInt(data.substr(i, 2), 16);
 
 			buffer.push(encodedChar);
@@ -269,11 +267,11 @@ export const base64: Codec = {
 	 * @param data
 	 * A Base64 encoded String
 	 */
-	encode(data: string): number[] {
+	encode(data: string = ''): number[] {
 		let buffer: number[] = [];
 
 		let length = data.length;
-		while(data[--length] === '=') { }
+		while (data[--length] === '=') { }
 
 		for (let i = 0; i < length;) {
 			let encoded = BASE64_KEYSTR.indexOf(data[i++]) << 18;
