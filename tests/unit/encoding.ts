@@ -67,8 +67,6 @@ registerSuite({
 	'ascii': {
 		'.encode()'() {
 			let buffer = ascii.encode(ENCODED_STRING);
-			assert.lengthOf(buffer, ENCODED_STRING.length);
-
 			assert.deepEqual(buffer, ASCII_BUFFER);
 
 			buffer = ascii.encode('1');
@@ -90,7 +88,6 @@ registerSuite({
 	'utf8': {
 		'.encode()'() {
 			let buffer = utf8.encode(ENCODED_STRING);
-			assert.lengthOf(buffer, 26);
 			assert.deepEqual(buffer, UTF8_BUFFER);
 
 			// test surrogates
@@ -168,7 +165,6 @@ registerSuite({
 	'hex': {
 		'.encode()'() {
 			let buffer = hex.encode(HEX_STRING);
-			assert.lengthOf(buffer, 2);
 			assert.deepEqual(buffer, HEX_BUFFER);
 		},
 
@@ -185,7 +181,6 @@ registerSuite({
 	'base64': {
 		'.encode()'() {
 			let buffer = base64.encode(BASE64_STRING);
-			assert.lengthOf(buffer, BASE64_BUFFER.length);
 			assert.deepEqual(buffer, BASE64_BUFFER);
 		},
 

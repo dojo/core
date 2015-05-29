@@ -1,5 +1,9 @@
 type ByteBuffer = Uint8Array | Buffer | number[];
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const HIGH_SURROGATE_MIN = 0xD800;
+const HIGH_SURROGATE_MAX = 0xDBFF;
+const LOW_SURROGATE_MIN = 0xDC00;
+const LOW_SURROGATE_MAX = 0xDFFF;
 
 function validateDecodingArgs(data: any) {
 	return data == null ? false : true;
@@ -106,9 +110,9 @@ export const utf8: Codec = {
 			 * Surrogates
 			 * http://en.wikipedia.org/wiki/Universal_Character_Set_characters
 			 */
-			if (encodedChar > 0xD800 && encodedChar < 0xDBFF) {
+			if (encodedChar > HIGH_SURROGATE_MIN && encodedChar < HIGH_SURROGATE_MAX) {
 				let lowSurrogate = data.charCodeAt(++i);
-				if (lowSurrogate >= 0xDC00 && lowSurrogate < 0xDFFF) {
+				if (lowSurrogate >= LOW_SURROGATE_MIN && lowSurrogate < LOW_SURROGATE_MAX) {
 					encodedChar = 0x010000 + (encodedChar - 0xD800) * 0x0400 + (lowSurrogate - 0xDC00);
 				}
 				else {
