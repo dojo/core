@@ -72,6 +72,8 @@ registerSuite({
 			buffer = ascii.encode('1');
 			assert.lengthOf(buffer, 1);
 			assert.strictEqual(buffer[0], 49);
+
+			assert.deepEqual([], ascii.encode(undefined));
 		},
 
 		'.decode()'() {
@@ -99,6 +101,8 @@ registerSuite({
 			buffer = utf8.encode('1');
 			assert.lengthOf(buffer, 1);
 			assert.strictEqual(buffer[0], 49);
+
+			assert.deepEqual([], utf8.encode(undefined));
 
 			assert.throws(function () {
 				utf8.encode('𐌆');
@@ -164,6 +168,8 @@ registerSuite({
 		'.encode()'() {
 			let buffer = hex.encode(HEX_STRING);
 			assert.deepEqual(buffer, HEX_BUFFER);
+
+			assert.deepEqual([], hex.encode(undefined));
 		},
 
 		'.decode()'() {
@@ -180,11 +186,17 @@ registerSuite({
 		'.encode()'() {
 			let buffer = base64.encode(BASE64_STRING);
 			assert.deepEqual(buffer, BASE64_BUFFER);
+
+			assert.deepEqual([], base64.encode(undefined));
 		},
 
 		'.decode()'() {
 			let decoded = base64.decode(BASE64_BUFFER);
 			assert.strictEqual(decoded, BASE64_STRING);
+
+			assert.strictEqual(base64.decode(undefined), '');
+
+			assert.strictEqual(base64.decode([ 102, 100, 97, 115, 0 ]), 'ZmRhcwA=');
 
 			assert.strictEqual(BASE64_STRING, base64.decode(base64.encode(BASE64_STRING)));
 		}
