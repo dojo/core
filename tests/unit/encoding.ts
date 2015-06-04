@@ -1,6 +1,7 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import {ascii, utf8, hex, base64} from 'src/encoding';
+import has from 'src/has';
 
 const ENCODED_STRING = 'the catｷ and ｦ the hat';
 const HEX_STRING = 'CBDE';
@@ -74,6 +75,7 @@ registerSuite({
 			assert.strictEqual(buffer[0], 49);
 
 			assert.deepEqual([], ascii.encode(undefined));
+			assert.deepEqual([], ascii.encode(null));
 		},
 
 		'.decode()'() {
@@ -83,6 +85,16 @@ registerSuite({
 			assert.strictEqual(ENCODED_STRING, ascii.decode(ascii.encode(ENCODED_STRING)));
 
 			assert.strictEqual(ascii.decode(undefined), '');
+			assert.strictEqual(ascii.decode(null), '');
+
+			if (has('host-node')) {
+				let buffer = new Buffer('The cat and the hat');
+				assert.strictEqual(ascii.decode(buffer), 'The cat and the hat');
+			}
+			else if (has('host-browser')) {
+				let buffer = new Uint16Array(ASCII_BUFFER);
+				assert.strictEqual(ascii.decode(buffer), ENCODED_STRING);
+			}
 		}
 	},
 
@@ -103,10 +115,7 @@ registerSuite({
 			assert.strictEqual(buffer[0], 49);
 
 			assert.deepEqual([], utf8.encode(undefined));
-
-			assert.throws(function () {
-				utf8.encode('𐌆');
-			});
+			assert.deepEqual([], utf8.encode(null));
 
 			buffer = utf8.encode('\u0000');
 			let bufferArray = [0];
@@ -149,6 +158,7 @@ registerSuite({
 			assert.strictEqual(utf8.decode([ 0xF0, 0x9D, 0x8C, 0x86 ]), '𐌆');
 
 			assert.strictEqual(utf8.decode(undefined), '');
+			assert.strictEqual(utf8.decode(null), '');
 
 			assert.throws(function () {
 				utf8.decode([ 0xFFFFFF ]);
@@ -161,6 +171,16 @@ registerSuite({
 			assert.throws(function () {
 				utf8.decode([ 0x1FFFF ]);
 			});
+
+			if (has('host-node')) {
+				let buffer = new Buffer('The cat and the hat');
+				assert.strictEqual(utf8.decode(buffer), 'The cat and the hat');
+
+			}
+			else if (has('host-browser')) {
+				let buffer = new Uint16Array(UTF8_BUFFER);
+				assert.strictEqual(utf8.decode(buffer), ENCODED_STRING);
+			}
 		}
 	},
 
@@ -170,6 +190,7 @@ registerSuite({
 			assert.deepEqual(buffer, HEX_BUFFER);
 
 			assert.deepEqual([], hex.encode(undefined));
+			assert.deepEqual([], hex.encode(null));
 		},
 
 		'.decode()'() {
@@ -179,6 +200,16 @@ registerSuite({
 
 			assert.strictEqual(HEX_STRING, hex.decode(hex.encode(HEX_STRING)));
 			assert.strictEqual(hex.decode(undefined), '');
+			assert.strictEqual(hex.decode(null), '');
+
+			if (has('host-node')) {
+				let buffer = new Buffer(HEX_BUFFER);
+				assert.strictEqual(hex.decode(buffer), HEX_STRING);
+			}
+			else if (has('host-browser')) {
+				let buffer = new Uint16Array(HEX_BUFFER);
+				assert.strictEqual(hex.decode(buffer), HEX_STRING);
+			}
 		}
 	},
 
@@ -188,6 +219,7 @@ registerSuite({
 			assert.deepEqual(buffer, BASE64_BUFFER);
 
 			assert.deepEqual([], base64.encode(undefined));
+			assert.deepEqual([], base64.encode(null));
 		},
 
 		'.decode()'() {
@@ -195,10 +227,20 @@ registerSuite({
 			assert.strictEqual(decoded, BASE64_STRING);
 
 			assert.strictEqual(base64.decode(undefined), '');
+			assert.strictEqual(base64.decode(null), '');
 
 			assert.strictEqual(base64.decode([ 102, 100, 97, 115, 0 ]), 'ZmRhcwA=');
 
 			assert.strictEqual(BASE64_STRING, base64.decode(base64.encode(BASE64_STRING)));
+
+			if (has('host-node')) {
+				let buffer = new Buffer(BASE64_BUFFER);
+				assert.strictEqual(base64.decode(buffer), BASE64_STRING);
+			}
+			else if (has('host-browser')) {
+				let buffer = new Uint16Array(BASE64_BUFFER);
+				assert.strictEqual(base64.decode(buffer), BASE64_STRING);
+			}
 		}
 	}
 });

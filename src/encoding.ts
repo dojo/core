@@ -3,7 +3,7 @@ import { HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX, LOW_SURROGATE_MIN, LOW_SURROGAT
 type ByteBuffer = Uint8Array | Buffer | number[];
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-function validateDecodingArgs(data: any) {
+function validateArguments(data: any) {
 	return data == null ? false : true;
 }
 
@@ -52,8 +52,12 @@ export const ascii: Codec = {
 	 * @param data
 	 * A text string to be encoded
 	 */
-	encode(data: string = ''): number[] {
-		let buffer: number[] = [];
+	encode(data: string): number[] {
+		if (!validateArguments(data)) {
+			data = '';
+		}
+
+		const buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i++) {
 			buffer[i] = data.charCodeAt(i);
@@ -69,7 +73,7 @@ export const ascii: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateDecodingArgs(data)) {
+		if (!validateArguments(data)) {
 			return '';
 		}
 
@@ -96,8 +100,12 @@ export const utf8: Codec = {
 	 * @param data
 	 * A text string to be encoded
 	 */
-	encode(data: string = ''): number[] {
-		let buffer: number[] = [];
+	encode(data: string): number[] {
+		if (!validateArguments(data)) {
+			data = '';
+		}
+
+		const buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i++) {
 			let encodedChar = data.charCodeAt(i);
@@ -106,9 +114,9 @@ export const utf8: Codec = {
 			 * Surrogates
 			 * http://en.wikipedia.org/wiki/Universal_Character_Set_characters
 			 */
-			if (encodedChar > HIGH_SURROGATE_MIN && encodedChar < HIGH_SURROGATE_MAX) {
+			if (encodedChar >= HIGH_SURROGATE_MIN && encodedChar <= HIGH_SURROGATE_MAX) {
 				let lowSurrogate = data.charCodeAt(i + 1);
-				if (lowSurrogate >= LOW_SURROGATE_MIN && lowSurrogate < LOW_SURROGATE_MAX) {
+				if (lowSurrogate >= LOW_SURROGATE_MIN && lowSurrogate <= LOW_SURROGATE_MAX) {
 					encodedChar = 0x010000 + (encodedChar - 0xD800) * 0x0400 + (lowSurrogate - 0xDC00);
 					i++;
 				}
@@ -148,7 +156,7 @@ export const utf8: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateDecodingArgs(data)) {
+		if (!validateArguments(data)) {
 			return '';
 		}
 
@@ -216,8 +224,12 @@ export const hex: Codec = {
 	 * @param data
 	 * A Hex encoded string
 	 */
-	encode(data: string = ''): number[] {
-		let buffer: number[] = [];
+	encode(data: string): number[] {
+		if (!validateArguments(data)) {
+			data = '';
+		}
+		
+		const buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i += 2) {
 			let encodedChar = parseInt(data.substr(i, 2), 16);
@@ -235,14 +247,14 @@ export const hex: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateDecodingArgs(data)) {
+		if (!validateArguments(data)) {
 			return '';
 		}
 
 		let decoded = '';
 
 		for (let i = 0, length = data.length; i < length; i++) {
-			decoded += parseInt('' + data[i], 10).toString(16).toUpperCase();
+			decoded += data[i].toString(16).toUpperCase();
 		}
 
 		return decoded;
@@ -261,8 +273,12 @@ export const base64: Codec = {
 	 * @param data
 	 * A Base64 encoded String
 	 */
-	encode(data: string = ''): number[] {
-		let buffer: number[] = [];
+	encode(data: string): number[] {
+		if (!validateArguments(data)) {
+			data = '';
+		}
+
+		const buffer: number[] = [];
 
 		let length = data.length;
 		while (data[--length] === '=') { }
@@ -298,7 +314,7 @@ export const base64: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateDecodingArgs(data)) {
+		if (!validateArguments(data)) {
 			return '';
 		}
 
