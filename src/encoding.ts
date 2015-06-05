@@ -54,7 +54,7 @@ export const ascii: Codec = {
 	 */
 	encode(data: string): number[] {
 		if (!validateArguments(data)) {
-			data = '';
+			return [];
 		}
 
 		const buffer: number[] = [];
@@ -102,7 +102,7 @@ export const utf8: Codec = {
 	 */
 	encode(data: string): number[] {
 		if (!validateArguments(data)) {
-			data = '';
+			return [];
 		}
 
 		const buffer: number[] = [];
@@ -226,9 +226,9 @@ export const hex: Codec = {
 	 */
 	encode(data: string): number[] {
 		if (!validateArguments(data)) {
-			data = '';
+			return [];
 		}
-		
+
 		const buffer: number[] = [];
 
 		for (let i = 0, length = data.length; i < length; i += 2) {
@@ -275,7 +275,7 @@ export const base64: Codec = {
 	 */
 	encode(data: string): number[] {
 		if (!validateArguments(data)) {
-			data = '';
+			return [];
 		}
 
 		const buffer: number[] = [];

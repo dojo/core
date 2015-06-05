@@ -55,6 +55,8 @@ add('host-node', function () {
 		return process.versions.node;
 	}
 });
+add('buffer', 'Buffer' in global);
+add('uint16Array', 'Uint16Array' in global);
 add('float32array', 'Float32Array' in global);
 add('setimmediate', typeof global.setImmediate !== 'undefined');
 add('dom-mutationobserver', function(): boolean {

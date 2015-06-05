@@ -87,11 +87,11 @@ registerSuite({
 			assert.strictEqual(ascii.decode(undefined), '');
 			assert.strictEqual(ascii.decode(null), '');
 
-			if (has('host-node')) {
+			if (has('buffer')) {
 				let buffer = new Buffer('The cat and the hat');
 				assert.strictEqual(ascii.decode(buffer), 'The cat and the hat');
 			}
-			else if (has('host-browser')) {
+			else if (has('uint16Array')) {
 				let buffer = new Uint16Array(ASCII_BUFFER);
 				assert.strictEqual(ascii.decode(buffer), ENCODED_STRING);
 			}
@@ -172,12 +172,12 @@ registerSuite({
 				utf8.decode([ 0x1FFFF ]);
 			});
 
-			if (has('host-node')) {
+			if (has('buffer')) {
 				let buffer = new Buffer('The cat and the hat');
 				assert.strictEqual(utf8.decode(buffer), 'The cat and the hat');
 
 			}
-			else if (has('host-browser')) {
+			else if (has('uint16Array')) {
 				let buffer = new Uint16Array(UTF8_BUFFER);
 				assert.strictEqual(utf8.decode(buffer), ENCODED_STRING);
 			}
@@ -202,11 +202,11 @@ registerSuite({
 			assert.strictEqual(hex.decode(undefined), '');
 			assert.strictEqual(hex.decode(null), '');
 
-			if (has('host-node')) {
+			if (has('buffer')) {
 				let buffer = new Buffer(HEX_BUFFER);
 				assert.strictEqual(hex.decode(buffer), HEX_STRING);
 			}
-			else if (has('host-browser')) {
+			else if (has('uint16Array')) {
 				let buffer = new Uint16Array(HEX_BUFFER);
 				assert.strictEqual(hex.decode(buffer), HEX_STRING);
 			}
@@ -233,11 +233,11 @@ registerSuite({
 
 			assert.strictEqual(BASE64_STRING, base64.decode(base64.encode(BASE64_STRING)));
 
-			if (has('host-node')) {
+			if (has('buffer')) {
 				let buffer = new Buffer(BASE64_BUFFER);
 				assert.strictEqual(base64.decode(buffer), BASE64_STRING);
 			}
-			else if (has('host-browser')) {
+			else if (has('uint16Array')) {
 				let buffer = new Uint16Array(BASE64_BUFFER);
 				assert.strictEqual(base64.decode(buffer), BASE64_STRING);
 			}
