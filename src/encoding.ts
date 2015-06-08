@@ -3,10 +3,6 @@ import { HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX, LOW_SURROGATE_MIN, LOW_SURROGAT
 type ByteBuffer = Uint8Array | Buffer | number[];
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
-function validateArguments(data: any) {
-	return data == null ? false : true;
-}
-
 function validateUtf8EncodedCodePoint(codePoint: number): void {
 	if ((codePoint & 0xC0) !== 0x80) {
 		throw Error('Invalid continuation byte');
@@ -53,7 +49,7 @@ export const ascii: Codec = {
 	 * A text string to be encoded
 	 */
 	encode(data: string): number[] {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return [];
 		}
 
@@ -73,7 +69,7 @@ export const ascii: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return '';
 		}
 
@@ -101,7 +97,7 @@ export const utf8: Codec = {
 	 * A text string to be encoded
 	 */
 	encode(data: string): number[] {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return [];
 		}
 
@@ -156,7 +152,7 @@ export const utf8: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return '';
 		}
 
@@ -225,7 +221,7 @@ export const hex: Codec = {
 	 * A Hex encoded string
 	 */
 	encode(data: string): number[] {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return [];
 		}
 
@@ -247,7 +243,7 @@ export const hex: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return '';
 		}
 
@@ -274,7 +270,7 @@ export const base64: Codec = {
 	 * A Base64 encoded String
 	 */
 	encode(data: string): number[] {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return [];
 		}
 
@@ -314,7 +310,7 @@ export const base64: Codec = {
 	 * The byte buffer to be decoded
 	 */
 	decode(data: ByteBuffer): string {
-		if (!validateArguments(data)) {
+		if (data == null) {
 			return '';
 		}
 
