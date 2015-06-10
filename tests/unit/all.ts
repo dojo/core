@@ -23,3 +23,6 @@ import './string';
 import './UrlSearchParams';
 import './WeakMap';
 import './DateObject';
+import './async/iteration';
+import './async/timing';
+import './Map';
