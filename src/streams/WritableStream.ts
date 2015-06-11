@@ -39,13 +39,13 @@ export interface Sink<T> {
 	 *
 	 * @param reason The reason the stream is closing.
 	 */
-	abort?: (reason?: any) => Promise<void>;
+	abort?(reason?: any): Promise<void>;
 
 	/**
 	 * Indicates the stream is closing.  The sink should do any necessary cleanup and release resources. The stream
 	 * will not call this method until is has successfully written all queued chunks.
 	 */
-	close?: () => Promise<void>;
+	close?(): Promise<void>;
 
 	/**
 	 * Requests the sink to prepare for receiving chunks.
@@ -54,7 +54,7 @@ export interface Sink<T> {
 	 * @returns A promise that resolves when the sink's start operation has finished.  If the promise rejects,
 	 * 		the stream will be errored.
 	 */
-	start?: (error: (error: Error) => void) => Promise<void>;
+	start?(error: (error: Error) => void): Promise<void>;
 
 	/**
 	 * Requests the sink write a chunk.
@@ -63,7 +63,7 @@ export interface Sink<T> {
 	 * @returns A promise that resolves when the sink's write operation has finished.  If the promise rejects,
 	 * 		the stream will be errored.
 	 */
-	write?: (chunk: T) => Promise<void>;
+	write?(chunk: T): Promise<void>;
 }
 
 /**
@@ -279,7 +279,8 @@ export default class WritableStream<T> {
 			// 4.2.4.4-2
 			return Promise.resolve();
 		}
-		else if (this.state === State.Errored) {
+
+		if (this.state === State.Errored) {
 			// 4.2.4.4-3
 			return Promise.reject(this._storedError);
 		}
@@ -310,10 +311,12 @@ export default class WritableStream<T> {
 		if (this.state === State.Closed) {
 			return Promise.reject(new TypeError('Stream is already closed'));
 		}
-		else if (this.state === State.Closing) {
+
+		if (this.state === State.Closing) {
 			return Promise.reject(new TypeError('Stream is already closing'));
 		}
-		else if (this.state === State.Errored) {
+
+		if (this.state === State.Errored) {
 			// 4.2.4.5-3
 			return Promise.reject(this._storedError);
 		}
@@ -349,10 +352,12 @@ export default class WritableStream<T> {
 		if (this.state === State.Closed) {
 			return Promise.reject(new TypeError('Stream is closed'));
 		}
-		else if (this.state === State.Closing) {
+
+		if (this.state === State.Closing) {
 			return Promise.reject(new TypeError('Stream is closing'));
 		}
-		else if (this.state === State.Errored) {
+
+		if (this.state === State.Errored) {
 			// 4.2.4.6-3
 			return Promise.reject(this._storedError);
 		}
