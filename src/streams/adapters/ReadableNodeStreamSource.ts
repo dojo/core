@@ -11,10 +11,19 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 	protected _onClose: () => void;
 	protected _onError: (error: Error) => void;
 	protected _nodeStream: Readable;
+	protected _shouldResume: boolean;
 
 	constructor(nodeStream: Readable) {;
 		this._isClosed = false;
 		this._nodeStream = nodeStream;
+
+		// TODO: remove <any> when typedef is fixed to include 'isPaused'
+		this._shouldResume = !(<any> this._nodeStream).isPaused();
+
+		if (this._shouldResume) {
+			// put stream in paused mode so it behaves as a pull source, rather than a push source
+			this._nodeStream.pause();
+		}
 	}
 
 	// Perform internal close logic
@@ -22,6 +31,10 @@ export default class ReadableNodeStreamSource implements Source<NodeSourceType> 
 		this._isClosed = true;
 		this._removeListeners();
 		this._nodeStream.unpipe();
+
+		if (this._shouldResume) {
+			this._nodeStream.resume();
+		}
 	}
 
 	// Handle external request to close
