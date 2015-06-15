@@ -36,6 +36,7 @@
 		"./src/has.ts",
 		"./src/interfaces.d.ts",
 		"./src/lang.ts",
+		"./src/load.ts",
 		"./src/math.ts",
 		"./src/number.ts",
 		"./src/object.ts",
