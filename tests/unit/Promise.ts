@@ -75,12 +75,12 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 				let dfd = this.async();
 				let iterable: any[] = [];
 
-				iterable[0] = Promise.resolve(0);
+				iterable[1] = Promise.resolve(1);
 				iterable[3] = Promise.resolve(3);
 
 				Promise.all(iterable).then(dfd.callback(function (value: number[]) {
-					assert.strictEqual(value[0], 0);
-					assert.isUndefined(value[1]);
+					assert.isUndefined(value[0]);
+					assert.strictEqual(value[1], 1);
 					assert.isUndefined(value[2]);
 					assert.strictEqual(value[3], 3);
 				}));
@@ -90,11 +90,11 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 				let dfd = this.async();
 				let iterable: any[] = [];
 
-				iterable[0] = Promise.resolve(0);
+				iterable[1] = Promise.resolve(1);
 				iterable[3] = Promise.resolve(3);
 
 				Promise.race(iterable).then(dfd.callback(function (value: number) {
-					assert.strictEqual(value, 0);
+					assert.isUndefined(value);
 				}));
 			}
 		},

@@ -80,10 +80,7 @@ export class PromiseShim<T> implements Thenable<T> {
 
 			let count = items.length;
 			for (let i = 0; i < count; ++i) {
-				// Handle sparse arrays
-				if (i in items) {
-					processItem(i, items[i]);
-				}
+				processItem(i, items[i]);
 			}
 			populating = false;
 
@@ -97,18 +94,15 @@ export class PromiseShim<T> implements Thenable<T> {
 			let item: (T | Thenable<T>);
 
 			for (let i = 0; i < count; ++i) {
-				// Handle sparse arrays
-				if (i in items) {
-					item = items[i];
+				item = items[i];
 
-					if (item instanceof PromiseShim) {
-						// If a PromiseShim item rejects, this PromiseShim is immediately rejected with the item
-						// PromiseShim's rejection error.
-						item.then(resolve, reject);
-					}
-					else {
-						PromiseShim.resolve(item).then(resolve);
-					}
+				if (item instanceof PromiseShim) {
+					// If a PromiseShim item rejects, this PromiseShim is immediately rejected with the item
+					// PromiseShim's rejection error.
+					item.then(resolve, reject);
+				}
+				else {
+					PromiseShim.resolve(item).then(resolve);
 				}
 			}
 		});
