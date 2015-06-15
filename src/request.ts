@@ -1,4 +1,3 @@
-///<amd-dependency path="module" name="module"/>
 import Task from './async/Task';
 import has from './has';
 import { Handle } from './interfaces';
@@ -6,7 +5,7 @@ import Promise from './Promise';
 import Registry, { Test } from './Registry';
 import load from './load';
 
-declare var module: any;
+declare var require: any;
 
 export class FilterRegistry extends Registry<RequestFilter> {
 	register(test: string | RegExp | RequestFilterTest, value: RequestFilter, first?: boolean): Handle {
@@ -66,7 +65,7 @@ export class ProviderRegistry extends Registry<RequestProvider> {
 		// provider. While that import is in-flight, subsequent requests will queue up while
 		// waiting for the provider to be fulfilled.
 		this._defaultValue = (url: string, options?: RequestOptions): ResponsePromise<any> => {
-			this._providerPromise = load(module, defaultProvider).then(([ providerModule ]: [ { default: RequestProvider } ]): RequestProvider => {
+			this._providerPromise = load(require, defaultProvider).then(([ providerModule ]: [ { default: RequestProvider } ]): RequestProvider => {
 				this._defaultValue = providerModule.default;
 				return providerModule.default;
 			});
