@@ -1,7 +1,4 @@
-import has from './has';
 import { Handle, Hash } from './interfaces';
-import { PropertyEvent, Observer } from './observers/interfaces';
-import * as ObjectObserver from './observers/ObjectObserver';
 
 const slice = Array.prototype.slice;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -171,9 +168,12 @@ export function getPropertyDescriptor(object: Object, property: string): Propert
 }
 
 export function isIdentical(a: any, b: any): boolean {
-	return a === b ||
-		/* both values are NaN */
-		(a !== a && b !== b);
+	if (a === b) {
+		// Check that +/-0s are equal
+		return a !== 0 || 1 / a === 1 / b;
+	}
+	// both values are NaN
+	return a !== a && b !== b;
 }
 
 export function lateBind(instance: {}, method: string, ...suppliedArgs: any[]): (...args: any[]) => any {
@@ -188,19 +188,6 @@ export function lateBind(instance: {}, method: string, ...suppliedArgs: any[]): 
 			// TS7017
 			return (<any> instance)[method].apply(instance, arguments);
 		};
-}
-
-export function observe(kwArgs: ObserveArgs): Observer {
-	const Ctor = kwArgs.nextTurn && has('object-observe') ? ObjectObserver.Es7Observer : ObjectObserver.Es5Observer;
-
-	return new Ctor(kwArgs);
-}
-
-export interface ObserveArgs {
-	listener: (events: PropertyEvent[]) => any;
-	nextTurn?: boolean;
-	onlyReportObserved?: boolean;
-	target: {}
 }
 
 export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs: any[]): (...args: any[]) => any {
