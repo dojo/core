@@ -1,4 +1,3 @@
-import has from './has';
 import Promise from './Promise';
 
 declare var define: {
@@ -6,28 +5,21 @@ declare var define: {
 	amd: any;
 };
 
+export interface AMDRequire {
+	(moduleIds: string[], callback: (...modules:any[]) => void): void;
+}
+export interface NodeRequire {
+	(moduleId: string): any;
+}
+export type Require = AMDRequire | NodeRequire;
+
 export interface Load {
 	(require: Require, ...moduleIds: string[]): Promise<any[]>;
 }
 
-export interface Require {
-	(moduleIds: string[], callback: (...modules:any[]) => void): void;
-	(moduleId: string): any;
-}
-
 const load: Load = (function (): Load {
-	if (typeof define === 'function' && define.amd) {
-		return function (require: Require, ...moduleIds: string[]): Promise<any[]> {
-			return new Promise(function (resolve) {
-				// TODO: Error path
-				require(moduleIds, function (...modules: any[]) {
-					resolve(modules);
-				});
-			});
-		};
-	}
-	else if (has('host-node')) {
-		return function (require: Require, ...moduleIds: string[]): Promise<any[]> {
+	if (typeof module === 'object' && typeof module.exports === 'object') {
+		return function (require: NodeRequire, ...moduleIds: string[]): Promise<any[]> {
 			return new Promise(function (resolve, reject) {
 				try {
 					resolve(moduleIds.map(function (moduleId): any {
@@ -40,8 +32,18 @@ const load: Load = (function (): Load {
 			});
 		};
 	}
+	else if (typeof define === 'function' && define.amd) {
+		return function (require: AMDRequire, ...moduleIds: string[]): Promise<any[]> {
+			return new Promise(function (resolve) {
+				// TODO: Error path
+				require(moduleIds, function (...modules: any[]) {
+					resolve(modules);
+				});
+			});
+		};
+	}
 	else {
-		return <any> function () {
+		return function () {
 			return Promise.reject(new Error('Unknown loader'));
 		};
 	}
