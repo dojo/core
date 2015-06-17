@@ -1,13 +1,25 @@
 import assert = require('intern/chai!assert');
-import on, { emit } from 'src/on';
-import { Handle } from 'src/interfaces';
+import on, { emit, once, pausable } from 'src/on';
+import { Handle, PausableHandle } from 'src/interfaces';
 
 let handles: Handle[] = [];
-function testOn(...args: any[]) {
+function testOn(...args: any[]): Handle {
 	let handle = on.apply(null, arguments);
 	handles.push(handle);
 	return handle;
-};
+}
+
+function testOnce(...args: any[]): Handle {
+	let handle = once.apply(null, arguments);
+	handles.push(handle);
+	return handle;
+}
+
+function testPausable(...args: any[]): PausableHandle {
+	let handle = pausable.apply(null, arguments);
+	handles.push(handle);
+	return handle;
+}
 
 function cleanUpListeners(): void {
 	while (handles.length > 0) {
@@ -80,16 +92,59 @@ export default function createCommonTests(args: any) {
 
 		'on - multiple handlers'() {
 			const order: any[] = [];
-			on(target, ['a', 'b'], function (event) {
+			testOn(target, ['a', 'b'], function (event: CustomEvent) {
 				order.push(1 + event.type);
 			});
-			on(target, [ 'a', 'c' ], function (event) {
+			testOn(target, [ 'a', 'c' ], function (event: CustomEvent) {
 				order.push(2 + event.type);
 			});
 			emit(target, { type: 'a' });
 			emit(target, { type: 'b' });
 			emit(target, { type: 'c' });
 			assert.deepEqual(order, [ '1a', '2a', '1b', '2c' ]);
+		},
+
+		'once'() {
+			let listenerCallCount = 0;
+			let emittedEvent: CustomEvent;
+
+			testOnce(target, testEventName, function (actualEvent: CustomEvent) {
+				listenerCallCount++;
+				assert.strictEqual(actualEvent.value, emittedEvent.value);
+			});
+
+			emittedEvent = { value: 'foo', type: testEventName };
+
+			emit(target, emittedEvent);
+			assert.strictEqual(listenerCallCount, 1);
+
+			emit(target, emittedEvent);
+			assert.strictEqual(listenerCallCount, 1);
+		},
+
+		'pausable'() {
+			let listenerCallCount = 0;
+			let emittedEvent: CustomEvent;
+
+			let handle = testPausable(target, testEventName, function (actualEvent: CustomEvent) {
+				listenerCallCount++;
+				assert.strictEqual(actualEvent.value, emittedEvent.value);
+			});
+
+			console.log(handle);
+
+			emittedEvent = { value: 'foo', type: testEventName };
+
+			emit(target, emittedEvent);
+			assert.strictEqual(listenerCallCount, 1);
+
+			handle.pause();
+			emit(target, emittedEvent);
+			assert.strictEqual(listenerCallCount, 1);
+
+			handle.resume();
+			emit(target, emittedEvent);
+			assert.strictEqual(listenerCallCount, 2);
 		}
 	};
 }
