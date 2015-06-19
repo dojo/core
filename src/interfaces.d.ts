@@ -7,8 +7,8 @@ export interface Handle {
 }
 
 export interface PausableHandle extends Handle {
-	pause(): PausableHandle;
-	resume(): PausableHandle;
+	pause(): void;
+	resume(): void;
 }
 
 export interface Hash<T> {
