@@ -6,6 +6,11 @@ export interface Handle {
 	destroy(): void;
 }
 
+export interface PausableHandle extends Handle {
+	pause(): void;
+	resume(): void;
+}
+
 export interface Hash<T> {
 	[ key: string ]: T;
 }

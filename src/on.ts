@@ -1,4 +1,4 @@
-import { Handle, EventObject } from './interfaces';
+import { Handle, EventObject, PausableHandle } from './interfaces';
 import { createHandle, createCompositeHandle } from './lang';
 import Evented from './Evented';
 
@@ -60,7 +60,7 @@ export function emit(target: any, event: EventObject): boolean {
 /**
  * Provides a normalized mechanism for listening to events from event emitters, Evented objects, or DOM nodes.
  * @param target Target to listen for event on
- * @param type Event type(s) to listen for; may be strings or extension events
+ * @param type Event event type(s) to listen for; may a string or an array of strings
  * @param listener Callback to handle the event when it fires
  * @param capture Whether the listener should be registered in the capture phase (DOM events only)
  * @return A handle which will remove the listener when destroy is called
@@ -104,3 +104,54 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 
 	throw new TypeError('Unknown event emitter object');
 }
+
+/**
+ * Provides a mechanism for listening to the next occurrence of events from event
+ * emitters, Evented objects, or DOM nodes.
+ * @param target Target to listen for event on
+ * @param type Event event type(s) to listen for; may a string or an array of strings
+ * @param listener Callback to handle the event when it fires
+ * @param capture Whether the listener should be registered in the capture phase (DOM events only)
+ * @return A handle which will remove the listener when destroy is called
+ */
+export function once(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
+export function once(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): Handle;
+export function once(target: any, type: any, listener: any, capture?: boolean): Handle {
+	const handle = on(target, type, function () {
+		handle.destroy();
+		return listener.apply(this, arguments);
+	}, capture);
+
+	return handle;
+}
+
+/**
+ * Provides a mechanism for creating pausable listeners for events from event emitters, Evented objects, or DOM nodes.
+ * @param target Target to listen for event on
+ * @param type Event event type(s) to listen for; may a string or an array of strings
+ * @param listener Callback to handle the event when it fires
+ * @param capture Whether the listener should be registered in the capture phase (DOM events only)
+ * @return A handle which will remove the listener when destroy is called
+ */
+export function pausable(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): PausableHandle;
+export function pausable(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): PausableHandle;
+export function pausable(target: any, type: any, listener: any, capture?: boolean): PausableHandle {
+	let paused: boolean;
+
+	const handle = <PausableHandle> on(target, type, function () {
+		if (!paused) {
+			return listener.apply(this, arguments);
+		}
+	}, capture);
+
+	handle.pause = function () {
+		paused = true;
+	};
+
+	handle.resume = function () {
+		paused = false;
+	};
+	
+	return handle;
+}
+
