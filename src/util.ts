@@ -44,15 +44,12 @@ export function throttle<T extends (...args: any[]) => void>(callback: T, delay:
 		if (ran) {
 			return;
 		}
-
+		
 		ran = true;
-
-		let context = this;
-		let args = arguments;
-
+		
+		callback.apply(this, arguments);
 		setTimeout(function () {
-			callback.apply(context, args);
-			args = context = ran = null;
+			ran = null;
 		}, delay);
 	};
 }
@@ -64,12 +61,15 @@ export function throttleAfter<T extends (...args: any[]) => void>(callback: T, d
 		if (ran) {
 			return;
 		}
-		
+
 		ran = true;
-		
-		callback.apply(this, arguments);
+
+		let context = this;
+		let args = arguments;
+
 		setTimeout(function () {
-			ran = null;
+			callback.apply(context, args);
+			args = context = ran = null;
 		}, delay);
 	};
 }
