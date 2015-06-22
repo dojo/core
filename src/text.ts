@@ -1,6 +1,7 @@
 import has from './has';
 import request, { Response } from './request';
 import { Require } from 'dojo-loader/loader';
+import Promise from './Promise';
 
 /* 
  * Strips <?xml ...?> declarations so that external SVG and XML
@@ -58,6 +59,16 @@ let textCache: { [key: string]: any; } = {};
  * Cache of pending text resources
  */
 let pending: { [key: string]: any; } = {};
+
+export function get(url: string): Promise <string> {
+	let promise = new Promise <string> (function (resolve, reject) {
+		getText(url, function (text) {
+			resolve(text);
+		});
+	});
+
+	return promise;
+}
 
 export function normalize(id: string, toAbsMid: (moduleId: string) => string): string {
 	let parts = id.split('!');

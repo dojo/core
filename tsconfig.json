@@ -142,6 +142,7 @@
 		"./tests/unit/streams/nodeOnly.ts",
 		"./tests/unit/streams/util.ts",
 		"./tests/unit/string.ts",
+		"./tests/unit/text.ts",
 		"./typings/tsd.d.ts"
 	]
 }
