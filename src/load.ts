@@ -14,16 +14,20 @@ export interface NodeRequire {
 export type Require = AMDRequire | NodeRequire;
 
 export interface Load {
-	(require: Require, ...moduleIds: string[]): Promise<any[]>;
+	(require: Require|string, ...moduleIds: string[]): Promise<any[]>;
 }
 
 const load: Load = (function (): Load {
 	if (typeof module === 'object' && typeof module.exports === 'object') {
-		return function (require: NodeRequire, ...moduleIds: string[]): Promise<any[]> {
+		return function (contextualRequire: any, ...moduleIds: string[]): Promise<any[]> {
+			if (typeof contextualRequire === 'string') {
+				moduleIds.unshift(contextualRequire);
+				contextualRequire = require;
+			}
 			return new Promise(function (resolve, reject) {
 				try {
 					resolve(moduleIds.map(function (moduleId): any {
-						return require(moduleId);
+						return contextualRequire(moduleId);
 					}));
 				}
 				catch (error) {
@@ -33,10 +37,14 @@ const load: Load = (function (): Load {
 		};
 	}
 	else if (typeof define === 'function' && define.amd) {
-		return function (require: AMDRequire, ...moduleIds: string[]): Promise<any[]> {
+		return function (contextualRequire: any, ...moduleIds: string[]): Promise<any[]> {
+			if (typeof contextualRequire === 'string') {
+				moduleIds.unshift(contextualRequire);
+				contextualRequire = require;
+			}
 			return new Promise(function (resolve) {
 				// TODO: Error path
-				require(moduleIds, function (...modules: any[]) {
+				contextualRequire(moduleIds, function (...modules: any[]) {
 					resolve(modules);
 				});
 			});
