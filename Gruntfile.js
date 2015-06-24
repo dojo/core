@@ -66,7 +66,7 @@ module.exports = function (grunt) {
 		tsconfig: tsconfig,
 		all: [ '<%= tsconfig.filesGlob %>' ],
 		skipTests: [ '<%= all %>' , '!tests/**/*.ts' ],
-		staticTestFiles: 'tests/**/*.{html,css,json,xml}',
+		staticTestFiles: 'tests/**/*.{html,css,json,txt,xml}',
 		devDirectory: '<%= tsconfig.compilerOptions.outDir %>',
 		istanbulIgnoreNext: '/* istanbul ignore next */',
 
