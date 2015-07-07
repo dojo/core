@@ -3,6 +3,7 @@ import has from './has';
 import { Handle } from './interfaces';
 import Promise from './Promise';
 import Registry, { Test } from './Registry';
+import { ParamList } from './UrlSearchParams';
 
 declare var require: Function;
 declare var define: { amd: any };
@@ -138,7 +139,7 @@ export interface RequestOptions {
 	headers?: { [name: string]: string; };
 	method?: string;
 	password?: string;
-	query?: string;
+	query?: string | ParamList;
 	responseType?: string;
 	timeout?: number;
 	user?: string;
