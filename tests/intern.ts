@@ -1,9 +1,17 @@
 import intern = require('intern');
+import has = require('intern/dojo/has');
+import topic = require('intern/dojo/topic');
+import echo = require('intern/dojo/has!host-node?./services/echo');
 
+if (has('host-node') && intern.mode === 'runner') {
+	echo.start().then(function (server: any) {
+		topic.subscribe('runner/end', server.close);
+	});
+}
 export var proxyPort = 9000;
 
 // A fully qualified URL to the Intern proxy
-export var proxyUrl = 'http://localhost:9000/';
+export var proxyUrl = 'http://localhost:9001/';
 
 // Default desired capabilities for all environments. Individual capabilities can be overridden by any of the
 // specified browser environments in the `environments` array below as well. See
