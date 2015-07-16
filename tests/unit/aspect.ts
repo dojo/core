@@ -171,6 +171,41 @@ registerSuite({
 			}
 		},
 
+		'.on()': {
+			'advising function returns undefined, returns original result'() {
+				const aspectStub1 = sinon.stub();
+
+				aspect.on(obj, 'method', aspectStub1);
+
+				assert.strictEqual(obj.method(0), 1);
+				assert.isTrue(aspectStub1.calledAfter(methodSpy));
+			},
+
+			'advising function returns defined values, returns advising function result'() {
+				const aspectStub1 = sinon.stub().returns(2);
+
+				aspect.on(obj, 'method', aspectStub1);
+
+				assert.strictEqual(obj.method(0), 2);
+				assert.isTrue(aspectStub1.calledAfter(methodSpy));
+			},
+
+			'there are previous advising functions (covering previous.next)'() {
+				const aspectStub1 = sinon.stub().returns(2);
+				const aspectStub2 = sinon.stub();
+				const aspectStub3 = sinon.stub().returns(6);
+
+				aspect.on(obj, 'method', aspectStub1);
+				aspect.on(obj, 'method', aspectStub2);
+				aspect.on(obj, 'method', aspectStub3);
+
+				assert.strictEqual(obj.method(0), 6);
+				assert.isTrue(aspectStub1.calledAfter(methodSpy));
+				assert.isTrue(aspectStub2.calledAfter(methodSpy));
+				assert.isTrue(aspectStub3.calledAfter(methodSpy));
+			}
+		},
+
 		'handle.destroy()': {
 			'prevents aspect from being called'() {
 				const aspectSpy = createBeforeSpy();
