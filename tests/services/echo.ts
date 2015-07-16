@@ -8,7 +8,7 @@ const proxy = new httpProxy.RoutingProxy();
 
 function wrapWithMultipartHandler(handleRequest: (request: any, response: any) => void) {
 	//	summary:
-	//		Returns JSGI middleware for handling multi-part forms.
+	//		Wraps a request handling function so that it can handle multipart form data.
 	//		If a multi-part request is detected, a promise will be added
 	//		to the request object at the 'data' property. It will resolve
 	//		to the fields sent in the multi-part request.
