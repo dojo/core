@@ -96,6 +96,79 @@ registerSuite({
 				hasAdd('one', true, true);
 				assert.isTrue(has('one'));
 			}
+		},
+
+		'has loader tests': {
+
+			teardown() {
+				delete hasCache['abc'];
+				delete hasCache['def'];
+			},
+
+			'both feature and no-feature modules provided'() {
+				const featureModule = require('intern');
+				const noFeatureModule = require('intern!object');
+
+				let hostBrowser = require('src/has!host-browser?intern:intern!object');
+				let hostNode = require('src/has!host-node?intern:intern!object');
+
+				if (has('host-browser')) {
+					assert.strictEqual(hostBrowser, featureModule);
+					assert.strictEqual(hostNode, noFeatureModule);
+				}
+				else if (has('host-node')){
+					assert.strictEqual(hostBrowser, noFeatureModule);
+					assert.strictEqual(hostNode, featureModule);
+				}
+			},
+
+			'only feature module provided'() {
+				let result: any;
+				let noResult: any;
+
+				if (has('host-browser')) {
+					result = require('src/has!host-browser?intern');
+					noResult = require('src/has!host-node?intern');
+				}
+				else if (has('host-node')) {
+					result = require('src/has!host-node?intern');
+					noResult = require('src/has!host-browser?intern');
+				}
+
+				assert.isDefined(result);
+				assert.isUndefined(noResult);
+			},
+
+			'only no-feature module provided'() {
+				let result: any;
+				let noResult: any;
+
+				if (has('host-browser')) {
+					result = require('src/has!host-node?:intern');
+					noResult = require('src/has!host-browser?:intern');
+				}
+				else if (has('host-node')){
+					result = require('src/has!host-browser?:intern');
+					noResult = require('src/has!host-node?:intern');
+				}
+
+				assert.isDefined(result);
+				assert.isUndefined(noResult);
+			},
+
+			'custom has test'() {
+				const featureModule = require('intern');
+				const noFeatureModule = require('intern!object');
+
+				hasAdd('abc', true);
+				hasAdd('def', false);
+
+				var result1 = require('src/has!abc?intern:intern!object');
+				assert.strictEqual(result1, featureModule);
+
+				var result2 = require('src/has!def?intern:intern!object');
+				assert.strictEqual(result2, noFeatureModule);
+			}
 		}
 	}
 );

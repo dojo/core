@@ -3,6 +3,60 @@ import { Hash } from './interfaces';
 export const cache: Hash<any> = Object.create(null);
 const testFunctions: Hash<() => any> = Object.create(null);
 
+export const dynamic: boolean = true;
+
+/**
+ * Conditional loading of AMD modules based on a has feature test value.
+ *
+ * @param resourceId Gives the resolved module id to load.
+ * @param require The loader require function with respect to the module that contained the plugin resource in it's dependency list.
+ * @param loaded Callback to loader that consumes result of plugin demand.
+ */
+export function load(resourceId: string, require: Function, loaded: Function): void {
+	if (resourceId) {
+		require([ resourceId ], loaded);
+	}
+	else {
+		loaded();
+	}
+}
+
+/**
+ * Resolves resourceId into a module id based on possibly-nested tenary expression that branches on has feature test value(s).
+ *
+ * @param resourceId The id of the module
+ * @param toAbsMid Resolves a relative module id into an absolute module id
+ */
+export function normalize(resourceId: string, normalize: (moduleId: string) => string): string {
+	var tokens = resourceId.match(/[\?:]|[^:\?]*/g);
+	var i = 0;
+	function get(skip?: boolean): string {
+		var term = tokens[i++];
+		if (term === ':') {
+			// empty string module name, resolves to 0
+			return null;
+		}
+		else {
+			// postfixed with a ? means it is a feature to branch on, the term is the name of the feature
+			if (tokens[i++] === '?') {
+				if (!skip && has(term)) {
+					// matched the feature, get the first value from the options
+					return get();
+				}
+				else {
+					// did not match, get the second value, passing over the first
+					get(true);
+					return get(skip);
+				}
+			}
+			// a module
+			return term;
+		}
+	}
+	resourceId = get();
+	return resourceId && normalize(resourceId);
+}
+
 /**
  * Register a new test for a named feature.
  *
