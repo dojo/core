@@ -14,7 +14,8 @@ export interface NodeRequire {
 export type Require = AMDRequire | NodeRequire;
 
 export interface Load {
-	(require: Require|string, ...moduleIds: string[]): Promise<any[]>;
+	(require: Require, ...moduleIds: string[]): Promise<any[]>;
+	(...moduleIds: string[]): Promise<any[]>;
 }
 
 const load: Load = (function (): Load {
@@ -43,7 +44,7 @@ const load: Load = (function (): Load {
 				contextualRequire = require;
 			}
 			return new Promise(function (resolve) {
-				// TODO: Error path
+				// TODO: Error path once https://github.com/dojo/loader/issues/14 is figured out
 				contextualRequire(moduleIds, function (...modules: any[]) {
 					resolve(modules);
 				});
