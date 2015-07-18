@@ -73,14 +73,16 @@ function _mixin(kwArgs: MixinArgs): {} {
  * @param sources Any number of objects whose enumerable own properties will be copied to the target object
  * @return The modified target object
  */
-export function assign(target: {}, ...sources: {}[]): {} {
-	return _mixin({
-		deep: false,
-		inherited: false,
-		sources: sources,
-		target: target
-	});
-}
+export let assign = has('object-assign') ?
+	(<any> Object).assign :
+	function assign(target: {}, ...sources: {}[]): {} {
+		return (typeof (<any> Object).assign === 'function') ? (<any> Object).assign.apply(null, arguments) : _mixin({
+			deep: false,
+			inherited: false,
+			sources: sources,
+			target: target
+		});
+	}
 
 /**
  * Creates a new object from the given prototype, and copies all enumerable own properties of one or more
