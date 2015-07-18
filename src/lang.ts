@@ -34,6 +34,10 @@ interface MixinArgs {
 	target: {};
 }
 
+interface ObjectAssignConstructor extends ObjectConstructor {
+	assign(target: {}, ...sources: {}[]): {}
+}
+
 function _mixin(kwArgs: MixinArgs): {} {
 	const deep = kwArgs.deep;
 	const inherited = kwArgs.inherited;
@@ -73,10 +77,10 @@ function _mixin(kwArgs: MixinArgs): {} {
  * @param sources Any number of objects whose enumerable own properties will be copied to the target object
  * @return The modified target object
  */
-export let assign = has('object-assign') ?
-	(<any> Object).assign :
-	function assign(target: {}, ...sources: {}[]): {} {
-		return (typeof (<any> Object).assign === 'function') ? (<any> Object).assign.apply(null, arguments) : _mixin({
+export const assign = has('object-assign') ?
+	(<ObjectAssignConstructor> Object).assign :
+	function (target: {}, ...sources: {}[]): {} {
+		return _mixin({
 			deep: false,
 			inherited: false,
 			sources: sources,
