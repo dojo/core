@@ -117,9 +117,9 @@ registerSuite({
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json'), { timeout: 1 })
+			return xhrRequest('/__echo/xhr?delay=5', { timeout: 1 })
 				.then(
-					function (response) {
+					function () {
 						assert(false, "Should have timed out");
 					},
 					function (error: Error) {

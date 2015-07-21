@@ -57,7 +57,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 		}
 
 		request.onreadystatechange = function (): void {
-			if (request.readyState === 4 && response.statusCode >= 200 && response.statusCode < 400) {
+			if (request.readyState === 4) {
 				request.onreadystatechange = function () {};
 
 				if (options.responseType === 'xml') {
@@ -69,8 +69,9 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 
 				response.statusCode = request.status;
 				response.statusText = request.statusText;
-
-				resolve(response);
+				if (response.statusCode >= 200 && response.statusCode < 400) {
+					resolve(response);
+				}
 			}
 		};
 
