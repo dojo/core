@@ -4,7 +4,8 @@ import * as sinon from 'sinon';
 import has from 'src/has';
 import { Handle } from 'src/interfaces';
 import Promise from 'src/Promise';
-import { default as xhrRequest } from 'src/request/xhr';
+import xhrRequest from 'src/request/xhr';
+import { Response } from 'src/request';
 import UrlSearchParams from 'src/UrlSearchParams';
 import { createTimer } from 'src/util';
 
@@ -167,10 +168,13 @@ registerSuite({
 				}).then(
 					function (response: any) {
 						const query = JSON.parse(response.data).query;
-						assert.strictEqual(query.color, 'blue');
-						assert.deepEqual(query.numbers, [ 'one', 'two' ]);
-						assert.strictEqual(query.thud, 'thonk');
-						assert.strictEqual(query.foo.length, 2);
+						assert.deepEqual(query, {
+							color: 'blue',
+							numbers: [ 'one', 'two' ],
+							thud: 'thonk',
+							foo: [ 'bar', 'baz' ],
+							xyzzy: '3'
+						});
 						assert.strictEqual(
 							response.url,
 							'/__echo/xhr?color=blue&numbers=one&numbers=two&foo=bar&foo=baz&thud=thonk&xyzzy=3'
@@ -193,9 +197,11 @@ registerSuite({
 				}).then(
 					function (response: any) {
 						const query = JSON.parse(response.data).query;
-						assert.strictEqual(query.thud, 'thonk');
-						assert.strictEqual(query.foo.length, 2);
-						assert.strictEqual(query.xyzzy, '3');
+						assert.deepEqual(query, {
+							foo: [ 'bar', 'baz' ],
+							thud: 'thonk',
+							xyzzy: '3'
+						});
 						assert.strictEqual(
 							response.url,
 							'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
@@ -218,9 +224,11 @@ registerSuite({
 				}).then(
 					function (response: any) {
 						const query = JSON.parse(response.data).query;
-						assert.strictEqual(query.thud, 'thonk');
-						assert.strictEqual(query.foo.length, 2);
-						assert.strictEqual(query.xyzzy, '3');
+						assert.deepEqual(query, {
+							foo: [ 'bar', 'baz' ],
+							thud: 'thonk',
+							xyzzy: '3'
+						});
 						assert.strictEqual(
 							response.url,
 							'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
@@ -242,10 +250,13 @@ registerSuite({
 						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
 						cacheBustStringA = response.url.split('&')[1];
 						assert.isFalse(isNaN(Number(cacheBustStringA)));
-
-						return xhrRequest('/__echo/xhr?foo=bar', {
-							cacheBust: true
-						})
+						return new Promise<Response<any>>(function (resolve, reject) {
+							setTimeout(function () {
+								xhrRequest('/__echo/xhr?foo=bar', {
+									cacheBust: true
+								}).then(resolve, reject);
+							}, 5);
+						});
 					}
 				).then(
 					function (response) {
@@ -275,12 +286,16 @@ registerSuite({
 						cacheBustStringA = response.url.split('&')[2];
 						assert.isFalse(isNaN(Number(cacheBustStringA)));
 
-						return xhrRequest('/__echo/xhr?foo=bar', {
-							cacheBust: true,
-							query: {
-								bar: 'baz'
-							}
-						})
+						return new Promise<Response<any>>(function (resolve, reject) {
+							setTimeout(function () {
+								xhrRequest('/__echo/xhr?foo=bar', {
+									cacheBust: true,
+									query: {
+										bar: 'baz'
+									}
+								}).then(resolve, reject);
+							}, 5);
+						});
 					}
 				).then(
 					function (response) {
@@ -310,12 +325,16 @@ registerSuite({
 						cacheBustStringA = response.url.split('&')[1];
 						assert.isFalse(isNaN(Number(cacheBustStringA)));
 
-						return xhrRequest('/__echo/xhr', {
-							cacheBust: true,
-							query: {
-								foo: 'bar'
-							}
-						})
+						return new Promise<Response<any>>(function (resolve, reject) {
+							setTimeout(function () {
+								xhrRequest('/__echo/xhr', {
+									cacheBust: true,
+									query: {
+										foo: 'bar'
+									}
+								}).then(resolve, reject);
+							}, 5);
+						});
 					}
 				).then(
 					function (response) {
