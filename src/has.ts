@@ -3,8 +3,6 @@ import { Hash } from './interfaces';
 export const cache: Hash<any> = Object.create(null);
 const testFunctions: Hash<() => any> = Object.create(null);
 
-export const dynamic: boolean = true;
-
 /**
  * Conditional loading of AMD modules based on a has feature test value.
  *
