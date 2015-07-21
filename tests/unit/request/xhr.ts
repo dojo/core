@@ -79,8 +79,10 @@ registerSuite({
 			}).then(
 				function (response: any) {
 					const query = JSON.parse(response.data).query;
-					assert.strictEqual(query.color, 'blue');
-					assert.deepEqual(query.numbers, [ 'one', 'two' ]);
+					assert.deepEqual(query, {
+						color: 'blue',
+						numbers: [ 'one', 'two' ]
+					});
 					assert.strictEqual(
 						response.url,
 						'/__echo/xhr?color=blue&numbers=one&numbers=two'
