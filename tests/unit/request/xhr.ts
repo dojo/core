@@ -119,7 +119,9 @@ registerSuite({
 			}
 			return xhrRequest(getRequestUrl('foo.json'), { timeout: 1 })
 				.then(
-					null,
+					function (response) {
+						assert(false, "Should have timed out");
+					},
 					function (error: Error) {
 						assert.strictEqual(error.name, 'RequestTimeoutError');
 					}

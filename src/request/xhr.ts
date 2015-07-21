@@ -57,7 +57,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 		}
 
 		request.onreadystatechange = function (): void {
-			if (request.readyState === 4) {
+			if (request.readyState === 4 && response.statusCode >= 200 && response.statusCode < 400) {
 				request.onreadystatechange = function () {};
 
 				if (options.responseType === 'xml') {
