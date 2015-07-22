@@ -30,7 +30,7 @@ import lang = require('dojo/lang');
 To access modules use after cloning or downloading the repository, you can reference it by:
 
 ```ts
-import lang from 'src/lang'; // this imports all exports of the module to lang
+import * as lang from 'src/lang'; // this imports all exports of the module as the object lang
 
 import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin from the module
 ```
@@ -50,25 +50,35 @@ on methods in the ES2015 proposal; others are additional APIs for commonly-perfo
 
 #### [array](docs/array.md)
 
-The `array` module contains analogues to some of the ES2015 Array APIs.
+The `dojo-core/array` module contains analogues to some of the ES2015 Array APIs.
 
 #### [lang](docs/lang.md)
 
-The `lang` module contains various utility functions for tasks such as copying objects and creating late-bound
-or partial applications of functions.
+The `dojo-core/lang` module contains various utility functions for tasks such as copying objects and creating late-bound
+or partially applied functions.
 
 #### [math](docs/math.md)
 
-The `math` module contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
+The `dojo-core/math` module contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
 functions.
 
 #### [string](docs/string.md)
 
-The `string` module contains analogues to the some of the ES2015 String APIs.
+The `dojo-core/string` module contains analogues to the some of the ES2015 String APIs.
 
 #### [UrlSearchParams](docs/UrlSearchParams.md)
 
-The `UrlSearchParams` class can be used to parse and generate URL query strings.
+The `dojo-core/UrlSearchParams` class can be used to parse and generate URL query strings.
+
+#### [Event handling](docs/events.md)
+
+The `dojo-core/on` module contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
+once and pauseable events.
+
+#### [HTTP requests](docs/requests.md)
+
+The `dojo-core/request` module contains methods to simplify making http requests. It can handle
+making requests in both node and the browser through the same methods.
 
 ### Promises and Asynchronous Operations
 
@@ -82,6 +92,22 @@ and a `finally` method for cleanup actions.
 #### Task
 
 The `dojo-core/async/Task` class is an extension of `dojo-core/Promise` that provides cancelation support.
+
+### Data Structures
+
+#### [Map](docs/Map.md)
+
+The `dojo-core/Map` class is an implementation of the ES2015 Map specification
+without iterators for use in older browsers.
+
+#### [WeakMap](docs/WeakMap.md)
+
+The `dojo-core/WeakMap` class is an implementation of the ES2015 WeakMap specification
+without iterators for use in older browsers.
+
+#### [Date](docs/DateObject.md)
+
+The `dojo-core/DateObject` class add some convenience methods around a JavaScript Date Object.
 
 ## How do I contribute?
 
