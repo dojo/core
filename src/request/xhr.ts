@@ -72,6 +72,12 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 				if (response.statusCode >= 200 && response.statusCode < 400) {
 					resolve(response);
 				}
+				else {
+					reject(response.statusText ?
+						new Error(response.statusText) :
+						new Error("An error prevented completion of the request.")
+					);
+				}
 			}
 		};
 
