@@ -87,7 +87,6 @@
 		"./tests/typings/leadfoot/leadfoot.d.ts",
 		"./tests/typings/services/echo.d.ts",
 		"./tests/typings/sinon/sinon.d.ts",
-		"./tests/typings/tsd.d.ts",
 		"./tests/unit/DateObject.ts",
 		"./tests/unit/Evented.ts",
 		"./tests/unit/Map.ts",
