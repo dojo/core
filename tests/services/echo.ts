@@ -167,7 +167,9 @@ export function start(port?: number): Promise<http.Server> {
 	});
 
 	const promise: Promise<http.Server> = new Promise(function (resolve, reject) {
-		server.on('listening', resolve);
+		server.on('listening', function () {
+			resolve(server);
+		});
 		setTimeout(reject, 10000);
 	});
 	server.listen(port || 9001);

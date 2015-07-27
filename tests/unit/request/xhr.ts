@@ -9,10 +9,6 @@ import { Response } from 'src/request';
 import UrlSearchParams from 'src/UrlSearchParams';
 import { createTimer } from 'src/util';
 
-function getRequestUrl(dataKey: string): string {
-	return (<any> require).toUrl('../../support/data/' + dataKey);
-}
-
 function requestResponseType(responseType?: string, options?: any) {
 	if (options) {
 		return xhrRequest('/__echo/xhr' + (responseType ? '?responseType=' + responseType : ''), options);
@@ -50,24 +46,20 @@ registerSuite({
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json'), { method: 'get' })
-				.then(
-					function (response: any) {
-						assert.strictEqual(response.requestOptions.method, 'get');
-					}
-				);
+			return xhrRequest('/__echo/foo.json', { method: 'get' })
+				.then(function (response: any) {
+					assert.strictEqual(response.requestOptions.method, 'get');
+				});
 		},
 
 		'default'() {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json'))
-				.then(
-					function (response: any) {
-						assert.strictEqual(response.requestOptions.method, 'GET');
-					}
-				);
+			return xhrRequest('/__echo/foo.json')
+				.then(function (response: any) {
+					assert.strictEqual(response.requestOptions.method, 'GET');
+				});
 		},
 
 		'.get with URL query'() {
@@ -76,19 +68,17 @@ registerSuite({
 			}
 			return xhrRequest('/__echo/xhr?color=blue&numbers=one&numbers=two', {
 				handleAs: 'json'
-			}).then(
-				function (response: any) {
-					const query = JSON.parse(response.data).query;
-					assert.deepEqual(query, {
-						color: 'blue',
-						numbers: [ 'one', 'two' ]
-					});
-					assert.strictEqual(
-						response.url,
-						'/__echo/xhr?color=blue&numbers=one&numbers=two'
-					);
-				}
-			);
+			}).then(function (response: any) {
+				const query = JSON.parse(response.data).query;
+				assert.deepEqual(query, {
+					color: 'blue',
+					numbers: [ 'one', 'two' ]
+				});
+				assert.strictEqual(
+					response.url,
+					'/__echo/xhr?color=blue&numbers=one&numbers=two'
+				);
+			});
 		},
 
 		'.post': function () {
@@ -99,16 +89,14 @@ registerSuite({
 				method: 'POST',
 				data: new UrlSearchParams({ color: 'blue' }).toString(),
 				responseType: 'json'
-			}).then(
-				function (response: any) {
-					const data = JSON.parse(response.data);
-					assert.strictEqual(data.method, 'POST');
-					const payload = data.payload;
+			}).then(function (response: any) {
+				const data = JSON.parse(response.data);
+				assert.strictEqual(data.method, 'POST');
+				const payload = data.payload;
 
-					assert.ok(payload && payload.color);
-					assert.strictEqual(payload.color, 'blue');
-				}
-			);
+				assert.ok(payload && payload.color);
+				assert.strictEqual(payload.color, 'blue');
+			});
 		}
 	},
 
@@ -132,29 +120,25 @@ registerSuite({
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json'), {
+			return xhrRequest('/__echo/foo.json', {
 				user: 'user',
 				password: 'password'
-			}).then(
-				function (response: any) {
-					assert.strictEqual(response.requestOptions.user, 'user');
-					assert.strictEqual(response.requestOptions.password, 'password');
-				}
-			);
+			}).then(function (response: any) {
+				assert.strictEqual(response.requestOptions.user, 'user');
+				assert.strictEqual(response.requestOptions.password, 'password');
+			});
 		},
 
 		'auth, without user or password'() {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json'), {
+			return xhrRequest('/__echo/foo.json', {
 				auth: 'user:password'
-			}).then(
-				function (response: any) {
-					assert.strictEqual(response.requestOptions.user, 'user');
-					assert.strictEqual(response.requestOptions.password, 'password');
-				}
-			);
+			}).then(function (response: any) {
+				assert.strictEqual(response.requestOptions.user, 'user');
+				assert.strictEqual(response.requestOptions.password, 'password');
+			});
 		},
 
 		'query': {
@@ -169,22 +153,20 @@ registerSuite({
 						xyzzy: '3'
 					}).toString(),
 					handleAs: 'json'
-				}).then(
-					function (response: any) {
-						const query = JSON.parse(response.data).query;
-						assert.deepEqual(query, {
-							color: 'blue',
-							numbers: [ 'one', 'two' ],
-							thud: 'thonk',
-							foo: [ 'bar', 'baz' ],
-							xyzzy: '3'
-						});
-						assert.strictEqual(
-							response.url,
-							'/__echo/xhr?color=blue&numbers=one&numbers=two&foo=bar&foo=baz&thud=thonk&xyzzy=3'
-						);
-					}
-				)
+				}).then(function (response: any) {
+					const query = JSON.parse(response.data).query;
+					assert.deepEqual(query, {
+						color: 'blue',
+						numbers: [ 'one', 'two' ],
+						thud: 'thonk',
+						foo: [ 'bar', 'baz' ],
+						xyzzy: '3'
+					});
+					assert.strictEqual(
+						response.url,
+						'/__echo/xhr?color=blue&numbers=one&numbers=two&foo=bar&foo=baz&thud=thonk&xyzzy=3'
+					);
+				});
 			},
 
 			'.get with query option string'() {
@@ -198,20 +180,18 @@ registerSuite({
 						xyzzy: '3'
 					}).toString(),
 					handleAs: 'json'
-				}).then(
-					function (response: any) {
-						const query = JSON.parse(response.data).query;
-						assert.deepEqual(query, {
-							foo: [ 'bar', 'baz' ],
-							thud: 'thonk',
-							xyzzy: '3'
-						});
-						assert.strictEqual(
-							response.url,
-							'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
-						);
-					}
-				)
+				}).then(function (response: any) {
+					const query = JSON.parse(response.data).query;
+					assert.deepEqual(query, {
+						foo: [ 'bar', 'baz' ],
+						thud: 'thonk',
+						xyzzy: '3'
+					});
+					assert.strictEqual(
+						response.url,
+						'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
+					);
+				});
 			},
 
 			'.get with query option object'() {
@@ -225,20 +205,18 @@ registerSuite({
 						xyzzy: '3'
 					},
 					handleAs: 'json'
-				}).then(
-					function (response: any) {
-						const query = JSON.parse(response.data).query;
-						assert.deepEqual(query, {
-							foo: [ 'bar', 'baz' ],
-							thud: 'thonk',
-							xyzzy: '3'
-						});
-						assert.strictEqual(
-							response.url,
-							'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
-						);
-					}
-				)
+				}).then(function (response: any) {
+					const query = JSON.parse(response.data).query;
+					assert.deepEqual(query, {
+						foo: [ 'bar', 'baz' ],
+						thud: 'thonk',
+						xyzzy: '3'
+					});
+					assert.strictEqual(
+						response.url,
+						'/__echo/xhr?foo=bar&foo=baz&thud=thonk&xyzzy=3'
+					);
+				});
 			},
 
 			'.get with cacheBust w/query string w/o/query option'() {
@@ -249,28 +227,24 @@ registerSuite({
 				let cacheBustStringB: string;
 				return xhrRequest('/__echo/xhr?foo=bar', {
 					cacheBust: true
-				}).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
-						cacheBustStringA = response.url.split('&')[1];
-						assert.isFalse(isNaN(Number(cacheBustStringA)));
-						return new Promise<Response<any>>(function (resolve, reject) {
-							setTimeout(function () {
-								xhrRequest('/__echo/xhr?foo=bar', {
-									cacheBust: true
-								}).then(resolve, reject);
-							}, 5);
-						});
-					}
-				).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
-						cacheBustStringB = response.url.split('&')[1];
-						assert.isFalse(isNaN(Number(cacheBustStringB)));
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
+					cacheBustStringA = response.url.split('&')[1];
+					assert.isFalse(isNaN(Number(cacheBustStringA)));
+					return new Promise<Response<any>>(function (resolve, reject) {
+						setTimeout(function () {
+							xhrRequest('/__echo/xhr?foo=bar', {
+								cacheBust: true
+							}).then(resolve, reject);
+						}, 5);
+					});
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
+					cacheBustStringB = response.url.split('&')[1];
+					assert.isFalse(isNaN(Number(cacheBustStringB)));
 
-						assert.notEqual(cacheBustStringA, cacheBustStringB);
-					}
-				);
+					assert.notEqual(cacheBustStringA, cacheBustStringB);
+				});
 			},
 
 			'.get with cacheBust w/query string w/query option'() {
@@ -284,32 +258,28 @@ registerSuite({
 					query: {
 						bar: 'baz'
 					}
-				}).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
-						cacheBustStringA = response.url.split('&')[2];
-						assert.isFalse(isNaN(Number(cacheBustStringA)));
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
+					cacheBustStringA = response.url.split('&')[2];
+					assert.isFalse(isNaN(Number(cacheBustStringA)));
 
-						return new Promise<Response<any>>(function (resolve, reject) {
-							setTimeout(function () {
-								xhrRequest('/__echo/xhr?foo=bar', {
-									cacheBust: true,
-									query: {
-										bar: 'baz'
-									}
-								}).then(resolve, reject);
-							}, 5);
-						});
-					}
-				).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
-						cacheBustStringB = response.url.split('&')[2];
-						assert.isFalse(isNaN(Number(cacheBustStringB)));
+					return new Promise<Response<any>>(function (resolve, reject) {
+						setTimeout(function () {
+							xhrRequest('/__echo/xhr?foo=bar', {
+								cacheBust: true,
+								query: {
+									bar: 'baz'
+								}
+							}).then(resolve, reject);
+						}, 5);
+					});
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
+					cacheBustStringB = response.url.split('&')[2];
+					assert.isFalse(isNaN(Number(cacheBustStringB)));
 
-						assert.notEqual(cacheBustStringA, cacheBustStringB);
-					}
-				);
+					assert.notEqual(cacheBustStringA, cacheBustStringB);
+				});
 			},
 
 			'.get with cacheBust w/o/query string w/query option'() {
@@ -323,32 +293,28 @@ registerSuite({
 					query: {
 						foo: 'bar'
 					}
-				}).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
-						cacheBustStringA = response.url.split('&')[1];
-						assert.isFalse(isNaN(Number(cacheBustStringA)));
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
+					cacheBustStringA = response.url.split('&')[1];
+					assert.isFalse(isNaN(Number(cacheBustStringA)));
 
-						return new Promise<Response<any>>(function (resolve, reject) {
-							setTimeout(function () {
-								xhrRequest('/__echo/xhr', {
-									cacheBust: true,
-									query: {
-										foo: 'bar'
-									}
-								}).then(resolve, reject);
-							}, 5);
-						});
-					}
-				).then(
-					function (response) {
-						assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
-						cacheBustStringB = response.url.split('&')[1];
-						assert.isFalse(isNaN(Number(cacheBustStringB)));
+					return new Promise<Response<any>>(function (resolve, reject) {
+						setTimeout(function () {
+							xhrRequest('/__echo/xhr', {
+								cacheBust: true,
+								query: {
+									foo: 'bar'
+								}
+							}).then(resolve, reject);
+						}, 5);
+					});
+				}).then(function (response) {
+					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
+					cacheBustStringB = response.url.split('&')[1];
+					assert.isFalse(isNaN(Number(cacheBustStringB)));
 
-						assert.notEqual(cacheBustStringA, cacheBustStringB);
-					}
-				);
+					assert.notEqual(cacheBustStringA, cacheBustStringB);
+				});
 			},
 
 			'.get with cacheBust and no query'() {
@@ -359,24 +325,20 @@ registerSuite({
 				let cacheBustStringB: string;
 				return xhrRequest('/__echo/xhr', {
 					cacheBust: true
-				}).then(
-					function (response: any) {
-						cacheBustStringA = response.url.split('?')[1];
-						assert.ok(cacheBustStringA);
-						assert.isFalse(isNaN(Number(cacheBustStringA)));
+				}).then(function (response: any) {
+					cacheBustStringA = response.url.split('?')[1];
+					assert.ok(cacheBustStringA);
+					assert.isFalse(isNaN(Number(cacheBustStringA)));
 
-						return xhrRequest('/__echo/xhr', {
-							cacheBust: true
-						});
-					}
-				).then(
-					function (response: any) {
-						cacheBustStringB = response.url.split('?')[1];
-						assert.ok(cacheBustStringB);
-						assert.isFalse(isNaN(Number(cacheBustStringB)));
-						assert.notEqual(cacheBustStringA, cacheBustStringB);
-					}
-				);
+					return xhrRequest('/__echo/xhr', {
+						cacheBust: true
+					});
+				}).then(function (response: any) {
+					cacheBustStringB = response.url.split('?')[1];
+					assert.ok(cacheBustStringB);
+					assert.isFalse(isNaN(Number(cacheBustStringB)));
+					assert.notEqual(cacheBustStringA, cacheBustStringB);
+				});
 			},
 		},
 
@@ -389,13 +351,11 @@ registerSuite({
 					headers: {
 						'CONTENT-TYPE': 'arbitrary-value'
 					}
-				}).then(
-					function (response: any) {
-						const data = JSON.parse(response.data);
-						assert.isUndefined(data.headers['CONTENT-TYPE']);
-						assert.include(data.headers['content-type'], 'arbitrary-value');
-					}
-				);
+				}).then(function (response: any) {
+					const data = JSON.parse(response.data);
+					assert.isUndefined(data.headers['CONTENT-TYPE']);
+					assert.propertyVal(data.headers, 'content-type', 'arbitrary-value');
+				});
 			},
 
 			'custom headers'() {
@@ -406,12 +366,10 @@ registerSuite({
 					headers: {
 						'Content-Type': 'application/arbitrary-value'
 					}
-				}).then(
-					function (response: any) {
-						const data = JSON.parse(response.data);
-						assert.strictEqual(data.headers['content-type'], 'application/arbitrary-value');
-					}
-				);
+				}).then(function (response: any) {
+					const data = JSON.parse(response.data);
+					assert.propertyVal(data.headers, 'content-type', 'application/arbitrary-value');
+				});
 			},
 
 			'default headers'() {
@@ -419,15 +377,13 @@ registerSuite({
 					this.skip('No echo server available');
 				}
 				const options = has('formdata') ? { data: new FormData() }: {};
-				return xhrRequest('/__echo/default', options).then(
-					function (response: any) {
-						const data = JSON.parse(response.data);
-						assert.strictEqual(data.headers['x-requested-with'], 'XMLHttpRequest');
-						if (has('formdata')) {
-							assert.include(data.headers['content-type'], 'application/x-www-form-urlencoded');
-						}
+				return xhrRequest('/__echo/default', options).then(function (response: any) {
+					const data = JSON.parse(response.data);
+					assert.strictEqual(data.headers['x-requested-with'], 'XMLHttpRequest');
+					if (has('formdata')) {
+						assert.include(data.headers['content-type'], 'application/x-www-form-urlencoded');
 					}
-				);
+				});
 			}
 		},
 
@@ -437,54 +393,36 @@ registerSuite({
 					this.skip('No echo server available');
 				}
 				sinon.spy(XMLHttpRequest.prototype, 'overrideMimeType');
-				return requestResponseType('xml', { responseType: 'xml' }).then(
-					function (response: any) {
-						const foo: string = response.data.getElementsByTagName('foo')[0].getAttribute('value');
-						assert.strictEqual(foo, 'bar');
-						assert.isTrue((<any>XMLHttpRequest.prototype.overrideMimeType).calledOnce,
-							'Should have called overrideMimeType once');
-						assert.strictEqual(
-							'text/xml',
-							(<any>XMLHttpRequest.prototype.overrideMimeType).getCall(0).args[0],
-							'Should have called overrideMimetype with \'text/xml\'  as the argument'
-						);
-						(<any>XMLHttpRequest.prototype.overrideMimeType).restore();
-					}
-				);
+				return requestResponseType('xml', { responseType: 'xml' }).then(function (response: any) {
+					const foo: string = response.data.getElementsByTagName('foo')[0].getAttribute('value');
+					assert.strictEqual(foo, 'bar');
+					assert.isTrue((<any>XMLHttpRequest.prototype.overrideMimeType).calledOnce,
+						'Should have called overrideMimeType once');
+					assert.strictEqual(
+						'text/xml',
+						(<any>XMLHttpRequest.prototype.overrideMimeType).getCall(0).args[0],
+						'Should have called overrideMimetype with \'text/xml\'  as the argument'
+					);
+					(<any>XMLHttpRequest.prototype.overrideMimeType).restore();
+				});
 			},
 
 			'blob'() {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
-				return requestResponseType('gif', { responseType: 'blob' }).then(
-					function (response: any) {
-						assert.instanceOf(response.data, Blob);
-					}
-				);
+				return requestResponseType('gif', { responseType: 'blob' }).then(function (response: any) {
+					assert.instanceOf(response.data, Blob);
+				});
 			},
 
 			'arrayBuffer'() {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
-				return requestResponseType('gif', { responseType: 'arraybuffer' }).then(
-					function (response: any) {
-						assert.instanceOf(response.data, ArrayBuffer);
-					}
-				);
-			},
-
-			'default'() {
-				if (!echoServerAvailable) {
-					this.skip('No echo server available');
-				}
-				return xhrRequest('/__echo/xhr?foo=bar').then(
-					function (response: any) {
-						const query: {} = JSON.parse(response.data).query;
-						assert.deepEqual(query, { foo: 'bar' });
-					}
-				);
+				return requestResponseType('gif', { responseType: 'arraybuffer' }).then(function (response: any) {
+					assert.instanceOf(response.data, ArrayBuffer);
+				});
 			}
 		}
 	},
@@ -494,28 +432,23 @@ registerSuite({
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			const url: string = getRequestUrl('foo.json');
-			return xhrRequest(url).then(
-				function (response: any) {
-					assert.strictEqual(response.statusCode, 200);
-					assert.strictEqual(response.statusText, 'OK');
-					assert.isTrue(response.nativeResponse instanceof XMLHttpRequest);
-					assert.strictEqual(response.url, url);
-					assert.deepEqual(response.requestOptions, { method: 'GET' });
-				}
-			);
+			return xhrRequest('/__echo/foo.json').then(function (response: any) {
+				assert.strictEqual(response.statusCode, 200);
+				assert.strictEqual(response.statusText, 'OK');
+				assert.isTrue(response.nativeResponse instanceof XMLHttpRequest);
+				assert.strictEqual(response.url, '/__echo/foo.json');
+				assert.deepEqual(response.requestOptions, { method: 'GET' });
+			});
 		},
 
 		'.getHeader'() {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
-			return xhrRequest(getRequestUrl('foo.json')).then(
-				function (response: any) {
-					const length: number = Number(response.getHeader('content-length'));
-					assert.strictEqual(length, response.data.length);
-				}
-			);
+			return xhrRequest('/__echo/foo.json').then(function (response: any) {
+				const length: number = Number(response.getHeader('content-length'));
+				assert.strictEqual(length, response.data.length);
+			});
 		}
 	}
 });

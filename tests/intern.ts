@@ -5,7 +5,9 @@ import echo = require('intern/dojo/has!host-node?./services/echo');
 
 if (has('host-node') && intern.mode === 'runner') {
 	echo.start().then(function (server: any) {
-		topic.subscribe('runner/end', server.close);
+		topic.subscribe('/runner/end', function () {
+			server.close();
+		});
 	});
 }
 export var proxyPort = 9000;
