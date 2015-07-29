@@ -35,6 +35,24 @@ import * as lang from 'src/lang'; // this imports all exports of the module as t
 import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin from the module
 ```
 
+#### Compile To JavaScript
+
+Once downloaded, you can compile the TypesScript files by first installing the project dependencey with:
+
+```
+npm install
+```
+
+The by running this command:
+
+```
+
+node -e "require('grunt').tasks(['dev']);"
+
+```
+
+This will run the grunt 'dev' task.
+
 ## Features
 
 ### [Feature Detection](docs/has.md)
