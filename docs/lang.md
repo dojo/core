@@ -5,7 +5,7 @@
 * assign
 
 ```ts
-import { assign } from 'dojo/lang';
+import { assign } from 'src/lang';
 
 var target = {
 	foo: 'bar'
@@ -25,7 +25,7 @@ target.bar === 'foo'; // true
 * create
 
 ```ts
-import { create } from 'dojo/lang';
+import { create } from 'src/lang';
 
 var oldObj = {
 	foo: 'bar',
@@ -52,7 +52,7 @@ newObj.obj.bar === 'bar'; // true
 * deepAssign
 
 ```ts
-import { deepAssign } from 'dojo/lang';
+import { deepAssign } from 'src/lang';
 
 var oldObj = {
 	foo: 'bar',
@@ -75,12 +75,54 @@ oldObj.obj.bar = 'bar';
 newObj.foo === 'bar'; // true
 newObj.obj.bar === 'bar'; // true
 ```
+* mixin
+```ts
+import { mixin } from 'src/lang';
+
+const obj = {
+	foo: 'bar',
+	fooObj: {
+		bar: 'foo'
+	}
+};
+
+const result = mixin({}, obj);
+
+result.foo === 'bar'; // true
+result.fooObj.bar === 'foo'; // true
+
+obj.fooObj.bar = 'bar';
+
+result.fooObj.bar === 'bar'; // true
+
+```
 
 * deepMixin
+```ts
+import { deepMixin } from 'src/lang';
+
+const obj = {
+	foo: 'bar',
+	fooObj: {
+		bar: 'foo'
+	}
+};
+
+const result = deepMixin({}, obj);
+
+result.foo === 'bar'; // true
+result.fooObj.bar === 'foo'; // true
+
+obj.fooObj.bar = 'bar';
+
+result.fooObj.bar === 'bar'; // false
+result.fooObj.bar === 'foo'; // true
+
+```
 * duplicate
 
 ```ts
-import { duplicate } from 'dojo/lang';
+import { duplicate } from 'src/lang';
 
 var obj = {
 	foo: 'bar'
@@ -94,3 +136,5 @@ obj.foo === 'foo';
 newObj.foo === 'bar';
 
 ```
+
+* partial
