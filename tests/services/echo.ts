@@ -22,6 +22,7 @@ function wrapWithMultipartHandler(handleRequest: (request: any, response: any) =
 				parser.parse(request, function (err: any, fields: formidable.Fields, files: formidable.Files) {
 					if (err) {
 						reject(err);
+						return;
 					}
 					for (let key in files) {
 						fields[key] = files[key].name;
