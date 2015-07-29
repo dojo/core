@@ -1,1 +1,19 @@
 # math
+
+* acosh
+* asinh
+* atanh
+* cbrt
+* clz32
+* cosh
+* expm1
+* fround
+* hypot
+* imul
+* log2
+* log10
+* log1p
+* sign
+* sinh
+* tanh
+* trunc

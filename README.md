@@ -37,7 +37,7 @@ import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin f
 
 ## Features
 
-### Feature Detection
+### [Feature Detection](docs/has.md)
 
 Using the latest Web technologies isn't always as straightforward as developers would like due to differing support
 across platforms. `dojo-core/has` provides a simple feature detection API that makes it easy to detect which platforms
