@@ -123,10 +123,6 @@ without iterators for use in older browsers.
 The `dojo-core/WeakMap` class is an implementation of the ES2015 WeakMap specification
 without iterators for use in older browsers.
 
-#### [Date](docs/DateObject.md)
-
-The `dojo-core/DateObject` class add some convenience methods around a JavaScript Date Object.
-
 ## How do I contribute?
 
 We appreciate your interest!  Please see the [Guidelines Repository](https://github.com/dojo/guidelines#readme) for the

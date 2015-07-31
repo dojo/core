@@ -2,7 +2,7 @@
 
 # Module Exports
 
-* assign
+* assign - copies values of own properties from the source object(s) to the target object
 
 ```ts
 import { assign } from 'src/lang';
@@ -22,7 +22,7 @@ target.bar === 'foo'; // true
 
 ```
 
-* create
+* create - creates a new object based on
 
 ```ts
 import { create } from 'src/lang';
@@ -49,7 +49,7 @@ newObj.foo === 'bar'; // true
 newObj.obj.bar === 'bar'; // true
 ```
 
-* deepAssign
+* deepAssign - recursively copies values from own properties of source object(s) to target object
 
 ```ts
 import { deepAssign } from 'src/lang';
@@ -75,7 +75,8 @@ oldObj.obj.bar = 'bar';
 newObj.foo === 'bar'; // true
 newObj.obj.bar === 'bar'; // true
 ```
-* mixin
+
+* mixin - copies values of own and inherited properties from the source object(s) to the target object
 ```ts
 import { mixin } from 'src/lang';
 
@@ -97,7 +98,7 @@ result.fooObj.bar === 'bar'; // true
 
 ```
 
-* deepMixin
+* deepMixin - recursively copies values of own and inherited properties from the source object(s) to the target object
 ```ts
 import { deepMixin } from 'src/lang';
 
@@ -119,22 +120,68 @@ result.fooObj.bar === 'bar'; // false
 result.fooObj.bar === 'foo'; // true
 
 ```
-* duplicate
 
+* duplicate - creates new object with property set to `oldObj` prototype and a deep copies of its properties
 ```ts
 import { duplicate } from 'src/lang';
 
-var obj = {
+var oldObj = {
 	foo: 'bar'
 };
 
-var newObj = duplicate(old);
+var newObj = duplicate(oldObj);
 
-obj.foo = 'foo';
+oldObj.foo = 'foo';
 
-obj.foo === 'foo';
+oldObj.foo === 'foo';
 newObj.foo === 'bar';
 
 ```
 
-* partial
+* partial - creates a function that calls the provided function with the arguments provides and any other arguments provided to the new function
+
+```ts
+import { partial } from 'src/lang';
+
+var add = function (a, b) {
+	return a + b;
+}
+
+var addFive = partial(add, 5);
+
+var result = addFive(4);
+
+result === 9;
+
+```
+
+* isIdentical - determines whether two values are the same (including NaN)
+```ts
+import { isIdentical } from 'src/lang';
+
+isIdentical(1, 1); // true
+isIdentical(NaN, NaN); // true
+
+```
+
+* lateBind - creates a function that calls the current method on an object with given arguments
+```ts
+import { lateBind } from 'src/lang';
+
+var person = {
+	speak: function (name) {
+		return 'hi, ' + name;
+	}
+};
+
+var personSpeak = lateBind(person, 'speak', 'name');
+
+personSpeak() === 'hi, name'; // true
+
+person.speak = function (name) {
+	return 'bye, ' + name;
+};
+
+personSpeak() === 'bye, name';
+
+```

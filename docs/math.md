@@ -1,5 +1,7 @@
 # math
 
+This module provides the following trigonometrical and rounding methods:
+
 * acosh
 * asinh
 * atanh
