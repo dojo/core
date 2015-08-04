@@ -26,6 +26,7 @@
 		"grunt-tslint": "2.0.0",
 		"http-proxy": "0.10.3",
 		"intern": "3.0.1",
+		"istanbul": "^0.3.17",
 		"sinon": "1.14.1",
 		"tslint": "2.4.0",
 		"typescript": "1.6.0-beta"
