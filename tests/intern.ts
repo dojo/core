@@ -26,6 +26,7 @@ export const proxyUrl = 'http://localhost:9001/';
 // automatically
 export const capabilities = {
 	'browserstack.selenium_version': '2.46.0',
+	'browserstack.debug': false,
 	project: 'Dojo 2',
 	name: 'dojo-core'
 };
@@ -34,14 +35,14 @@ export const capabilities = {
 // OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 // capabilities options specified for an environment will be copied as-is
 export const environments = [
-	{ browser: 'IE', browser_version: '9', os: 'WINDOWS', os_version: '7' },
-	{ browser: 'Firefox', os: 'WINDOWS', os_version: '8.1' },
-	{ browser: 'Firefox', os: 'WINDOWS', os_version: 'XP' },
-	{ browser: 'Firefox', os: 'OS X' },
-	{ browser: 'Chrome', os: 'WINDOWS', os_version: '8.1' },
+	{ browserName: 'internet explorer', version: [ '11', '10', '9' ], platform: 'WINDOWS' },
+	{ browserName: 'firefox', os: 'WINDOWS' },
+	// { browser: 'Firefox', os: 'WINDOWS', os_version: 'XP' },
+	// { browser: 'Firefox', os: 'OS X' },
+	{ browserName: 'chrome', os: 'WINDOWS' }/*,
 	{ browser: 'Chrome', os: 'WINDOWS', os_version: 'XP' },
 	{ browser: 'Chrome', os: 'OS X' },
-	{ browser: 'Safari', browser_version: '8', os: 'OS X' }
+	{ browser: 'Safari', browser_version: '8', os: 'OS X' }*/
 ];
 
 // Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
@@ -49,6 +50,10 @@ export const maxConcurrency = 1;
 
 // Name of the tunnel class to use for WebDriver tests
 export const tunnel = 'BrowserStackTunnel';
+
+export const runnerClientReporter = {
+	waitForRunner: true
+};
 
 // Support running unit tests from a web server that isn't the intern proxy
 export const initialBaseUrl: string = (function () {
