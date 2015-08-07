@@ -88,12 +88,12 @@ The `dojo-core/string` module contains analogues to the some of the ES2015 Strin
 
 The `dojo-core/UrlSearchParams` class can be used to parse and generate URL query strings.
 
-#### [Event handling](docs/events.md)
+#### [Event handling](docs/on.md)
 
 The `dojo-core/on` module contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
 once and pauseable events.
 
-#### [HTTP requests](docs/requests.md)
+#### [HTTP requests](docs/request.md)
 
 The `dojo-core/request` module contains methods to simplify making http requests. It can handle
 making requests in both node and the browser through the same methods.

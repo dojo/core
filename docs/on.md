@@ -1,4 +1,4 @@
-# Events
+# On
 
 `dojo-core/on` provides event handling support with methods to attach and emit events.
 
