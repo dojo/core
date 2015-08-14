@@ -1,8 +1,8 @@
 # lang
 
-# Module Exports
+## Module Exports
 
-* assign - copies values of own properties from the source object(s) to the target object
+### assign - copies values of own properties from the source object(s) to the target object
 
 ```ts
 import { assign } from 'src/lang';
@@ -22,7 +22,7 @@ target.bar === 'foo'; // true
 
 ```
 
-* create - creates a new object based on
+### create - creates a new object based on
 
 ```ts
 import { create } from 'src/lang';
@@ -49,7 +49,7 @@ newObj.foo === 'bar'; // true
 newObj.obj.bar === 'bar'; // true
 ```
 
-* deepAssign - recursively copies values from own properties of source object(s) to target object
+### deepAssign - recursively copies values from own properties of source object(s) to target object
 
 ```ts
 import { deepAssign } from 'src/lang';
@@ -76,7 +76,7 @@ newObj.foo === 'bar'; // true
 newObj.obj.bar === 'bar'; // true
 ```
 
-* mixin - copies values of own and inherited properties from the source object(s) to the target object
+### mixin - copies values of own and inherited properties from the source object(s) to the target object
 ```ts
 import { mixin } from 'src/lang';
 
@@ -98,7 +98,7 @@ result.fooObj.bar === 'bar'; // true
 
 ```
 
-* deepMixin - recursively copies values of own and inherited properties from the source object(s) to the target object
+### deepMixin - recursively copies values of own and inherited properties from the source object(s) to the target object
 ```ts
 import { deepMixin } from 'src/lang';
 
@@ -121,7 +121,7 @@ result.fooObj.bar === 'foo'; // true
 
 ```
 
-* duplicate - creates new object with property set to `oldObj` prototype and a deep copies of its properties
+### duplicate - creates new object with property set to `oldObj` prototype and a deep copies of its properties
 ```ts
 import { duplicate } from 'src/lang';
 
@@ -138,7 +138,7 @@ newObj.foo === 'bar';
 
 ```
 
-* partial - creates a function that calls the provided function with the arguments provides and any other arguments provided to the new function
+### partial - creates a function that calls the provided function with the arguments provides and any other arguments provided to the new function
 
 ```ts
 import { partial } from 'src/lang';
@@ -155,7 +155,7 @@ result === 9;
 
 ```
 
-* isIdentical - determines whether two values are the same (including NaN)
+### isIdentical - determines whether two values are the same (including NaN)
 ```ts
 import { isIdentical } from 'src/lang';
 
@@ -164,7 +164,7 @@ isIdentical(NaN, NaN); // true
 
 ```
 
-* lateBind - creates a function that calls the current method on an object with given arguments
+### lateBind - creates a function that calls the current method on an object with given arguments
 ```ts
 import { lateBind } from 'src/lang';
 
