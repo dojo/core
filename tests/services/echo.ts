@@ -45,6 +45,16 @@ function writeErrorResponse(response: any, error?: string) {
 	response.end();
 }
 
+function writeSuccessResponse(response: any, body: string) {
+	response.writeHead(200, {
+		'Content-Length': body.length,
+		'Content-Type': 'application/json'
+	});
+
+	response.write(body);
+	response.end();
+}
+
 function retrieveResource(response: any, responseType: string): void {
 	let resourceName: string;
 	let encoding: string;
@@ -133,14 +143,16 @@ export function start(port?: number): Promise<http.Server> {
 							headers: request.headers,
 							payload: data
 						});
-
-						response.writeHead(200, {
-							'Content-Length': body.length,
-							'Content-Type': 'application/json'
-						});
-
-						response.write(body);
-						response.end();
+						if (query && query['delay']) {
+							try {
+								let delay = Number(query['delay']);
+								setTimeout(writeSuccessResponse, delay, response, body)
+							} catch (ignore) {
+								writeSuccessResponse(response, body);
+							}
+						} else {
+							writeSuccessResponse(response, body);
+						}
 					}
 					else {
 						retrieveResource(response, responseType);
