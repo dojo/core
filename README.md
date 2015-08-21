@@ -6,26 +6,12 @@ and making HTTP requests.
 
 ## Installation
 
-This package is currently in Alpha with a initial stable release scheduled for later this year. You can install the Alpha
-through npm:
+This package is currently in Alpha with a initial stable release scheduled for later this year. You can download
+the Alpha by cloning or downloading this repository.
 
-```
-npm install dojo@2.0.0-alpha4
-```
+## Usage
 
-You can also clone or download this repository.
-
-## Dojo Usage
-
-### npm
-
-If using npm, you can access modules by using ```require``` like so:
-
-```ts
-import lang = require('dojo/lang');
-```
-
-### Downloading
+### TypeScript
 
 To access modules use after cloning or downloading the repository, you can reference it by:
 
@@ -35,9 +21,9 @@ import * as lang from 'src/lang'; // this imports all exports of the module as t
 import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin from the module
 ```
 
-#### Compile To JavaScript
+### Compile To JavaScript
 
-Once downloaded, you can compile the TypesScript files by first installing the project dependencey with:
+Once downloaded, you can compile the TypesScript files by first installing the project dependencies with:
 
 ```
 npm install
@@ -46,9 +32,7 @@ npm install
 The by running this command:
 
 ```
-
-node -e "require('grunt').tasks(['dev']);"
-
+grunt dev
 ```
 
 This will run the grunt 'dev' task.
@@ -63,7 +47,7 @@ detect which platforms support which features.
 
 ### Language Utilities
 
-The core package provides several modules offering a number of langauge utilities.  Some of these are heavily based
+The core package provides modules offering language utilities.  Some of these are heavily based
 on methods in the ES2015 proposal; others are additional APIs for commonly-performed tasks.
 
 #### array
@@ -120,13 +104,17 @@ without iterators for use in older browsers.
 
 #### WeakMap
 
-The [`dojo-core/WeakMap` class](docs/WeakMap.md) is an implementation of the ES2015 WeakMap specification
-without iterators for use in older browsers.
+The `dojo-core/WeakMap` class is an implementation of the ES2015 WeakMap specification
+without iterators for use in older browsers. The main difference between WeakMap and Map
+is that WeakMap's keys can only be objects and that the store has a weak reference
+to the key/value pair. This allows for the garbage collector to remove pairs.
+
+Look at [Map](docs/Map.md) for more information on how to use WeakMap.
 
 ## How do I contribute?
 
-We appreciate your interest!  Please see the [Guidelines Repository](https://github.com/dojo/guidelines#readme) for the
-Contributing Guidelines and Style Guide.
+We appreciate your interest! Please see the [Guidelines Repository](https://github.com/dojo/guidelines#readme)
+for the Contributing Guidelines and Style Guide.
 
 ## Licensing information
 
