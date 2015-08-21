@@ -1,4 +1,5 @@
 import Promise from '../../src/Promise';
+import { Hash } from '../../src/interfaces'
 
 import http = require('intern/dojo/node!http');
 import querystring = require('intern/dojo/node!querystring');
@@ -98,7 +99,7 @@ export function start(port?: number): Promise<http.Server> {
 	const echoRequest = wrapWithMultipartHandler(function (request: any, response: any) {
 		try {
 			const queryString = request.url.split('?')[1];
-			let query: { [ name: string ]: string | string[] };
+			let query: Hash<string | string[]>;
 			let responseType = '';
 
 			if (queryString) {
@@ -144,12 +145,8 @@ export function start(port?: number): Promise<http.Server> {
 							payload: data
 						});
 						if (query && query['delay']) {
-							try {
-								let delay = Number(query['delay']);
-								setTimeout(writeSuccessResponse, delay, response, body)
-							} catch (ignore) {
-								writeSuccessResponse(response, body);
-							}
+							let delay = Number(query['delay']);
+							setTimeout(writeSuccessResponse, delay, response, body)
 						} else {
 							writeSuccessResponse(response, body);
 						}
