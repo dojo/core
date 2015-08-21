@@ -55,55 +55,55 @@ This will run the grunt 'dev' task.
 
 ## Features
 
-### [Feature Detection](docs/has.md)
+### Feature Detection
 
 Using the latest Web technologies isn't always as straightforward as developers would like due to differing support
-across platforms. `dojo-core/has` provides a simple feature detection API that makes it easy to detect which platforms
-support which features.
+across platforms. [`dojo-core/has`](docs/has.md) provides a simple feature detection API that makes it easy to
+detect which platforms support which features.
 
 ### Language Utilities
 
 The core package provides several modules offering a number of langauge utilities.  Some of these are heavily based
 on methods in the ES2015 proposal; others are additional APIs for commonly-performed tasks.
 
-#### [array](docs/array.md)
+#### array
 
-The `dojo-core/array` module contains analogues to some of the ES2015 Array APIs.
+The [`dojo-core/array` module](docs/array.md) contains analogues to some of the ES2015 Array APIs.
 
-#### [lang](docs/lang.md)
+#### lang
 
-The `dojo-core/lang` module contains various utility functions for tasks such as copying objects and creating late-bound
-or partially applied functions.
+The [`dojo-core/lang` module](docs/lang.md) contains various utility functions for tasks such as copying objects
+and creating late-bound or partially applied functions.
 
-#### [math](docs/math.md)
+#### math
 
-The `dojo-core/math` module contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
+The [`dojo-core/math` module](docs/math.md) contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
 functions.
 
-#### [string](docs/string.md)
+#### string
 
-The `dojo-core/string` module contains analogues to the some of the ES2015 String APIs.
+The [`dojo-core/string` module](docs/string.md) contains analogues to the some of the ES2015 String APIs.
 
-#### [UrlSearchParams](docs/UrlSearchParams.md)
+#### UrlSearchParams
 
-The `dojo-core/UrlSearchParams` class can be used to parse and generate URL query strings.
+The [`dojo-core/UrlSearchParams` class](docs/UrlSearchParams.md) can be used to parse and generate URL query strings.
 
-#### [Event handling](docs/on.md)
+#### Event handling
 
-The `dojo-core/on` module contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
+The [`dojo-core/on` module](docs/on.md) contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
 once and pauseable events.
 
-#### [HTTP requests](docs/request.md)
+#### HTTP requests
 
-The `dojo-core/request` module contains methods to simplify making http requests. It can handle
+The [`dojo-core/request` module](docs/request.md) contains methods to simplify making http requests. It can handle
 making requests in both node and the browser through the same methods.
 
 ### Promises and Asynchronous Operations
 
 #### Promise
 
-The `dojo-core/Promise` class is an implementation of the ES2015 Promise API that also includes static state inspection
-and a `finally` method for cleanup actions.
+The `dojo-core/Promise` class is an implementation of the ES2015 Promise API that also includes static state
+inspection and a `finally` method for cleanup actions.
 
 `dojo-core/async` contains a number of classes and utility modules to simplify working with asynchronous operations.
 
@@ -113,14 +113,14 @@ The `dojo-core/async/Task` class is an extension of `dojo-core/Promise` that pro
 
 ### Data Structures
 
-#### [Map](docs/Map.md)
+#### Map
 
-The `dojo-core/Map` class is an implementation of the ES2015 Map specification
+The [`dojo-core/Map` class](docs/Map.md) is an implementation of the ES2015 Map specification
 without iterators for use in older browsers.
 
-#### [WeakMap](docs/WeakMap.md)
+#### WeakMap
 
-The `dojo-core/WeakMap` class is an implementation of the ES2015 WeakMap specification
+The [`dojo-core/WeakMap` class](docs/WeakMap.md) is an implementation of the ES2015 WeakMap specification
 without iterators for use in older browsers.
 
 ## How do I contribute?
