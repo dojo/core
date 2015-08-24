@@ -18,6 +18,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-tslint');
 	grunt.loadNpmTasks('dts-generator');
 	grunt.loadNpmTasks('intern');
+	grunt.loadNpmTasks('remap-istanbul');
 
 	grunt.loadTasks('tasks');
 
@@ -115,7 +116,7 @@ module.exports = function (grunt) {
 				runType: 'runner',
 				config: '<%= devDirectory %>/tests/intern'
 			},
-			runner: {
+			remote: {
 				options: {
 					reporters: [ 'Runner', 'LcovHtml' ]
 				}
@@ -126,7 +127,7 @@ module.exports = function (grunt) {
 					reporters: [ 'Runner', 'LcovHtml' ]
 				}
 			},
-			client: {
+			node: {
 				options: {
 					runType: 'client',
 					reporters: [ 'Console', 'LcovHtml' ]
@@ -203,7 +204,7 @@ module.exports = function (grunt) {
 			}
 		},
 
-		mapCoverage: {
+		remapIstanbul: {
 			main: {
 				options: {
 					'html': 'html-report',
@@ -229,7 +230,7 @@ module.exports = function (grunt) {
 		var flags = Object.keys(this.flags);
 
 		if (!flags.length) {
-			flags.push('client');
+			flags.push('node');
 		}
 
 		grunt.option('force', true);
@@ -241,15 +242,15 @@ module.exports = function (grunt) {
 			]);
 			grunt.task.run('intern:' + flag);
 		});
-		grunt.task.run('mapCoverage');
+		grunt.task.run('remapIstanbul');
 		grunt.task.run('clean:coverage');
 	});
 	grunt.registerTask('ci', function () {
-		grunt.config.set('mapCoverage.main.options', {
+		grunt.config.set('remapIstanbul.main.options', {
 			'json': 'coverage-final.json',
 			'text': null
 		});
-		grunt.task.run('test:local:local');
+		grunt.task.run('test:node:local');
 	});
 
 	grunt.registerTask('dev', [
