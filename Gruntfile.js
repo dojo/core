@@ -112,24 +112,23 @@ module.exports = function (grunt) {
 		intern: {
 			options: {
 				runType: 'runner',
-				config: '<%= devDirectory %>/tests/intern',
-				reporters: [ 'LcovHtml' ]
+				config: '<%= devDirectory %>/tests/intern'
 			},
 			runner: {
 				options: {
-					reporters: [ 'Runner', '<%= intern.options.reporters %>' ]
+					reporters: [ 'Runner', 'LcovHtml' ]
 				}
 			},
 			local: {
 				options: {
 					config: '<%= devDirectory %>/tests/intern-local',
-					reporters: [ 'Runner', '<%= intern.options.reporters %>' ]
+					reporters: [ 'Runner', 'LcovHtml' ]
 				}
 			},
 			client: {
 				options: {
 					runType: 'client',
-					reporters: [ 'Console', '<%= intern.options.reporters %>' ]
+					reporters: [ 'Console', 'LcovHtml' ]
 				}
 			},
 			proxy: {
@@ -205,7 +204,10 @@ module.exports = function (grunt) {
 
 		mapCoverage: {
 			main: {
-				dest: 'html-report',
+				options: {
+					'html': 'html-report',
+					'text': null
+				},
 				src: 'coverage.json'
 			}
 		}
@@ -240,14 +242,13 @@ module.exports = function (grunt) {
 			flags.push('client');
 		}
 
-		grunt.config.set('intern.options.reporters', [
-			{ id: 'tests/support/JsonReporter', filename: 'coverage.json' }
-		]);
-
 		grunt.option('force', true);
 		grunt.task.run('clean:coverage');
 		grunt.task.run('dev');
 		flags.forEach(function (flag) {
+			grunt.config.set('intern.' + flag + '.options.reporters', [
+				{ id: 'tests/support/JsonReporter', filename: 'coverage.json' }
+			]);
 			grunt.task.run('intern:' + flag);
 		});
 		grunt.task.run('mapCoverage');

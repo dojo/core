@@ -1,11 +1,14 @@
 define([
+	'intern/lib/reporters/Console',
 	'intern/dojo/node!fs',
 	'intern/dojo/node!istanbul/lib/collector',
 	'intern/dojo/node!istanbul/lib/report/json',
 	'intern/dojo/node!istanbul/index'
-], function (fs, Collector, Reporter) {
+], function (Console, fs, Collector, Reporter) {
 	function JsonCoverageReporter(config) {
 		config = config || {};
+
+		Console.call(this, config);
 
 		this._filename = config.filename || 'coverage-final.json';
 		this._collector = new Collector();
@@ -14,6 +17,9 @@ define([
 			watermarks: config.watermarks
 		});
 	}
+
+	JsonCoverageReporter.prototype = Object.create(Console.prototype);
+	JsonCoverageReporter.prototype.constructor = JsonCoverageReporter;
 
 	JsonCoverageReporter.prototype.coverage = function (sessionId, coverage) {
 		this._collector.add(coverage);
