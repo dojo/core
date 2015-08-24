@@ -42,6 +42,7 @@ module.exports = function (grunt) {
 		name: packageJson.name,
 		version: packageJson.version,
 		tsconfig: tsconfig,
+		tsconfigContent: tsconfigContent,
 		all: [ '<%= tsconfig.filesGlob %>' ],
 		skipTests: [ '<%= all %>' , '!tests/**/*.ts' ],
 		staticTestFiles: [ 'tests/**/*.{html,css,json,xml}', 'tests/support/JsonReporter.js' ],
@@ -68,7 +69,7 @@ module.exports = function (grunt) {
 				}
 			},
 			report: {
-				src: [ 'html-report/' ]
+				src: [ 'html-report/', 'coverage-final.json' ]
 			},
 			coverage: {
 				src: [ 'coverage.json' ]
@@ -160,12 +161,12 @@ module.exports = function (grunt) {
 				src: [ '<%= all %>' ]
 			},
 			dist: {
-				options: mixin({}, tsOptions, {
+				options: {
 					mapRoot: '../dist/_debug',
 					sourceMap: true,
 					inlineSourceMap: false,
 					inlineSources: true
-				}),
+				},
 				outDir: 'dist',
 				src: [ '<%= skipTests %>' ]
 			}
@@ -224,17 +225,6 @@ module.exports = function (grunt) {
 		}
 	});
 
-	grunt.registerTask('updateTsconfig', function () {
-		var tsconfig = JSON.parse(tsconfigContent);
-		tsconfig.files = grunt.file.expand(tsconfig.filesGlob);
-
-		var output = JSON.stringify(tsconfig, null, '\t') + require('os').EOL;
-		if (output !== tsconfigContent) {
-			grunt.file.write('tsconfig.json', output);
-			tsconfigContent = output;
-		}
-	});
-
 	grunt.registerTask('test', function () {
 		var flags = Object.keys(this.flags);
 
@@ -254,6 +244,13 @@ module.exports = function (grunt) {
 		grunt.task.run('mapCoverage');
 		grunt.task.run('clean:coverage');
 	});
+	grunt.registerTask('ci', function () {
+		grunt.config.set('mapCoverage.main.options', {
+			'json': 'coverage-final.json',
+			'text': null
+		});
+		grunt.task.run('test:local:local');
+	});
 
 	grunt.registerTask('dev', [
 		'ts:dev',
@@ -269,6 +266,5 @@ module.exports = function (grunt) {
 		'dtsGenerator:dist'
 	]);
 	grunt.registerTask('test-proxy', [ 'dev', 'intern:proxy' ]);
-	grunt.registerTask('ci', [ 'test:client:runner' ]);
 	grunt.registerTask('default', [ 'clean', 'dev' ]);
 };
