@@ -26,8 +26,8 @@
 		"grunt-tslint": "2.0.0",
 		"http-proxy": "0.10.3",
 		"intern": "3.0.1",
-		"istanbul": "^0.3.17",
-		"remap-istanbul": "git://github.com/bryanforbes/remap-istanbul.git#632512e87ca0bd2ffe1e49353076ccee757442ba",
+		"istanbul": "0.3.17",
+		"remap-istanbul": "git://github.com/kitsonk/remap-istanbul.git#e3c51e6abb6f2a454f8744cec7f3296a2341fa61",
 		"sinon": "1.14.1",
 		"tslint": "2.4.0",
 		"typescript": "1.6.0-beta"

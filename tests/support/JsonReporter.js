@@ -18,19 +18,26 @@ define([
 		});
 	}
 
-	JsonCoverageReporter.prototype = Object.create(Console.prototype);
-	JsonCoverageReporter.prototype.constructor = JsonCoverageReporter;
+	JsonCoverageReporter.prototype = Object.create(Console.prototype, {
+		constructor: {
+			value: JsonCoverageReporter
+		},
 
-	JsonCoverageReporter.prototype.coverage = function (sessionId, coverage) {
-		this._collector.add(coverage);
-	};
+		coverage: {
+			value: function (sessionId, coverage) {
+				this._collector.add(coverage);
+			}
+		},
 
-	JsonCoverageReporter.prototype.runEnd = function () {
-		if (fs.existsSync(this._filename)) {
-			this._collector.add(JSON.parse(fs.readFileSync(this._filename)));
+		runEnd: {
+			value: function () {
+				if (fs.existsSync(this._filename)) {
+					this._collector.add(JSON.parse(fs.readFileSync(this._filename)));
+				}
+				this._reporter.writeReport(this._collector, true);
+			}
 		}
-		this._reporter.writeReport(this._collector, true);
-	};
+	});
 
 	return JsonCoverageReporter;
 });

@@ -73,7 +73,7 @@ module.exports = function (grunt) {
 				src: [ 'html-report/', 'coverage-final.json' ]
 			},
 			coverage: {
-				src: [ 'coverage.json' ]
+				src: [ 'coverage-unmapped.json' ]
 			}
 		},
 
@@ -207,10 +207,12 @@ module.exports = function (grunt) {
 		remapIstanbul: {
 			main: {
 				options: {
-					'html': 'html-report',
-					'text': null
+					reports: {
+						'html': 'html-report',
+						'text': null
+					}
 				},
-				src: 'coverage.json'
+				src: [ 'coverage-unmapped.json' ]
 			}
 		}
 	});
@@ -238,7 +240,7 @@ module.exports = function (grunt) {
 		grunt.task.run('dev');
 		flags.forEach(function (flag) {
 			grunt.config.set('intern.' + flag + '.options.reporters', [
-				{ id: 'tests/support/JsonReporter', filename: 'coverage.json' }
+				{ id: 'tests/support/JsonReporter', filename: 'coverage-unmapped.json' }
 			]);
 			grunt.task.run('intern:' + flag);
 		});
@@ -247,8 +249,10 @@ module.exports = function (grunt) {
 	});
 	grunt.registerTask('ci', function () {
 		grunt.config.set('remapIstanbul.main.options', {
-			'json': 'coverage-final.json',
-			'text': null
+			reports: {
+				'json': 'coverage-final.json',
+				'text': null
+			}
 		});
 		grunt.task.run('test:node:local');
 	});
