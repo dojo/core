@@ -46,7 +46,7 @@ module.exports = function (grunt) {
 		tsconfigContent: tsconfigContent,
 		all: [ '<%= tsconfig.filesGlob %>' ],
 		skipTests: [ '<%= all %>' , '!tests/**/*.ts' ],
-		staticTestFiles: [ 'tests/**/*.{html,css,json,xml}', 'tests/support/JsonReporter.js' ],
+		staticTestFiles: [ 'tests/**/*.{html,css,json,xml}' ],
 		devDirectory: '<%= tsconfig.compilerOptions.outDir %>',
 		istanbulIgnoreNext: '/* istanbul ignore next */',
 
@@ -239,9 +239,9 @@ module.exports = function (grunt) {
 		grunt.task.run('clean:coverage');
 		grunt.task.run('dev');
 		flags.forEach(function (flag) {
-			grunt.config.set('intern.' + flag + '.options.reporters', [
-				{ id: 'tests/support/JsonReporter', filename: 'coverage-unmapped.json' }
-			]);
+			var reporters = grunt.config.get('intern.' + flag + '.options.reporters').slice(0);
+			reporters[1] = { id: 'tests/support/JsonCoverageReporter', filename: 'coverage-unmapped.json' };
+			grunt.config.set('intern.' + flag + '.options.reporters', reporters);
 			grunt.task.run('intern:' + flag);
 		});
 		grunt.task.run('remapIstanbul');
