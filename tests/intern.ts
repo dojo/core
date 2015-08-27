@@ -2,7 +2,8 @@ import intern = require('intern');
 import echo = require('intern/dojo/has!host-node?./services/echo');
 
 let server: any;
-if (echo && intern.mode === 'runner') {
+// TODO: intern.mode is null and shouldn't be... always start the proxy
+if (echo/* && intern.mode === 'runner'*/) {
 	echo.start().then(function (_server: any) {
 		server = _server;
 	});
@@ -35,7 +36,7 @@ export const capabilities = {
 // OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 // capabilities options specified for an environment will be copied as-is
 export const environments = [
-	{ browserName: 'internet explorer', version: [ '11', '10', '9' ], platform: 'WINDOWS' },
+	{ browserName: 'internet explorer', version: [ '9', '10', '11' ], platform: 'WINDOWS' },
 	{ browserName: 'firefox', os: 'WINDOWS' },
 	// { browser: 'Firefox', os: 'WINDOWS', os_version: 'XP' },
 	// { browser: 'Firefox', os: 'OS X' },
@@ -51,6 +52,7 @@ export const maxConcurrency = 1;
 // Name of the tunnel class to use for WebDriver tests
 export const tunnel = 'BrowserStackTunnel';
 
+// TODO: this is set to true because of out of order message issues and hanging tests
 export const runnerClientReporter = {
 	waitForRunner: true
 };
@@ -66,7 +68,7 @@ export const initialBaseUrl: string = (function () {
 // The desired AMD loader to use when running unit tests (client.html/client.js). Omit to use the default Dojo
 // loader
 export const loaders = {
-	'host-browser': `node_modules/dojo-loader/loader.js`,
+	'host-browser': 'node_modules/dojo-loader/loader.js',
 	'host-node': 'dojo-loader'
 };
 
