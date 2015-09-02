@@ -2,11 +2,14 @@ import intern = require('intern');
 import echo = require('intern/dojo/has!host-node?./services/echo');
 
 let server: any;
-// TODO: intern.mode is null and shouldn't be... always start the proxy
-if (echo/* && intern.mode === 'runner'*/) {
-	echo.start().then(function (_server: any) {
-		server = _server;
-	});
+
+// This hook is called when Intern starts
+export function setup() {
+	if (echo && intern.mode === 'runner') {
+		echo.start().then(function (_server: any) {
+			server = _server;
+		});
+	}
 }
 
 // This hook is called when Intern closes
@@ -51,11 +54,6 @@ export const maxConcurrency = 1;
 
 // Name of the tunnel class to use for WebDriver tests
 export const tunnel = 'BrowserStackTunnel';
-
-// TODO: this is set to true because of out of order message issues and hanging tests
-export const runnerClientReporter = {
-	waitForRunner: true
-};
 
 // Support running unit tests from a web server that isn't the intern proxy
 export const initialBaseUrl: string = (function () {

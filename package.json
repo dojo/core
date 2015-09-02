@@ -27,7 +27,7 @@
 		"http-proxy": "0.10.3",
 		"intern": "3.0.1",
 		"istanbul": "0.3.17",
-		"remap-istanbul": "git://github.com/kitsonk/remap-istanbul.git#e3c51e6abb6f2a454f8744cec7f3296a2341fa61",
+		"remap-istanbul": "git://github.com/kitsonk/remap-istanbul.git#e9355372a4b1368d8feae2c5666f3b68cc136b4a",
 		"sinon": "1.14.1",
 		"tslint": "2.4.0",
 		"typescript": "1.6.0-beta"
