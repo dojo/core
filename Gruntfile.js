@@ -118,19 +118,19 @@ module.exports = function (grunt) {
 			},
 			remote: {
 				options: {
-					reporters: [ 'Runner', 'LcovHtml' ]
+					reporters: [ 'Runner' ]
 				}
 			},
 			local: {
 				options: {
 					config: '<%= devDirectory %>/tests/intern-local',
-					reporters: [ 'Runner', 'LcovHtml' ]
+					reporters: [ 'Runner' ]
 				}
 			},
 			node: {
 				options: {
 					runType: 'client',
-					reporters: [ 'Console', 'LcovHtml' ]
+					reporters: [ 'Runner' ]
 				}
 			},
 			proxy: {
@@ -205,7 +205,7 @@ module.exports = function (grunt) {
 		},
 
 		remapIstanbul: {
-			main: {
+			coverage: {
 				options: {
 					reports: {
 						'html': 'html-report',
@@ -213,6 +213,12 @@ module.exports = function (grunt) {
 					}
 				},
 				src: [ 'coverage-unmapped.json' ]
+			}
+		},
+
+		codecov: {
+			ci: {
+				src: 'coverage-final.json'
 			}
 		}
 	});
@@ -239,22 +245,23 @@ module.exports = function (grunt) {
 		grunt.task.run('clean:coverage');
 		grunt.task.run('dev');
 		flags.forEach(function (flag) {
-			var reporters = grunt.config.get('intern.' + flag + '.options.reporters').slice(0);
-			reporters[1] = { id: 'tests/support/JsonCoverageReporter', filename: 'coverage-unmapped.json' };
-			grunt.config.set('intern.' + flag + '.options.reporters', reporters);
+			grunt.config.set('intern.' + flag + '.options.reporters', [
+				{ id: 'tests/support/Reporter', file: 'coverage-unmapped.json' }
+			]);
 			grunt.task.run('intern:' + flag);
 		});
 		grunt.task.run('remapIstanbul');
 		grunt.task.run('clean:coverage');
 	});
 	grunt.registerTask('ci', function () {
-		grunt.config.set('remapIstanbul.main.options', {
+		grunt.config.set('remapIstanbul.coverage.options', {
 			reports: {
 				'json': 'coverage-final.json',
 				'text': null
 			}
 		});
-		grunt.task.run('test:node:local');
+		grunt.task.run('test:node');
+		grunt.task.run('codecov:ci');
 	});
 
 	grunt.registerTask('dev', [
