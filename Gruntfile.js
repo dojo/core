@@ -114,23 +114,18 @@ module.exports = function (grunt) {
 		intern: {
 			options: {
 				runType: 'runner',
-				config: '<%= devDirectory %>/tests/intern'
+				config: '<%= devDirectory %>/tests/intern',
+				reporters: [ 'Runner' ]
 			},
-			remote: {
-				options: {
-					reporters: [ 'Runner' ]
-				}
-			},
+			remote: {},
 			local: {
 				options: {
-					config: '<%= devDirectory %>/tests/intern-local',
-					reporters: [ 'Runner' ]
+					config: '<%= devDirectory %>/tests/intern-local'
 				}
 			},
 			node: {
 				options: {
-					runType: 'client',
-					reporters: [ 'Runner' ]
+					runType: 'client'
 				}
 			},
 			proxy: {
@@ -213,12 +208,15 @@ module.exports = function (grunt) {
 					}
 				},
 				src: [ 'coverage-unmapped.json' ]
-			}
-		},
-
-		codecov: {
+			},
 			ci: {
-				src: 'coverage-final.json'
+				options: {
+					reports: {
+						'json': 'coverage-final.json',
+						'text': null
+					}
+				},
+				src: [ 'coverage-unmapped.json' ]
 			}
 		}
 	});
@@ -234,6 +232,15 @@ module.exports = function (grunt) {
 		}
 	});
 
+	function setCombined(combined) {
+		if (combined) {
+			grunt.config('intern.options.reporters', [
+				{ id: 'tests/support/Reporter', file: 'coverage-unmapped.json' }
+			]);
+		}
+	}
+	setCombined(grunt.option('combined'));
+
 	grunt.registerTask('test', function () {
 		var flags = Object.keys(this.flags);
 
@@ -244,24 +251,12 @@ module.exports = function (grunt) {
 		grunt.option('force', true);
 		grunt.task.run('clean:coverage');
 		grunt.task.run('dev');
+		setCombined(true);
 		flags.forEach(function (flag) {
-			grunt.config.set('intern.' + flag + '.options.reporters', [
-				{ id: 'tests/support/Reporter', file: 'coverage-unmapped.json' }
-			]);
 			grunt.task.run('intern:' + flag);
 		});
-		grunt.task.run('remapIstanbul');
+		grunt.task.run('remapIstanbul:coverage');
 		grunt.task.run('clean:coverage');
-	});
-	grunt.registerTask('ci', function () {
-		grunt.config.set('remapIstanbul.coverage.options', {
-			reports: {
-				'json': 'coverage-final.json',
-				'text': null
-			}
-		});
-		grunt.task.run('test:node');
-		grunt.task.run('codecov:ci');
 	});
 
 	grunt.registerTask('dev', [

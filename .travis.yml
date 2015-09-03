@@ -9,4 +9,7 @@ install:
   - "travis_retry npm install grunt-cli"
   - "travis_retry npm install"
 script:
-  - "grunt ci"
+  - "grunt"
+  - "grunt intern:node --combined"
+  - "grunt remapIstanbul:ci"
+  - "grunt codecov"

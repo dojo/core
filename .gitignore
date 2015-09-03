@@ -10,4 +10,5 @@ tests/typings/dist/
 .baseDir.ts
 html-report
 coverage-final.json
+coverage-unmapped.json
 /_build

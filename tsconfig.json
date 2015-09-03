@@ -76,7 +76,7 @@
 		"./tests/intern-local.ts",
 		"./tests/intern.ts",
 		"./tests/services/echo.ts",
-		"./tests/support/JsonCoverageReporter.ts",
+		"./tests/support/Reporter.ts",
 		"./tests/support/util.ts",
 		"./tests/typings/benchmark/benchmark.d.ts",
 		"./tests/typings/chai/chai.d.ts",
