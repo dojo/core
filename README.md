@@ -1,5 +1,8 @@
 # Dojo 2 core
 
+[![Build Status](https://travis-ci.org/bryanforbes/core.svg?branch=coverage)](https://travis-ci.org/bryanforbes/core)
+[![codecov.io](http://codecov.io/github/bryanforbes/core/coverage.svg?branch=coverage)](http://codecov.io/github/bryanforbes/core?branch=coverage)
+
 This package provides a set of language helpers, utility functions, and classes for writing TypeScript applications.
 It includes APIs for feature detection, asynchronous and streaming operations, basic event handling,
 and making HTTP requests.
