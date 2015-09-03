@@ -212,7 +212,7 @@ module.exports = function (grunt) {
 			ci: {
 				options: {
 					reports: {
-						'lcovonly': 'coverage-final.lcov',
+						'cobertura': 'coverage-final.xml',
 						'text': null
 					}
 				},

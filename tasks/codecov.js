@@ -6,7 +6,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('codecov', function () {
 		var done = this.async();
 
-		var contents = grunt.file.read('coverage-final.lcov');
+		var contents = grunt.file.read('coverage-final.xml');
 		sendToCodeCov(contents, function (err) {
 			done(err);
 		});
