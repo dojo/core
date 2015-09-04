@@ -69,7 +69,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 
 				response.statusCode = request.status;
 				response.statusText = request.statusText;
-				if (response.statusCode >= 200 && response.statusCode < 400) {
+				if (response.statusCode > 0 && response.statusCode < 400) {
 					resolve(response);
 				}
 				else {
