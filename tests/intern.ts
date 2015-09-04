@@ -41,11 +41,7 @@ export const capabilities = {
 export const environments = [
 	{ browserName: 'internet explorer', version: [ '9', '10', '11' ], platform: 'WINDOWS' },
 	{ browserName: 'firefox', os: 'WINDOWS' },
-	// { browser: 'Firefox', os: 'WINDOWS', os_version: 'XP' },
-	// { browser: 'Firefox', os: 'OS X' },
 	{ browserName: 'chrome', os: 'WINDOWS' }/*,
-	{ browser: 'Chrome', os: 'WINDOWS', os_version: 'XP' },
-	{ browser: 'Chrome', os: 'OS X' },
 	{ browser: 'Safari', browser_version: '8', os: 'OS X' }*/
 ];
 

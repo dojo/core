@@ -2,6 +2,11 @@ sudo: false
 language: node_js
 node_js:
   - "0.12"
+env:
+  global:
+    # Please get your own free key if you want to test yourself
+    - BROWSERSTACK_USERNAME: dtktestaccount1
+    - BROWSERSTACK_ACCESS_KEY: mG2qbEFJCZY2qLsM7yfx
 cache:
   directories:
     - node_modules
@@ -11,5 +16,6 @@ install:
 script:
   - "grunt"
   - "grunt intern:node --combined"
+  - "grunt intern:remote --combined"
   - "grunt remapIstanbul:ci"
-  - "grunt codecov"
+  - "grunt uploadCoverage"
