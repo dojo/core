@@ -92,3 +92,4 @@ add('xhr2-blob', function () {
 	request.abort();
 	return request.responseType === 'blob';
 });
+add('es6-symbol', typeof global.Symbol === 'function');
