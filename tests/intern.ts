@@ -29,7 +29,7 @@ export const proxyUrl = 'http://localhost:9001/';
 // Note that the `build` capability will be filled in with the current commit ID from the Travis CI environment
 // automatically
 export const capabilities = {
-	'browserstack.selenium_version': '2.46.0',
+	// 'browserstack.selenium_version': '2.46.0',
 	'browserstack.debug': false,
 	project: 'Dojo 2',
 	name: 'dojo-core'
@@ -40,6 +40,7 @@ export const capabilities = {
 // capabilities options specified for an environment will be copied as-is
 export const environments = [
 	{ browserName: 'internet explorer', version: [ '9', '10', '11' ], platform: 'WINDOWS' },
+	{ browserName: 'edge', version: '12', platform: 'WINDOWS' },
 	{ browserName: 'firefox', os: 'WINDOWS' },
 	{ browserName: 'chrome', os: 'WINDOWS' }/*,
 	{ browser: 'Safari', browser_version: '8', os: 'OS X' }*/
