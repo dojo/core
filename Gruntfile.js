@@ -258,11 +258,13 @@ module.exports = function (grunt) {
 	});
 
 	grunt.registerTask('dev', [
+		'tslint',
 		'ts:dev',
 		'copy:staticTestFiles',
 		'updateTsconfig'
 	]);
 	grunt.registerTask('dist', [
+		'tslint',
 		'ts:dist',
 		'rename:sourceMaps',
 		'rewriteSourceMaps',
