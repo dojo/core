@@ -158,8 +158,6 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				options: {
-					mapRoot: '../dist/_debug',
-					sourceMap: true,
 					inlineSourceMap: false,
 					inlineSources: true
 				},
