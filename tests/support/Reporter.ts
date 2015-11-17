@@ -112,7 +112,7 @@ class Reporter extends Runner {
 			}
 
 			this.charm
-				.write('\n');
+				.write('\n\n');
 
 			if (this._errors[suite.sessionId]) {
 				this._errors[suite.sessionId].forEach((test) => {
@@ -125,7 +125,7 @@ class Reporter extends Runner {
 						.foreground('red')
 						.write(util.getErrorMessage(test.error))
 						.display('reset')
-						.write('\n');
+						.write('\n\n');
 				});
 			}
 
