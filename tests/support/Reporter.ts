@@ -20,7 +20,7 @@ class Reporter extends Runner {
 	private _collector: Collector;
 	private _reporter: JsonReporter;
 	private reporter: any;
-	private _errors: { [sessionId: string ]: any[] };
+	private _errors: { [sessionId: string ]: any[] } = {};
 
 	constructor(config: any = {}) {
 		super(config);
