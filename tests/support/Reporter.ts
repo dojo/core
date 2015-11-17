@@ -123,7 +123,7 @@ class Reporter extends Runner {
 						.write(' (' + (test.timeElapsed / 1000) + 's)')
 						.write('\n')
 						.foreground('red')
-						.write(util.getErrorMessage(test.error))
+						.write(test.error)
 						.display('reset')
 						.write('\n\n');
 				});
@@ -159,20 +159,16 @@ class Reporter extends Runner {
 			this._errors[test.sessionId] = [];
 		}
 
-		this._errors[test.sessionId].push(test);
+		this._errors[test.sessionId].push({
+			id: test.id,
+			timeElapsed: test.timeElapsed,
+			error: util.getErrorMessage(test.error)
+		});
 
 		this.charm
 			.write(LIGHT_RED)
 			.write('×')
 			.display('reset');
-			/*
-			.foreground('white')
-			.write(' (' + (test.timeElapsed / 1000) + 's)')
-			.write('\n')
-			.foreground('red')
-			.write(util.getErrorMessage(test.error))
-			.display('reset')
-			.write('\n');*/
 	}
 
 	testPass(test: any): void {
