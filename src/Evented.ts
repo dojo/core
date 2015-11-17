@@ -29,6 +29,6 @@ export default class Evented {
 				writable: true
 			});
 		}
-		return on(this, '__on' + type, listener);
+		return on(this, name, listener);
 	}
 }
