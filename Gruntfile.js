@@ -161,7 +161,7 @@ module.exports = function (grunt) {
 					mapRoot: '../dist/_debug',
 					sourceMap: true,
 					inlineSourceMap: false,
-					inlineSources: true
+					inlineSources: false
 				},
 				outDir: 'dist',
 				src: [ '<%= skipTests %>' ]
