@@ -203,3 +203,17 @@ filterRegistry.register(
 		};
 	}
 );
+
+/**
+ * Add a filter that automatically parses incoming Buffer responses in Node.
+ */
+filterRegistry.register(
+	function (response: Response<any>, url: string, options: RequestOptions) {
+		return response.data.readDoubleLE !== undefined && options.responseType === 'json';
+	},
+	function (response: Response<any>, url: string, options: RequestOptions): Object {
+		return {
+			data: JSON.parse(String(response.data))
+		};
+	}
+);
