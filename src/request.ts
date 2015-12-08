@@ -209,7 +209,7 @@ filterRegistry.register(
  */
 filterRegistry.register(
 	function (response: Response<any>, url: string, options: RequestOptions) {
-		return response.data.readDoubleLE !== undefined && options.responseType === 'json';
+		return Buffer.isBuffer(response.data) !== undefined && options.responseType === 'json';
 	},
 	function (response: Response<any>, url: string, options: RequestOptions): Object {
 		return {
