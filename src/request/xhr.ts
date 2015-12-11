@@ -40,6 +40,12 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 			return request.getResponseHeader(name);
 		}
 	};
+	let isAborted: boolean = false;
+
+	function abort() {
+		isAborted = true;
+		request && request.abort();
+	}
 
 	const promise = new Task<Response<T>>(function (resolve, reject): void {
 		if (!options.method) {
@@ -60,7 +66,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 
 		let timeoutHandle: Handle;
 		request.onreadystatechange = function (): void {
-			if (request.readyState === 4) {
+			if (!isAborted && request.readyState === 4) {
 				request.onreadystatechange = function () {};
 				timeoutHandle && timeoutHandle.destroy();
 
@@ -91,7 +97,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 				// less specific error.  (This is also why we set up our own timeout rather than using
 				// native timeout and ontimeout, because that aborts and fires onreadystatechange before ontimeout.)
 				reject(new RequestTimeoutError('The XMLHttpRequest request timed out.'));
-				request.abort();
+				abort();
 			}, options.timeout);
 		}
 
@@ -122,7 +128,7 @@ export default function xhr<T>(url: string, options: XhrRequestOptions = {}): Re
 
 		request.send(options.data);
 	}, function () {
-		request && request.abort();
+		abort();
 	});
 
 	return promise;
