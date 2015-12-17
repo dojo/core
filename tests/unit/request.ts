@@ -232,7 +232,7 @@ if (has('host-node')) {
 			});
 
 			const dfd = this.async();
-      const options: RequestOptions = { responseType: 'json' };
+			const options: RequestOptions = { responseType: 'json' };
 			request.get(getRequestUrl('foo.json'), options)
 				.then(
 					dfd.callback(function (response: any) {

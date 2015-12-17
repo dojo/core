@@ -208,8 +208,8 @@ filterRegistry.register(
  * Add a filter that automatically parses incoming Buffer responses in Node.
  */
 filterRegistry.register(
-	function (response: Response<any>, url: string, options: RequestOptions) {
-		return Buffer.isBuffer(response.data) !== undefined && options.responseType === 'json';
+	function (response: Response<any>, url: string, options?: RequestOptions) {
+		return options && options.responseType === 'json' && Buffer && typeof Buffer.isBuffer(response.data) !== 'undefined';
 	},
 	function (response: Response<any>, url: string, options: RequestOptions): Object {
 		return {
