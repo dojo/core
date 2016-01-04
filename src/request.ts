@@ -1,5 +1,5 @@
 import Task from './async/Task';
-import has from './has';
+import has from './request/has';
 import { Handle } from './interfaces';
 import Promise from './Promise';
 import Registry, { Test } from './Registry';
@@ -207,13 +207,15 @@ filterRegistry.register(
 /**
  * Add a filter that automatically parses incoming Buffer responses in Node.
  */
-filterRegistry.register(
-	function (response: Response<any>, url: string, options?: RequestOptions) {
-		return options && options.responseType === 'json' && Buffer && typeof Buffer.isBuffer(response.data) !== 'undefined';
-	},
-	function (response: Response<any>, url: string, options: RequestOptions): Object {
-		return {
-			data: JSON.parse(String(response.data))
-		};
-	}
-);
+if (has('node-buffer')) {
+  filterRegistry.register(
+    function (response: Response<any>, url: string, options?: RequestOptions) {
+      return options && options.responseType === 'json' && typeof Buffer.isBuffer(response.data) !== 'undefined';
+    },
+    function (response: Response<any>, url: string, options: RequestOptions): Object {
+      return {
+        data: JSON.parse(String(response.data))
+      };
+    }
+  );
+}
