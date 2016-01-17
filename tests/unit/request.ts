@@ -210,36 +210,20 @@ if (has('host-node')) {
 			}
 		},
 
-		'JSON filter'() {
-			handle = filterRegistry.register(/foo\.json$/, function (response: Response<any>) {
-				response.data = JSON.parse(String(response.data));
-				return response;
-			});
-
-			const dfd = this.async();
-			request.get(getRequestUrl('foo.json'))
-				.then(
-					dfd.callback(function (response: any) {
-						assert.deepEqual(response.data, { foo: 'bar' });
-					}),
-					dfd.reject.bind(dfd)
-				);
+		'JSON responseType filter'() {
+			return request.get(getRequestUrl('foo.json'), { responseType: 'json' })
+				.then(function(response: any) {
+					assert.deepEqual(response.data, { foo: 'bar' });
+				})
+			;
 		},
 
-		'Buffer filter'() {
-			handle = filterRegistry.register(/foo\.json$/, function (response: Response<any>) {
-				return response;
-			});
-
-			const dfd = this.async();
-			const options: RequestOptions = { responseType: 'json' };
-			request.get(getRequestUrl('foo.json'), options)
-				.then(
-					dfd.callback(function (response: any) {
-						assert.deepEqual(response.data, { foo: 'bar' });
-					}),
-					dfd.reject.bind(dfd)
-				);
+		'JSON handleAs filter'() {
+			return request.get(getRequestUrl('foo.json'), { handleAs: 'json' })
+				.then(function(response: any) {
+					assert.deepEqual(response.data, { foo: 'bar' });
+				})
+			;
 		}
 	};
 }
@@ -258,13 +242,16 @@ if (has('host-browser')) {
 			;
 		},
 
-		'JSON filter'() {
-			filterRegistry.register(/foo.json$/, function (response: Response<any>) {
-				response.data = JSON.parse(String(response.data));
-				return response;
-			});
+		'JSON responseType filter'() {
+			return request.get(getRequestUrl('foo.json'), { responseType: 'json' })
+				.then(function (response: any) {
+					assert.deepEqual(response.data, { foo: 'bar' });
+				})
+			;
+		},
 
-			return request.get(getRequestUrl('foo.json'))
+		'JSON handleAs filter'() {
+			return request.get(getRequestUrl('foo.json'), { handleAs: 'json' })
 				.then(function (response: any) {
 					assert.deepEqual(response.data, { foo: 'bar' });
 				})
