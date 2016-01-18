@@ -199,7 +199,7 @@ filterRegistry.register(
 	},
 	function (response: Response<any>, url: string, options: RequestOptions): Object {
 		return {
-			data: JSON.parse(response.data)
+			data: JSON.parse(String(response.data))
 		};
 	}
 );

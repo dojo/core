@@ -145,8 +145,8 @@ if (has('host-node')) {
 		setup() {
 			const dfd = new DojoPromise.Deferred();
 			const responseData: { [name: string]: any } = {
-				'foo.json': JSON.stringify({ foo: 'bar' }),
-				invalidJson: '<not>JSON</not>'
+				'foo.json': new Buffer(JSON.stringify({ foo: 'bar' }), 'utf8'),
+				invalidJson: new Buffer('<not>JSON</not>', 'utf8')
 			};
 
 			function getResponseData(request: any) {
