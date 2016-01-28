@@ -278,7 +278,7 @@ registerSuite({
 			assert.strictEqual(stringUtil.raw(callSite), 'The answer is:\\n',
 				'stringUtil.raw applied with insufficient arguments should result in no substitution');
 
-			callSite.raw = [ 'The answer is:\\n' ];
+			(<any> callSite).raw = [ 'The answer is:\\n' ];
 			assert.strictEqual(stringUtil.raw(callSite, 42), 'The answer is:\\n',
 				'stringUtil.raw applied with insufficient raw fragments should result in truncation before substitution');
 		}
