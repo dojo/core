@@ -30,7 +30,7 @@
 		"istanbul": "0.4.1",
 		"remap-istanbul": "0.4.0",
 		"sinon": "1.14.1",
-		"tslint": "3.2.1",
+		"tslint": "next",
 		"typescript": "next"
 	}
 }
