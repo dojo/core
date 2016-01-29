@@ -13,13 +13,14 @@ class Controller extends ReadableStreamController<string> {
 	stream: any;
 
 	constructor() {
-		this.stream = {
+		const stream: any = {
 			readable: true,
 			_requestClose() {
 			},
 			_controller: undefined
 		};
-		super(<any> this.stream);
+		super(stream);
+		this.stream = stream;
 		this.closed = false;
 	}
 
