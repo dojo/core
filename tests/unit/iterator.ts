@@ -28,6 +28,17 @@ registerSuite({
 
 			assert.deepEqual(results, expected);
 		},
+		'utf-16'() {
+			const str = '\uD801\uDC00';
+			const results: string[] = [];
+			const expected = [ '\uD801\uDC00' ];
+
+			forOf(str, (value) => {
+				results.push(value);
+			});
+
+			assert.deepEqual(results, expected);
+		},
 		'arrays'() {
 			const array: any[] = [ 'foo', 'bar', {}, 1, [ 'qat', 2 ] ];
 			const results: any[] = [];
