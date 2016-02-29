@@ -94,3 +94,4 @@ add('xhr2-blob', function () {
 	return request.responseType === 'blob';
 });
 add('es6-symbol', typeof global.Symbol === 'function');
+add('es6-set', typeof global.Set === 'function');

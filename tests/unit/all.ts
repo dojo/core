@@ -7,6 +7,7 @@ import './Evented';
 import './encoding';
 import './global';
 import './has';
+import './iterator';
 import './lang';
 import './load';
 import './math';

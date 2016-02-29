@@ -8,7 +8,7 @@
 		"removeComments": false,
 		"target": "es5",
 		"experimentalDecorators": true,
-		"sourceMaps": true,
+		"sourceMap": true,
 		"moduleResolution": "classic"
 	},
 	"filesGlob": [
@@ -23,6 +23,7 @@
 		"./src/Promise.ts",
 		"./src/Registry.ts",
 		"./src/Scheduler.ts",
+		"./src/Set.ts",
 		"./src/Symbol.ts",
 		"./src/UrlSearchParams.ts",
 		"./src/WeakMap.ts",
@@ -36,6 +37,7 @@
 		"./src/global.ts",
 		"./src/has.ts",
 		"./src/interfaces.d.ts",
+		"./src/iterator.ts",
 		"./src/lang.ts",
 		"./src/load.ts",
 		"./src/math.ts",
@@ -95,6 +97,7 @@
 		"./tests/unit/Promise.ts",
 		"./tests/unit/Registry.ts",
 		"./tests/unit/Scheduler.ts",
+		"./tests/unit/Set.ts",
 		"./tests/unit/Symbol.ts",
 		"./tests/unit/UrlSearchParams.ts",
 		"./tests/unit/WeakMap.ts",
@@ -107,6 +110,7 @@
 		"./tests/unit/encoding.ts",
 		"./tests/unit/global.ts",
 		"./tests/unit/has.ts",
+		"./tests/unit/iterator.ts",
 		"./tests/unit/lang.ts",
 		"./tests/unit/load.ts",
 		"./tests/unit/load/a.ts",
@@ -147,6 +151,5 @@
 		"./tests/unit/string.ts",
 		"./tests/unit/util.ts",
 		"./typings/tsd.d.ts"
-	],
-	"exclude": []
+	]
 }
