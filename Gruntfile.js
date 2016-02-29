@@ -44,6 +44,7 @@ module.exports = function (grunt) {
 		version: packageJson.version,
 		tsconfig: tsconfig,
 		tsconfigContent: tsconfigContent,
+		packageJson: packageJson,
 		all: [ '<%= tsconfig.filesGlob %>' ],
 		skipTests: [ '<%= all %>' , '!tests/**/*.ts' ],
 		staticTestFiles: [ 'tests/**/*.{html,css,json,xml}' ],
@@ -158,7 +159,7 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				options: {
-					inlineSourceMap: false,
+					inlineSourceMap: true,
 					inlineSources: true
 				},
 				outDir: 'dist',
@@ -270,7 +271,8 @@ module.exports = function (grunt) {
 		'rewriteSourceMaps',
 		'copy:typings',
 		'copy:staticFiles',
-		'dtsGenerator:dist'
+		'dtsGenerator:dist',
+		'updatePackageJson'
 	]);
 	grunt.registerTask('test-proxy', [ 'dev', 'intern:proxy' ]);
 	grunt.registerTask('default', [ 'clean', 'dev' ]);

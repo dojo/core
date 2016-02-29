@@ -1,5 +1,5 @@
 import Task from './async/Task';
-import has from './has';
+import has from './request/has';
 import { Handle } from './interfaces';
 import Promise from './Promise';
 import Registry, { Test } from './Registry';
@@ -195,11 +195,11 @@ export default request;
  */
 filterRegistry.register(
 	function (response: Response<any>, url: string, options: RequestOptions) {
-		return typeof response.data === 'string' && options.responseType === 'json';
+		return typeof response.data && options && (options.responseType === 'json' || options.handleAs === 'json');
 	},
 	function (response: Response<any>, url: string, options: RequestOptions): Object {
 		return {
-			data: JSON.parse(response.data)
+			data: JSON.parse(String(response.data))
 		};
 	}
 );
