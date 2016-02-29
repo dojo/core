@@ -14,21 +14,21 @@ export namespace Shim {
 	}
 
 	export interface SymbolConstructor {
-	    prototype: Symbol;
-	    (description?: string|number): symbol;
-	    for(key: string): symbol;
-	    keyFor(sym: symbol): string;
-	    hasInstance: symbol;
-	    isConcatSpreadable: symbol;
-	    iterator: symbol;
-	    match: symbol;
-	    replace: symbol;
-	    search: symbol;
-	    species: symbol;
-	    split: symbol;
-	    toPrimitive: symbol;
-	    toStringTag: symbol;
-	    unscopables: symbol;
+		prototype: Symbol;
+		(description?: string|number): symbol;
+		for(key: string): symbol;
+		keyFor(sym: symbol): string;
+		hasInstance: symbol;
+		isConcatSpreadable: symbol;
+		iterator: symbol;
+		match: symbol;
+		replace: symbol;
+		search: symbol;
+		species: symbol;
+		split: symbol;
+		toPrimitive: symbol;
+		toStringTag: symbol;
+		unscopables: symbol;
 	}
 
 	const defineProperties = Object.defineProperties;
@@ -44,9 +44,9 @@ export namespace Shim {
 	const globalSymbols: GlobalSymbols = {};
 
 	interface TypedPropertyDescriptor<T> extends PropertyDescriptor {
-	    value?: T;
-	    get? (): T;
-	    set? (v: T): void;
+		value?: T;
+		get? (): T;
+		set? (v: T): void;
 	}
 
 	/**
