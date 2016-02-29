@@ -94,4 +94,11 @@ add('xhr2-blob', function () {
 	return request.responseType === 'blob';
 });
 add('es6-symbol', typeof global.Symbol === 'function');
-add('es6-set', typeof global.Set === 'function');
+add('es6-set', () => {
+	if (typeof global.Set === 'function') {
+		/* IE11 and older versions of Safari are missing critical ES6 Set functionality */
+		const set = new global.Set([1]);
+		return set.has(1) && 'keys' in set && typeof set.keys === 'function';
+	}
+	return false;
+});

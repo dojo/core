@@ -23,6 +23,7 @@ import './streams/all';
 import './request';
 import './request/has';
 import './Scheduler';
+import './Set';
 import './string';
 import './Symbol';
 import './UrlSearchParams';

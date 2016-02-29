@@ -1,5 +1,6 @@
 import has from './has';
 import global from './global';
+import { getValueDescriptor } from './util';
 
 export namespace Shim {
 	export let Symbol: SymbolConstructor;
@@ -47,23 +48,6 @@ export namespace Shim {
 		value?: T;
 		get? (): T;
 		set? (v: T): void;
-	}
-
-	/**
-	 * Helper function to generate a value property descriptor
-	 * @param {T}                            value        The value the property descriptor should be set to
-	 * @param {boolean}                      enumerable   If the property should be enumberable, defaults to false
-	 * @param {boolean}                      writable     If the property should be writable, defaults to true
-	 * @param {boolean}                      configurable If the property should be configurable, defaults to true
-	 * @returns {TypedPropertyDescriptor<T>}              The property descriptor object
-	 */
-	function getValueDescriptor<T>(value: T, enumerable: boolean = false, writable: boolean = true, configurable: boolean = true): TypedPropertyDescriptor<T> {
-		return {
-			value: value,
-			enumerable: enumerable,
-			writable: writable,
-			configurable: configurable
-		};
 	}
 
 	const getSymbolName = (function () {
