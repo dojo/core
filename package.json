@@ -15,7 +15,7 @@
 		"benchmark": "^1.0.0",
 		"codecov.io": "0.1.6",
 		"dojo-loader": "2.0.0-alpha.4",
-		"dts-generator": "1.6.3",
+		"dts-generator": "1.7.0",
 		"formidable": "1.0.14",
 		"glob": "3.2.7",
 		"grunt": "0.4.5",

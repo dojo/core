@@ -3,10 +3,10 @@ import global from './global';
 import { getValueDescriptor } from './util';
 
 export namespace Shim {
-	export let Symbol: SymbolConstructor;
-	let InternalSymbol: SymbolConstructor;
+	let Symbol: SymbolShimConstructor;
+	let InternalSymbol: SymbolShimConstructor;
 
-	export interface Symbol {
+	export interface SymbolShim {
 		toString(): string;
 		valueOf(): Object;
 		[Symbol.toStringTag]: string;
@@ -14,8 +14,8 @@ export namespace Shim {
 		[s: string]: any;
 	}
 
-	export interface SymbolConstructor {
-		prototype: Symbol;
+	export interface SymbolShimConstructor {
+		prototype: SymbolShim;
 		(description?: string|number): symbol;
 		for(key: string): symbol;
 		keyFor(sym: symbol): string;
@@ -157,10 +157,12 @@ export namespace Shim {
 
 	defineProperty(InternalSymbol.prototype, <any> Symbol.toPrimitive, getValueDescriptor(Symbol.prototype[Symbol.toPrimitive], false, false, true));
 	defineProperty(InternalSymbol.prototype, <any> Symbol.toStringTag, getValueDescriptor(Symbol.prototype[Symbol.toStringTag], false, false, true));
+
+	export const Exposed = Symbol;
 }
 
-const Symbol: Shim.SymbolConstructor = has('es6-symbol') ? global.Symbol : Shim.Symbol;
+const SymbolShim: Shim.SymbolShimConstructor = has('es6-symbol') ? global.Symbol : Shim.Exposed;
 
 export const isSymbol = Shim.isSymbol;
 
-export default Symbol;
+export default SymbolShim;
