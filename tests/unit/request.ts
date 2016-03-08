@@ -4,10 +4,8 @@ import DojoPromise = require('intern/dojo/Promise');
 import has = require('intern/dojo/has');
 import Task from 'src/async/Task';
 import request, { filterRegistry, providerRegistry, RequestOptions, Response, ResponsePromise } from 'src/request';
-
-// These imports are only for type information
-import * as nodeHttp from 'http';
-import * as nodeUrl from 'url';
+import { createServer } from 'http';
+import { parse } from 'url';
 
 const mockData = '{ "foo": "bar" }';
 let handle: any;
@@ -130,8 +128,6 @@ const suite: { [name: string]: any } = {
 };
 
 if (has('host-node')) {
-	const http: typeof nodeHttp = require('http');
-	const url: typeof nodeUrl = require('url');
 	const serverPort = 8124;
 	const serverUrl = 'http://localhost:' + serverPort;
 	let server: any;
@@ -150,11 +146,11 @@ if (has('host-node')) {
 			};
 
 			function getResponseData(request: any) {
-				const urlInfo = url.parse(request.url, true);
+				const urlInfo = parse(request.url, true);
 				return responseData[urlInfo.query.dataKey];
 			}
 
-			server = http.createServer(function(request, response){
+			server = createServer(function(request, response){
 				const body = getResponseData(request);
 				nodeRequest = request;
 
