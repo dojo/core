@@ -1,8 +1,8 @@
 import common from './common';
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
+import * as registerSuite from 'intern!object';
+import * as assert from 'intern/chai!assert';
 import on, { emit } from 'src/on';
-import events = require('events');
+import * as events from 'events';
 
 function createTarget() {
 	return new events.EventEmitter();
