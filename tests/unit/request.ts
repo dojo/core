@@ -4,8 +4,8 @@ import DojoPromise = require('intern/dojo/Promise');
 import has = require('intern/dojo/has');
 import Task from 'src/async/Task';
 import request, { filterRegistry, providerRegistry, RequestOptions, Response, ResponsePromise } from 'src/request';
-import { createServer } from 'http';
-import { parse } from 'url';
+import http = require('http');
+import url = require('url');
 
 const mockData = '{ "foo": "bar" }';
 let handle: any;
@@ -146,11 +146,11 @@ if (has('host-node')) {
 			};
 
 			function getResponseData(request: any) {
-				const urlInfo = parse(request.url, true);
+				const urlInfo = url.parse(request.url, true);
 				return responseData[urlInfo.query.dataKey];
 			}
 
-			server = createServer(function(request, response){
+			server = http.createServer(function(request, response){
 				const body = getResponseData(request);
 				nodeRequest = request;
 

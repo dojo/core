@@ -2,10 +2,10 @@ import common from './common';
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
 import on, { emit } from 'src/on';
-import { EventEmitter } from 'events';
+import events = require('events');
 
 function createTarget() {
-	return new EventEmitter();
+	return new events.EventEmitter();
 }
 
 registerSuite({
