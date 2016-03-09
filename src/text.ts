@@ -1,9 +1,8 @@
 import has from './has';
 import request, { Response } from './request';
-import { Require } from 'dojo-loader/loader';
 import Promise from './Promise';
 
-/* 
+/*
  * Strips <?xml ...?> declarations so that external SVG and XML
  * documents can be added to a document without worry. Also, if the string
  * is an HTML document, only the part inside the body tag is returned.
@@ -77,7 +76,7 @@ export function normalize(id: string, toAbsMid: (moduleId: string) => string): s
 	return (/^\./.test(url) ? toAbsMid(url) : url) + (parts[1] ? '!' + parts[1] : '');
 }
 
-export function load(id: string, require: Require, load: (value?: any) => void): void {
+export function load(id: string, require: DojoLoader.Require, load: (value?: any) => void, config: DojoLoader.Config): void {
 	let parts = id.split('!');
 	let stripFlag = parts.length > 1;
 	let mid = parts[0];

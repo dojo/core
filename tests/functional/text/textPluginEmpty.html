@@ -8,11 +8,12 @@
 	<body>
 		<script src="../../../../node_modules/dojo-loader/loader.js"></script>
 		<script>
-			require({
+			require.config({
 				packages: [
 					{ name: 'core', location: '../../../src' }
 				]
-			}, [
+			});
+			require([
 				'core/text!../../support/data/stripEmpty.xml!strip'
 			], function (result) {
 				window.loaderTestResults = {
