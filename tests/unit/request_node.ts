@@ -2,8 +2,8 @@ import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import * as DojoPromise from 'intern/dojo/Promise';
 import request, { RequestOptions } from 'src/request';
-import * as http from 'http';
-import * as url from 'url';
+import { createServer } from 'http';
+import { parse } from 'url';
 
 let handle: any;
 
@@ -27,11 +27,11 @@ registerSuite({
 		};
 
 		function getResponseData(request: any) {
-			const urlInfo = url.parse(request.url, true);
+			const urlInfo = parse(request.url, true);
 			return responseData[urlInfo.query.dataKey];
 		}
 
-		server = http.createServer(function(request, response){
+		server = createServer(function(request, response){
 			const body = getResponseData(request);
 			nodeRequest = request;
 
