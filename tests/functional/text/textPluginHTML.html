@@ -10,12 +10,11 @@
 		<script>
 			require.config({
 				packages: [
-					{ name: 'core', location: '../../../src' },
-					{ name: 'support', location: '../../support' }
+					{ name: 'core', location: '../../../src' }
 				]
 			});
 			require([
-				'core/text!support/data/strip.html!strip'
+				'core/text!../../support/data/strip.html!strip'
 			], function (result) {
 				window.loaderTestResults = {
 					text: result
