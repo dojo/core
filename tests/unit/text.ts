@@ -1,7 +1,8 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import has from 'src/has';
-import { get } from 'src/text';
+import { get, normalize } from 'src/text';
+import { stub } from 'sinon';
 
 // The exported get function from the text module
 // uses fs.readFile on node systems, which resolves
@@ -9,7 +10,7 @@ import { get } from 'src/text';
 // should be used internally for browser environments.
 // As such, this determines the appropriate base path
 // for get tests.
-let basePath = (function() {
+const basePath = (function() {
 	if (has('host-browser')) {
 		return '../../_build/tests/support/data/';
 	}
@@ -18,6 +19,8 @@ let basePath = (function() {
 	}
 })();
 
+const absPathMock = (val: string) => val;
+
 registerSuite({
 		name: 'text',
 
@@ -25,6 +28,27 @@ registerSuite({
 			get(basePath + 'correctText.txt').then(this.async().callback(function (text: string) {
 				assert.strictEqual(text, 'abc');
 			}));
+		},
+
+		'normalize': {
+			'calls absMid function for relative path'() {
+				const absMidStub = stub().returns('test');
+				normalize('./test', absMidStub);
+				assert.isTrue(absMidStub.calledOnce, 'Abs mid function should be called');
+			},
+			'does not call absMid function for abs path'() {
+				const absMidStub = stub().returns('test');
+				normalize('test', absMidStub);
+				assert.isFalse(absMidStub.called, 'Abs mid function should not be called');
+			},
+			'should return passed strip flag for relative path'() {
+				const normalized = normalize('./test!strip', absPathMock);
+				assert.include(normalized, '!strip', 'Strip flag should be present');
+			},
+			'should return passed strip flag for abs path'() {
+				const normalized = normalize('test!strip', absPathMock);
+				assert.include(normalized, '!strip', 'Strip flag should be present');
+			}
 		}
 	}
 );
