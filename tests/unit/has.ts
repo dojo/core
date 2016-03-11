@@ -112,7 +112,7 @@ registerSuite({
 				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
 
 				const expectedHasNode = has('host-node') ? 'intern/main' : 'intern!object';
-				const actualHasNode = hasNormalize('host-node?intern:intern!object', (<DojoLoader.Require> require.toAbsMid);
+				const actualHasNode = hasNormalize('host-node?intern:intern!object', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasNode, expectedHasNode);
 			},
 
