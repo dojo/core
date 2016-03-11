@@ -22,6 +22,7 @@ import './request';
 import './request/all';
 import './Scheduler';
 import './string';
+import './Symbol';
 import './UrlSearchParams';
 import './WeakMap';
 import './DateObject';

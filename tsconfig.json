@@ -23,6 +23,7 @@
 		"./src/Promise.ts",
 		"./src/Registry.ts",
 		"./src/Scheduler.ts",
+		"./src/Symbol.ts",
 		"./src/UrlSearchParams.ts",
 		"./src/WeakMap.ts",
 		"./src/array.ts",
@@ -94,6 +95,7 @@
 		"./tests/unit/Promise.ts",
 		"./tests/unit/Registry.ts",
 		"./tests/unit/Scheduler.ts",
+		"./tests/unit/Symbol.ts",
 		"./tests/unit/UrlSearchParams.ts",
 		"./tests/unit/WeakMap.ts",
 		"./tests/unit/all.ts",
@@ -148,5 +150,6 @@
 		"./tests/unit/string.ts",
 		"./tests/unit/util.ts",
 		"./typings/tsd.d.ts"
-	]
+	],
+	"exclude": []
 }
