@@ -8,14 +8,14 @@ const testFunctions: Hash<() => any> = Object.create(null);
  *
  * @param resourceId Gives the resolved module id to load.
  * @param require The loader require function with respect to the module that contained the plugin resource in it's dependency list.
- * @param loaded Callback to loader that consumes result of plugin demand.
+ * @param load Callback to loader that consumes result of plugin demand.
  */
-export function load(resourceId: string, require: Function, loaded: Function): void {
+export function load(resourceId: string, require: DojoLoader.Require, load: (value?: any) => void, config?: DojoLoader.Config): void {
 	if (resourceId) {
-		require([ resourceId ], loaded);
+		require([ resourceId ], load);
 	}
 	else {
-		loaded();
+		load();
 	}
 }
 
@@ -28,6 +28,7 @@ export function load(resourceId: string, require: Function, loaded: Function): v
 export function normalize(resourceId: string, normalize: (moduleId: string) => string): string {
 	const tokens = resourceId.match(/[\?:]|[^:\?]*/g);
 	let i = 0;
+
 	function get(skip?: boolean): string {
 		const term = tokens[i++];
 		if (term === ':') {

@@ -108,31 +108,31 @@ registerSuite({
 
 			'both feature and no-feature modules provided'() {
 				const expectedHasBrowser = has('host-browser') ? 'intern/main' : 'intern!object';
-				const actualHasBrowser = hasNormalize('host-browser?intern:intern!object', (<any> require).toAbsMid);
+				const actualHasBrowser = hasNormalize('host-browser?intern:intern!object', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
 
 				const expectedHasNode = has('host-node') ? 'intern/main' : 'intern!object';
-				const actualHasNode = hasNormalize('host-node?intern:intern!object', (<any> require).toAbsMid);
+				const actualHasNode = hasNormalize('host-node?intern:intern!object', (<DojoLoader.Require> require.toAbsMid);
 				assert.strictEqual(actualHasNode, expectedHasNode);
 			},
 
 			'only feature module provided'() {
 				const expectedHasBrowser = has('host-browser') ? 'intern/main' : undefined;
-				const actualHasBrowser = hasNormalize('host-browser?intern', (<any> require).toAbsMid);
+				const actualHasBrowser = hasNormalize('host-browser?intern', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
 
 				const expectedHasNode = has('host-node') ? 'intern/main' : undefined;
-				const actualHasNode = hasNormalize('host-node?intern', (<any> require).toAbsMid);
+				const actualHasNode = hasNormalize('host-node?intern', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasNode, expectedHasNode);
 			},
 
 			'only no-feature module provided'() {
 				const expectedHasBrowser = has('host-browser') ? 'intern/main' : null;
-				const actualHasBrowser = hasNormalize('host-node?:intern', (<any> require).toAbsMid);
+				const actualHasBrowser = hasNormalize('host-node?:intern', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
 
 				const expectedHasNode = has('host-node') ? 'intern/main' : null;
-				const actualHasNode = hasNormalize('host-browser?:intern', (<any> require).toAbsMid);
+				const actualHasNode = hasNormalize('host-browser?:intern', (<DojoLoader.Require> require).toAbsMid);
 				assert.strictEqual(actualHasNode, expectedHasNode);
 			},
 
@@ -144,9 +144,9 @@ registerSuite({
 				hasAdd('abc', true);
 				hasAdd('def', false);
 
-				const actual1 = hasNormalize('abc?def?one:two:three', (<any> require).toAbsMid);
-				const actual2 = hasNormalize('abc?abc?one:two:three', (<any> require).toAbsMid);
-				const actual3 = hasNormalize('def?abc?one:two:three', (<any> require).toAbsMid);
+				const actual1 = hasNormalize('abc?def?one:two:three', (<DojoLoader.Require> require).toAbsMid);
+				const actual2 = hasNormalize('abc?abc?one:two:three', (<DojoLoader.Require> require).toAbsMid);
+				const actual3 = hasNormalize('def?abc?one:two:three', (<DojoLoader.Require> require).toAbsMid);
 
 				assert.strictEqual(expected1, actual1);
 				assert.strictEqual(expected2, actual2);
@@ -160,8 +160,8 @@ registerSuite({
 				hasAdd('abc', true);
 				hasAdd('def', false);
 
-				const actualHasFeatureModule = hasNormalize('abc?intern:intern!object', (<any> require).toAbsMid);
-				const actualHasNoFeatureModule = hasNormalize('def?intern:intern!object', (<any> require).toAbsMid);
+				const actualHasFeatureModule = hasNormalize('abc?intern:intern!object', (<DojoLoader.Require> require).toAbsMid);
+				const actualHasNoFeatureModule = hasNormalize('def?intern:intern!object', (<DojoLoader.Require> require).toAbsMid);
 
 				assert.strictEqual(expectedHasFeatureModule, actualHasFeatureModule);
 				assert.strictEqual(expectedHasNoFeatureModule, actualHasNoFeatureModule);
