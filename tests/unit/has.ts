@@ -1,6 +1,7 @@
 import registerSuite = require('intern!object');
 import assert = require('intern/chai!assert');
-import has, { add as hasAdd, cache as hasCache } from 'src/has';
+import sinon = require('sinon');
+import has, { add as hasAdd, cache as hasCache, normalize as hasNormalize, load as hasLoad } from 'src/has';
 
 let alreadyCached: { [key: string]: boolean } = {};
 
@@ -95,6 +96,109 @@ registerSuite({
 				assert.isFalse(has('one'));
 				hasAdd('one', true, true);
 				assert.isTrue(has('one'));
+			}
+		},
+
+		'has loader tests': {
+
+			teardown() {
+				delete hasCache['abc'];
+				delete hasCache['def'];
+			},
+
+			'both feature and no-feature modules provided'() {
+				const expectedHasBrowser = has('host-browser') ? 'intern/main' : 'intern!object';
+				const actualHasBrowser = hasNormalize('host-browser?intern:intern!object', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
+
+				const expectedHasNode = has('host-node') ? 'intern/main' : 'intern!object';
+				const actualHasNode = hasNormalize('host-node?intern:intern!object', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasNode, expectedHasNode);
+			},
+
+			'only feature module provided'() {
+				const expectedHasBrowser = has('host-browser') ? 'intern/main' : undefined;
+				const actualHasBrowser = hasNormalize('host-browser?intern', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
+
+				const expectedHasNode = has('host-node') ? 'intern/main' : undefined;
+				const actualHasNode = hasNormalize('host-node?intern', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasNode, expectedHasNode);
+			},
+
+			'only no-feature module provided'() {
+				const expectedHasBrowser = has('host-browser') ? 'intern/main' : null;
+				const actualHasBrowser = hasNormalize('host-node?:intern', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasBrowser, expectedHasBrowser);
+
+				const expectedHasNode = has('host-node') ? 'intern/main' : null;
+				const actualHasNode = hasNormalize('host-browser?:intern', (<any> require).toAbsMid);
+				assert.strictEqual(actualHasNode, expectedHasNode);
+			},
+
+			'chained ternary test'() {
+				const expected1 = 'two';
+				const expected2 = 'one';
+				const expected3 = 'three';
+
+				hasAdd('abc', true);
+				hasAdd('def', false);
+
+				const actual1 = hasNormalize('abc?def?one:two:three', (<any> require).toAbsMid);
+				const actual2 = hasNormalize('abc?abc?one:two:three', (<any> require).toAbsMid);
+				const actual3 = hasNormalize('def?abc?one:two:three', (<any> require).toAbsMid);
+
+				assert.strictEqual(expected1, actual1);
+				assert.strictEqual(expected2, actual2);
+				assert.strictEqual(expected3, actual3);
+			},
+
+			'custom has test'() {
+				const expectedHasFeatureModule = 'intern/main';
+				const expectedHasNoFeatureModule = 'intern!object';
+
+				hasAdd('abc', true);
+				hasAdd('def', false);
+
+				const actualHasFeatureModule = hasNormalize('abc?intern:intern!object', (<any> require).toAbsMid);
+				const actualHasNoFeatureModule = hasNormalize('def?intern:intern!object', (<any> require).toAbsMid);
+
+				assert.strictEqual(expectedHasFeatureModule, actualHasFeatureModule);
+				assert.strictEqual(expectedHasNoFeatureModule, actualHasNoFeatureModule);
+			},
+
+			'normalize method is called once'() {
+				const normalizeStub = sinon.stub();
+				const resourceId = 'abc?intern:intern!object';
+
+				hasAdd('abc', true);
+				hasNormalize(resourceId, normalizeStub);
+
+				assert.isTrue(normalizeStub.calledOnce);
+				assert.strictEqual(normalizeStub.lastCall.args[0], 'intern');
+			},
+
+			'load test resourceId provided'() {
+				const requireStub = sinon.stub().callsArg(1);
+				const loadedStub = sinon.stub();
+				const resourceId = 'src/has!host-browser?intern:intern!object';
+
+				hasLoad(resourceId, requireStub, loadedStub);
+
+				assert.isTrue(requireStub.calledOnce);
+				assert.isTrue(loadedStub.calledOnce);
+				assert.isTrue(loadedStub.calledAfter(requireStub));
+				assert.strictEqual(requireStub.firstCall.args[0][0], resourceId);
+				assert.strictEqual(requireStub.firstCall.args[1], loadedStub);
+			},
+
+			'load test resourceId not provided'() {
+				const requireStub = sinon.stub();
+				const loadedStub = sinon.stub();
+
+				hasLoad(null, requireStub, loadedStub);
+				assert.isTrue(loadedStub.calledOnce);
+				assert.isFalse(requireStub.calledOnce);
 			}
 		}
 	}
