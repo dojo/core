@@ -179,26 +179,25 @@ registerSuite({
 			},
 
 			'load test resourceId provided'() {
-				const requireStub = sinon.stub().callsArg(1);
+				const stubbedRequire = sinon.stub().callsArg(1);
 				const loadedStub = sinon.stub();
 				const resourceId = 'src/has!host-browser?intern:intern!object';
 
-				hasLoad(resourceId, requireStub, loadedStub);
-
-				assert.isTrue(requireStub.calledOnce);
-				assert.isTrue(loadedStub.calledOnce);
-				assert.isTrue(loadedStub.calledAfter(requireStub));
-				assert.strictEqual(requireStub.firstCall.args[0][0], resourceId);
-				assert.strictEqual(requireStub.firstCall.args[1], loadedStub);
+				hasLoad(resourceId, <DojoLoader.Require> <any> stubbedRequire, loadedStub);
+				assert.isTrue(stubbedRequire.calledOnce, 'Require should be called once');
+				assert.isTrue(loadedStub.calledOnce, 'Load stub should be called once');
+				assert.isTrue(loadedStub.calledAfter(stubbedRequire), 'Load stub should be called after require');
+				assert.strictEqual(stubbedRequire.firstCall.args[0][0], resourceId);
+				assert.strictEqual(stubbedRequire.firstCall.args[1], loadedStub);
 			},
 
 			'load test resourceId not provided'() {
-				const requireStub = sinon.stub();
+				const requireSpy = sinon.spy(require);
 				const loadedStub = sinon.stub();
 
-				hasLoad(null, requireStub, loadedStub);
+				hasLoad(null, require, loadedStub);
 				assert.isTrue(loadedStub.calledOnce);
-				assert.isFalse(requireStub.calledOnce);
+				assert.isFalse(requireSpy.calledOnce);
 			}
 		}
 	}
