@@ -1,6 +1,6 @@
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
-import sinon = require('sinon');
+import * as registerSuite from 'intern!object';
+import * as assert from 'intern/chai!assert';
+import * as sinon from 'sinon';
 import has, { add as hasAdd, cache as hasCache, normalize as hasNormalize, load as hasLoad } from 'src/has';
 
 let alreadyCached: { [key: string]: boolean } = {};
