@@ -76,6 +76,7 @@
 		"./tests/functional/text/textPlugin.ts",
 		"./tests/intern-local.ts",
 		"./tests/intern.ts",
+		"./tests/module.d.ts",
 		"./tests/services/echo.ts",
 		"./tests/support/Reporter.ts",
 		"./tests/support/util.ts",
@@ -149,6 +150,8 @@
 		"./tests/unit/streams/util.ts",
 		"./tests/unit/string.ts",
 		"./tests/unit/text.ts",
+		"./tests/unit/text_browser.ts",
+		"./tests/unit/text_node.ts",
 		"./tests/unit/util.ts",
 		"./typings/tsd.d.ts"
 	]

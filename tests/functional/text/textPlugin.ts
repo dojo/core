@@ -3,7 +3,7 @@ import * as registerSuite from 'intern!object';
 import * as Suite from 'intern/lib/Suite';
 import * as Command from 'leadfoot/Command';
 
-import pollUntil = require('leadfoot/helpers/pollUntil');
+import pollUntil = require('intern/dojo/node!leadfoot/helpers/pollUntil');
 
 function executeTest(suite: Suite, htmlTestPath: string, testFn: (result: any) => void, timeout = 5000): Command<any> {
 	return suite.remote
