@@ -168,3 +168,11 @@ add('xhr2-blob', function () {
 	request.abort();
 	return request.responseType === 'blob';
 });
+// Native Array methods
+add('array-from', 'from' in global.Array);
+add('array-of', 'of' in global.Array);
+add('array-fill', 'fill' in global.Array.prototype);
+add('array-findIndex', 'findIndex' in global.Array.prototype);
+add('array-find', 'find' in global.Array.prototype);
+add('array-copy-within', 'copyWithin' in global.Array.prototype);
+add('array-includes', 'includes' in global.Array.prototype);
