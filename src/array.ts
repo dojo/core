@@ -70,7 +70,7 @@ export function from<T>(arrayLike: ArrayLike<T>, mapFunction?: MapCallback<T>, t
  */
 export function from<T>(arrayLike: (string | ArrayLike<T>), mapFunction?: MapCallback<T>, thisArg?: {}): ArrayLike<T> {
 	// Use the native Array.from() if it exists
-	if (has('array-from')) {
+	if (has('es6-array-from')) {
 		return (<any> Array).from.apply(null, arguments);
 	}
 
@@ -106,7 +106,7 @@ export function of(...items: any[]): any[];
  * @return An array from the given arguments
  */
 export function of() {
-	if (has('array-of')) {
+	if (has('es6-array-of')) {
 		return (<any> Array).of.apply(null, arguments);
 	}
 
@@ -123,7 +123,7 @@ export function of() {
  * @return The filled target
  */
 export function fill<T>(target: ArrayLike<T>, value: any, start?: number, end?: number): ArrayLike<T> {
-	if (has('array-fill')) {
+	if (has('es6-array-fill')) {
 		const method = (<any> Array.prototype).fill;
 		return method.call.apply(method, arguments);
 	}
@@ -149,7 +149,7 @@ export function fill<T>(target: ArrayLike<T>, value: any, start?: number, end?: 
  * @return The first index whose value satisfies the passed callback, or -1 if no values satisfy it
  */
 export function findIndex<T>(target: ArrayLike<T>, callback: FindCallback<T>, thisArg?: {}): number {
-	if (has('array-findIndex')) {
+	if (has('es6-array-findIndex')) {
 		const method = (<any> Array.prototype).findIndex;
 		return method.call.apply(method, arguments);
 	}
@@ -182,7 +182,7 @@ export function findIndex<T>(target: ArrayLike<T>, callback: FindCallback<T>, th
  * @return The first element matching the callback, or undefined if one does not exist
  */
 export function find<T>(target: ArrayLike<T>, callback: FindCallback<T>, thisArg?: {}): T {
-	if (has('array-find')) {
+	if (has('es6-array-find')) {
 		const method = (<any> Array.prototype).find;
 		return method.call.apply(method, arguments);
 	}
@@ -200,8 +200,8 @@ export function find<T>(target: ArrayLike<T>, callback: FindCallback<T>, thisArg
  * @param end The last (exclusive) index to copy; if negative, it counts backwards from length
  * @return The target
  */
-export function copyWithin<T>(target: ArrayLike<T>, offset: number, start?: number, end?: number): ArrayLike<T> {
-	if (has('array-copyWithin')) {
+export function copyWithin<T>(target: ArrayLike<T>, offset: number, start: number, end?: number): ArrayLike<T> {
+	if (has('es6-array-copyWithin')) {
 		const method = (<any> Array.prototype).copyWithin;
 		return method.call.apply(method, arguments);
 	}
@@ -246,7 +246,7 @@ export function copyWithin<T>(target: ArrayLike<T>, offset: number, start?: numb
  * @param fromIndex the starting index to search from
  */
 export function includes<T>(target: ArrayLike<T>, searchElement: T, fromIndex: number = 0): boolean {
-	if (has('array-includes')) {
+	if (has('es7-array-includes')) {
 		const method = (<any> Array.prototype).includes;
 		return method.call.apply(method, arguments);
 	}
