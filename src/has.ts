@@ -168,6 +168,14 @@ add('xhr2-blob', function () {
 	request.abort();
 	return request.responseType === 'blob';
 });
+// Native Array methods
+add('es6-array-from', 'from' in global.Array);
+add('es6-array-of', 'of' in global.Array);
+add('es6-array-fill', 'fill' in global.Array.prototype);
+add('es6-array-findIndex', 'findIndex' in global.Array.prototype);
+add('es6-array-find', 'find' in global.Array.prototype);
+add('es6-array-copyWithin', 'copyWithin' in global.Array.prototype);
+add('es7-array-includes', 'includes' in global.Array.prototype);
 add('es6-symbol', typeof global.Symbol === 'function');
 add('es6-set', () => {
 	if (typeof global.Set === 'function') {
