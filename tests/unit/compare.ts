@@ -149,7 +149,7 @@ registerSuite({
 					removed: [],
 					added: [
 						{moved: false, to: 0}
-					],
+					]
 				}
 			});
 		},
@@ -163,7 +163,7 @@ registerSuite({
 					removed: [
 						{deleted: true}
 					],
-					added: [],
+					added: []
 				}
 			});
 		},
@@ -191,7 +191,7 @@ registerSuite({
 					removed: [],
 					added: [
 						{moved: false, to: 1}
-					],
+					]
 				}
 			});
 		},
@@ -419,7 +419,7 @@ registerSuite({
 			const before = ['a', 1, 2, 'b', 3, 'c', 4, 5];
 			const after = ['a', 6, 'b', 7, 8, 'c', 9];
 			const patch = compare.diff(before, after);
-			var offset = 0;
+			let offset = 0;
 			for (const index in patch) {
 				const i = parseInt(index, 10);
 				const change = patch[index];
@@ -469,7 +469,7 @@ registerSuite({
 					removed: [
 						{deleted: false}
 					],
-					added:[]
+					added: []
 				},
 				5: {
 					type: compare.Type.Splice,
@@ -497,7 +497,7 @@ registerSuite({
 					removed: [
 						{deleted: false}
 					],
-					added:[]
+					added: []
 				},
 				5: {
 					type: compare.Type.Splice,
@@ -634,6 +634,80 @@ registerSuite({
 					}
 				}
 			});
+		}
+	},
+	'patch any[] diffs': {
+		'rendered': function () {
+			function render (item: {id: number, name: string}) {
+				return item.name;
+			};
+
+			const indexes: {[id: number]: number} = {};
+			let before = [
+				{id: 1, name: 'Apple'},
+				{id: 2, name: 'Banana'},
+				{id: 3, name: 'Cherry'},
+				{id: 4, name: 'Date'},
+				{id: 5, name: 'Fig'},
+				{id: 6, name: 'Grape'}
+			];
+			const after = before.slice(0);
+			const rendered: string[] = [];
+			for (let i = 0, length = before.length; i < length; i++) {
+				const item = before[i];
+				indexes[item.id] = i;
+				rendered.push(render(item));
+			}
+			assert.deepEqual(rendered, ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'], 'rendered');
+
+			function randomize () {
+				after.sort((a, b) => {
+					const rand = Math.random();
+					if (rand < 0.33) {
+						return -1;
+					}
+					else if (rand > 0.66) {
+						return 1;
+					}
+					else {
+						return 0;
+					}
+				});
+
+				const patch = compare.diff(before, after, {identityKey: 'id'});
+
+				const removed: {[index: number]: string} = {};
+				let offset = 0;
+				for (const index in patch) {
+					const i = parseInt(index, 10);
+					const change = patch[index];
+					for (let j = 0, length = change.removed.length; j < length; j++) {
+						removed[i + j] = rendered.splice(offset + i, 1)[0];
+					}
+					offset -= change.removed.length;
+				}
+				for (const index in patch) {
+					const change = patch[index];
+					for (let j = 0, length = change.added.length; j < length; j++) {
+						const added = change.added[j];
+						let value = '';
+						if (added.moved) {
+							value = removed[added.from];
+						}
+						else {
+							value = render(after[added.to]);
+						}
+						rendered.splice(added.to, 0, value);
+					}
+				}
+				assert.deepEqual(rendered, after.map(render), 'rendered');
+
+				before = after.slice(0);
+			};
+
+			for (let i = 0; i < 10000; i++) {
+				randomize();
+			}
 		}
 	}
 });

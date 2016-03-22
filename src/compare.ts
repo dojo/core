@@ -18,13 +18,13 @@ export class ObjectPatch<T, U> {
 };
 
 export interface ArrayChangeRemove {
-	deleted: boolean
+	deleted: boolean;
 }
 
 export interface ArrayChangeAdd {
-	from?: number,
-	to: number,
-	moved: boolean
+	from?: number;
+	to: number;
+	moved: boolean;
 };
 
 export interface ArrayChange<T, U> {
@@ -43,9 +43,9 @@ export interface IdentityCallback {
 };
 
 export interface DiffOptions {
-	identityKey?: string,
-	identityCallback?: IdentityCallback,
-	compareObjects?: boolean
+	identityKey?: string;
+	identityCallback?: IdentityCallback;
+	compareObjects?: boolean;
 };
 
 function getIdentity(object: any, options: DiffOptions): any {
@@ -206,9 +206,6 @@ export function diff<T, U>(a: any, b: any, options: DiffOptions = {}): any {
 					}
 				}
 				else {
-					if (bIndex == aInB) {
-						debugger;
-					}
 					for (; bIndex < aInB; bIndex++) {
 						bId = bIds[bIndex];
 						const from = aSearch.indexOf(bId);
@@ -278,11 +275,10 @@ export interface TransformCallback<T, U> {
 }
 
 export interface ArrayPatchOptions<T, U> {
-	
 }
 
 export interface ArrayTransformPatchOptions<T, U> extends ArrayPatchOptions<T, U> {
-	transformCallback: TransformCallback<T, U>
+	transformCallback: TransformCallback<T, U>;
 }
 
 export function patch<T, U>(target: any[], patch: ArrayPatch<T, U>, options?: ArrayTransformPatchOptions<T, U>): void;
@@ -291,13 +287,15 @@ export function patch<T, U>(target: T, patch: ObjectPatch<T, U>): U;
 export function patch<T, U>(target: any, patch: any, options = {}): any {
 	if (Array.isArray(target)) {
 		const arrayTarget: T[] = target;
+		/*
 		const arrayPatch: ArrayPatch<T, U> = patch;
 		const arrayOptions: ArrayPatchOptions<T, U> = options;
-		const transformCallback: TransformCallback<T, U> = (<{ [key: string]: TransformCallback<T, U> }>options)['transformCallback'];
+		const transformCallback: TransformCallback<T, U> = (<{ [key: string]: TransformCallback<T, U> }> options)['transformCallback'];
 		
 		if (transformCallback) {
 			return;
 		}
+		*/
 		return arrayTarget;
 	}
 
