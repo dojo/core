@@ -27,3 +27,4 @@ import './UrlSearchParams';
 import './WeakMap';
 import './DateObject';
 import './util';
+import './compare';
