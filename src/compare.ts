@@ -58,7 +58,7 @@ function getIdentity(object: any, options: DiffOptions): any {
 	return object;
 };
 
-const used = Symbol();
+const used = {}; // Symbol();
 
 export function diff<T, U>(a: T[], b: U[], options?: DiffOptions): ArrayPatch<T, U>;
 export function diff<T, U>(a: T, b: U): ObjectPatch<T, U>;

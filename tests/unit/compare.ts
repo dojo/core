@@ -637,12 +637,109 @@ registerSuite({
 		}
 	},
 	'patch any[] diffs': {
+		'indexed using before reference': function () {
+			function render (item: {id: number, name: string}) {
+				return item.name;
+			};
+
+			let before = [
+				{id: 1, name: 'Apple'},
+				{id: 2, name: 'Banana'},
+				{id: 3, name: 'Cherry'},
+				{id: 4, name: 'Date'},
+				{id: 5, name: 'Fig'},
+				{id: 6, name: 'Grape'}
+			];
+			const after = before.slice(0);
+			const indexed: {[id: number]: number} = {};
+			const rendered: string[] = [];
+			for (let i = 0, length = before.length; i < length; i++) {
+				const item = before[i];
+				indexed[item.id] = i;
+				rendered.push(render(item));
+			}
+			assert.deepEqual(rendered, ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'], 'rendered');
+
+			function randomize () {
+				after.sort((a, b) => {
+					const rand = Math.random();
+					if (rand < 0.33) {
+						return -1;
+					}
+					else if (rand > 0.66) {
+						return 1;
+					}
+					else {
+						return 0;
+					}
+				});
+				const patch = compare.diff(before, after, {identityKey: 'id'});
+
+				for (const index in patch) {
+					const i = parseInt(index, 10);
+					const change = patch[index];
+					const beforeItem = before[i + change.removed.length];
+					const beforeId = (beforeItem ? beforeItem.id : undefined);
+					for (let j = 0, length = change.removed.length; j < length; j++) {
+						const item = before[i + j];
+						let previousIndex = indexed[item.id];
+						rendered.splice(previousIndex, 1);
+						for (const id in indexed) {
+							if (indexed[id] > previousIndex) {
+								--indexed[id];
+							}
+						}
+						delete indexed[item.id];
+					}
+					for (let j = 0, length = change.added.length; j < length; j++) {
+						const added = change.added[j];
+						const item = after[added.to];
+						let destination = (beforeId === undefined ? rendered.length : indexed[beforeId]);
+						let value: string;
+						if (item.id in indexed) {
+							const previousIndex = indexed[item.id];
+							if (previousIndex < destination) {
+								--destination;
+							}
+							value = rendered.splice(previousIndex, 1)[0];
+							for (const id in indexed) {
+								if (indexed[id] > previousIndex) {
+									--indexed[id];
+								}
+							}
+						}
+						else {
+							value = render(item);
+						}
+						rendered.splice(destination, 0, value);
+						for (const id in indexed) {
+							if (indexed[id] >= destination) {
+								++indexed[id];
+							}
+						}
+						indexed[item.id] = destination;
+					}
+				}
+
+				assert.deepEqual(rendered, after.map(render), before.map((item) => item.id + ':' + item.name).join(',') + ' => ' + after.map((item) => item.id + ':' + item.name).join(','));
+				const reindexed: {[id: number]: number} = {};
+				for (let i = 0, length = after.length; i < length; i++) {
+					reindexed[after[i].id] = i;
+				}
+				assert.deepEqual(indexed, reindexed, 'reindexed');
+
+				before = after.slice(0);
+			};
+
+			for (let i = 0; i < 1000; i++) {
+				randomize();
+			}
+		},
 		'rendered': function () {
 			function render (item: {id: number, name: string}) {
 				return item.name;
 			};
 
-			const indexes: {[id: number]: number} = {};
 			let before = [
 				{id: 1, name: 'Apple'},
 				{id: 2, name: 'Banana'},
@@ -655,7 +752,6 @@ registerSuite({
 			const rendered: string[] = [];
 			for (let i = 0, length = before.length; i < length; i++) {
 				const item = before[i];
-				indexes[item.id] = i;
 				rendered.push(render(item));
 			}
 			assert.deepEqual(rendered, ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'], 'rendered');
@@ -705,7 +801,7 @@ registerSuite({
 				before = after.slice(0);
 			};
 
-			for (let i = 0; i < 10000; i++) {
+			for (let i = 0; i < 1000; i++) {
 				randomize();
 			}
 		}
