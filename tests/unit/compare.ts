@@ -125,6 +125,92 @@ registerSuite({
 				}
 			});
 		},
+		'object equality': function () {
+			const obj0 = {};
+			const obj1 = {};
+			const obj2 = /regex/;
+			const obj3: any[] = [];
+			const obj4: any = undefined;
+			const obj5: any = undefined; // should be identical to obj4
+			const obj6: any = null;
+			const obj7: any = null; // should be identical to obj6
+			const obj8: number = NaN; // never matches
+			const obj9: number = NaN; // never matches
+			const before = [obj0, obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9];
+			const after = [obj1, obj3, obj5, obj7, obj9, obj0, obj2, obj4, obj6, obj8];
+			const patch = compare.diff(before, after);
+			assert.deepEqual(patch, {
+				0: {
+					type: compare.Type.Splice,
+					removed: [
+						{
+							deleted: false
+						}
+					],
+					added: []
+				},
+				2: {
+					type: compare.Type.Splice,
+					removed: [
+						{
+							deleted: false
+						}
+					],
+					added: []
+				},
+				5: { // obj4 in before is matched with obj5 in after (which appears before obj4)
+					type: compare.Type.Splice,
+					removed: [
+						{
+							deleted: false
+						}
+					],
+					added: []
+				},
+				7: { // obj6 in before is matched with obj7 in after (which appears before obj6)
+					type: compare.Type.Splice,
+					removed: [],
+					added: [
+						{
+							moved: false, // NaN is deleted/added and not moved
+							to: 4
+						},
+						{
+							moved: true,
+							from: 0,
+							to: 5
+						},
+						{
+							moved: true,
+							from: 2,
+							to: 6
+						},
+						{
+							moved: true,
+							from: 5,
+							to: 7
+						}
+					]
+				},
+				8: {
+					type: compare.Type.Splice,
+					removed: [
+						{
+							deleted: true // NaN is deleted/added and not moved
+						},
+						{
+							deleted: true // NaN is deleted/added and not moved
+						}
+					],
+					added: [
+						{
+							moved: false, // NaN is deleted/added and not moved
+							to: 9
+						}
+					]
+				}
+			});
+		},
 		'addition at end': function () {
 			const before = ['a', 'b', 'c'];
 			const after = ['a', 'b', 'c', 'd'];
