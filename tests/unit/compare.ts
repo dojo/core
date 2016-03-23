@@ -767,15 +767,17 @@ registerSuite({
 					const beforeItem = before[i + change.removed.length];
 					const beforeId = (beforeItem ? beforeItem.id : undefined);
 					for (let j = 0, length = change.removed.length; j < length; j++) {
-						const item = before[i + j];
-						let previousIndex = indexed[item.id];
-						rendered.splice(previousIndex, 1);
-						for (const id in indexed) {
-							if (indexed[id] > previousIndex) {
-								--indexed[id];
+						if (change.removed[j].deleted) {
+							const item = before[i + j];
+							let previousIndex = indexed[item.id];
+							rendered.splice(previousIndex, 1);
+							for (const id in indexed) {
+								if (indexed[id] > previousIndex) {
+									--indexed[id];
+								}
 							}
+							delete indexed[item.id];
 						}
-						delete indexed[item.id];
 					}
 					for (let j = 0, length = change.added.length; j < length; j++) {
 						const added = change.added[j];
