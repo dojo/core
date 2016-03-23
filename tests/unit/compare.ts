@@ -689,6 +689,34 @@ registerSuite({
 				}
 			}, 'diff');
 			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
+		},
+		'large data set diff only': function () {
+			const before: number[] = [];
+			let length = 5000 + Math.round(Math.random() * 5000);
+			for (let i = 0; i < length; i++) {
+				before.push(Math.floor(Math.random() * 100));
+			}
+			const after: number[] = [];
+			length = 5000 + Math.round(Math.random() * 5000);
+			for (let i = 0; i < length; i++) {
+				after.push(Math.floor(Math.random() * 100));
+			}
+			compare.diff(before, after);
+		},
+		'large data set diff and patch': function () {
+			const before: number[] = [];
+			let length = 5000 + Math.round(Math.random() * 5000);
+			for (let i = 0; i < length; i++) {
+				before.push(Math.floor(Math.random() * 100));
+			}
+			const after: number[] = [];
+			length = 5000 + Math.round(Math.random() * 5000);
+			for (let i = 0; i < length; i++) {
+				after.push(Math.floor(Math.random() * 100));
+			}
+			const patch = compare.diff(before, after);
+			compare.patch(before, patch, after);
+			assert.deepEqual(before, after);
 		}
 	},
 	'diff(any[], any[], {identityKey: \'id\', compareObjects: true})': {

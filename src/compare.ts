@@ -153,7 +153,7 @@ export function diff<T, U>(a: any, b: any, options: DiffOptions = {}): any {
 					// but bId is in aIds
 					for (; aIndex < aLength; aIndex++) {
 						aId = aIds[aIndex];
-						if (aId === bId) {
+						if (aId === bId && aSearch[aIndex] !== used) {
 							break;
 						}
 						const to = bSearch.indexOf(aId);
