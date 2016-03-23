@@ -94,7 +94,8 @@ registerSuite({
 			const before = ['a', 'b'];
 			const after = ['c', 'd'];
 			const patch = compare.diff(before, after);
-			assert.deepEqual(patch, {});
+			assert.deepEqual(patch, {}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single commonality': function () {
 			const before = [1, 2, 'a', 3, 4];
@@ -123,7 +124,8 @@ registerSuite({
 						{moved: false, to: 4}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'object equality': function () {
 			const obj0 = {};
@@ -209,7 +211,8 @@ registerSuite({
 						}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'addition at end': function () {
 			const before = ['a', 'b', 'c'];
@@ -223,7 +226,8 @@ registerSuite({
 						{moved: false, to: 3}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'addition at beginning': function () {
 			const before = ['b', 'c', 'd'];
@@ -237,7 +241,8 @@ registerSuite({
 						{moved: false, to: 0}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'removal at end': function () {
 			const before = ['a', 'b', 'c', 'd'];
@@ -251,7 +256,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'removal at beginning': function () {
 			const before = ['a', 'b', 'c', 'd'];
@@ -265,7 +271,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single addition in middle': function () {
 			const before = ['a', 'c', 'd'];
@@ -279,7 +286,8 @@ registerSuite({
 						{moved: false, to: 1}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single removal in middle': function () {
 			const before = ['a', 'b', 'c', 'd'];
@@ -293,7 +301,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single additions in middle': function () {
 			const before = ['a', 'd'];
@@ -308,7 +317,8 @@ registerSuite({
 						{moved: false, to: 2}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single removals in middle': function () {
 			const before = ['a', 'b', 'c', 'd'];
@@ -323,7 +333,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple addition in middle': function () {
 			const before = ['a', 'c', 'e'];
@@ -344,7 +355,8 @@ registerSuite({
 						{moved: false, to: 3}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple removal in middle': function () {
 			const before = ['a', 'b', 'c', 'd', 'e'];
@@ -365,7 +377,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple additions in middle': function () {
 			const before = ['a', 'd', 'g'];
@@ -388,7 +401,8 @@ registerSuite({
 						{moved: false, to: 5}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple removals in middle': function () {
 			const before = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
@@ -411,7 +425,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single replacement': function () {
 			const before = ['a', 1, 'b'];
@@ -427,7 +442,8 @@ registerSuite({
 						{moved: false, to: 1}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single replacements': function () {
 			const before = ['a', 1, 2, 'b'];
@@ -445,7 +461,8 @@ registerSuite({
 						{moved: false, to: 2}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple replacement': function () {
 			const before = ['a', 1, 'b', 2, 'c'];
@@ -470,7 +487,8 @@ registerSuite({
 						{moved: false, to: 3}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'multiple replacements': function () {
 			const before = ['a', 1, 2, 'b', 3, 4, 'c'];
@@ -499,23 +517,8 @@ registerSuite({
 						{moved: false, to: 5}
 					]
 				}
-			});
-		},
-		'works with [].splice': function () {
-			const before = ['a', 1, 2, 'b', 3, 'c', 4, 5];
-			const after = ['a', 6, 'b', 7, 8, 'c', 9];
-			const patch = compare.diff(before, after);
-			let offset = 0;
-			for (const index in patch) {
-				const i = parseInt(index, 10);
-				const change = patch[index];
-				const added = change.added.map((add) => {
-					return after[add.to];
-				});
-				before.splice(i + offset, change.removed.length, ...added);
-				offset += (change.added.length - change.removed.length);
-			}
-			assert.deepEqual(before, after);
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single relocation': function () {
 			const before = ['a', 'b', 'c', 'd', 'e'];
@@ -536,7 +539,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single relocation w/ added duplicate': function () {
 			const before = ['a', 'b', 'c', 'd', 'e'];
@@ -564,7 +568,8 @@ registerSuite({
 						{moved: false, to: 5}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'single relocation w/ removed duplicate': function () {
 			const before = ['a', 'b', 'c', 'd', 'e', 'd'];
@@ -592,7 +597,8 @@ registerSuite({
 					],
 					added: []
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'abcdef => cbdfea': function () {
 			const before = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -630,7 +636,8 @@ registerSuite({
 						{moved: true, from: 0, to: 5}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'abcdef => bcfaed': function () {
 			const before = ['a', 'b', 'c', 'd', 'e', 'f'];
@@ -661,7 +668,8 @@ registerSuite({
 						{moved: true, from: 3, to: 5}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		},
 		'sparse array': function () {
 			const before = ['a'];
@@ -679,7 +687,8 @@ registerSuite({
 						{moved: false, to: 3}
 					]
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		}
 	},
 	'diff(any[], any[], {identityKey: \'id\', compareObjects: true})': {
@@ -719,10 +728,27 @@ registerSuite({
 						}
 					}
 				}
-			});
+			}, 'diff');
+			assert.deepEqual(compare.patch(before, patch, after), after, 'patch');
 		}
 	},
 	'patch any[] diffs': {
+		'[].splice': function () {
+			const before = ['a', 1, 2, 'b', 3, 'c', 4, 5];
+			const after = ['a', 6, 'b', 7, 8, 'c', 9];
+			const patch = compare.diff(before, after);
+			let offset = 0;
+			for (const index in patch) {
+				const i = parseInt(index, 10);
+				const change = patch[index];
+				const added = change.added.map((add) => {
+					return after[add.to];
+				});
+				before.splice(i + offset, change.removed.length, ...added);
+				offset += (change.added.length - change.removed.length);
+			}
+			assert.deepEqual(before, after);
+		},
 		'indexed using before reference': function () {
 			function render (item: {id: number, name: string}) {
 				return item.name;
@@ -809,7 +835,7 @@ registerSuite({
 					}
 				}
 
-				assert.deepEqual(rendered, after.map(render), before.map((item) => item.id + ':' + item.name).join(',') + ' => ' + after.map((item) => item.id + ':' + item.name).join(','));
+				assert.deepEqual(rendered, after.map(render));
 				const reindexed: {[id: number]: number} = {};
 				for (let i = 0, length = after.length; i < length; i++) {
 					reindexed[after[i].id] = i;

@@ -275,40 +275,59 @@ export interface TransformCallback<T, U> {
 export interface ArrayPatchOptions<T, U> {
 }
 
-export interface ArrayTransformPatchOptions<T, U> extends ArrayPatchOptions<T, U> {
-	transformCallback: TransformCallback<T, U>;
-}
-
-export function patch<T, U>(target: any[], patch: ArrayPatch<T, U>, options?: ArrayTransformPatchOptions<T, U>): void;
-export function patch<T, U>(target: T[], patch: ArrayPatch<T, U>, options?: ArrayPatchOptions<T, U>): U[];
+export function patch<T, U>(target: T[], patch: ArrayPatch<T, U>, update: U[], options?: ArrayPatchOptions<T, U>): U[];
 export function patch<T, U>(target: T, patch: ObjectPatch<T, U>): U;
-export function patch<T, U>(target: any, patch: any, options = {}): any {
-	if (Array.isArray(target)) {
-		const arrayTarget: T[] = target;
-		/*
-		const arrayPatch: ArrayPatch<T, U> = patch;
-		const arrayOptions: ArrayPatchOptions<T, U> = options;
-		const transformCallback: TransformCallback<T, U> = (<{ [key: string]: TransformCallback<T, U> }> options)['transformCallback'];
-		
-		if (transformCallback) {
-			return;
+export function patch<T, U>(): any {
+	if (Array.isArray(arguments[0])) {
+		const target: T[] = arguments[0];
+		const arrayPatch: ArrayPatch<T, U> = arguments[1];
+		const update: U[] = arguments[2];
+
+		let patched = false;
+		let offset = 0;
+		for (const index in arrayPatch) {
+			patched = true;
+			const i = parseInt(index, 10);
+			const change = arrayPatch[index];
+			if (change.type === Type.Splice) {
+				const added: T[] = change.added.map((add) => {
+					return <any> update[add.to];
+				});
+				target.splice(offset + i, change.removed.length, ...added);
+				for (let j = 0, length = change.added.length; j < length; j++) {
+					const add = change.added[j];
+					if (!(add.to in update)) {
+						delete target[offset + i + j];
+					}
+				}
+
+				offset += (change.added.length - change.removed.length);
+			}
+			else if (change.type === Type.Update) {
+				target[i] = <any> patch(target[i], change.patch);
+			}
 		}
-		*/
-		return arrayTarget;
+
+		if (!patched) {
+			return update;
+		}
+
+		return <any> target;
 	}
 
-	const targetObject: { [key: string]: any; } = target;
-	for (const key in patch) {
-		const change = patch[key];
+	const target: { [key: string]: any; } = arguments[0];
+	const objectPatch: ObjectPatch<T, U> = arguments[1];
+	for (const key in objectPatch) {
+		const change = objectPatch[key];
 		if (change.type === Type.Delete) {
-			delete targetObject[key];
-			if (targetObject[key] !== undefined) {
-				targetObject[key] = undefined;
+			delete target[key];
+			if (target[key] !== undefined) {
+				target[key] = undefined;
 			}
 		}
 		else if (change.type === Type.Add || change.type === Type.Update) {
-			targetObject[key] = change.newValue;
+			target[key] = change.newValue;
 		}
 	}
-	return targetObject;
+	return target;
 };
