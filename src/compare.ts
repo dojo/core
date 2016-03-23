@@ -1,5 +1,3 @@
-import { isIdentical } from './lang';
-
 export enum Type {
 	Add,
 	Update,
@@ -250,7 +248,7 @@ export function diff<T, U>(a: any, b: any, options: DiffOptions = {}): any {
 		else {
 			const aValue = aObject[key];
 			const bValue = bObject[key];
-			if (!isIdentical(aValue, bValue)) {
+			if (aValue !== bValue) {
 				patch[key] = {
 					type: Type.Update,
 					oldValue: aValue,
