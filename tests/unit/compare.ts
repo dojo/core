@@ -888,7 +888,11 @@ registerSuite({
 				{id: 3, name: 'Cherry'},
 				{id: 4, name: 'Date'},
 				{id: 5, name: 'Fig'},
-				{id: 6, name: 'Grape'}
+				{id: 6, name: 'Grape'},
+				{id: 7, name: 'Jackfruit'},
+				{id: 8, name: 'Kiwi'},
+				{id: 9, name: 'Lemon'},
+				{id: 10, name: 'Mango'}
 			];
 			const after = before.slice(0);
 			const rendered: string[] = [];
@@ -896,7 +900,7 @@ registerSuite({
 				const item = before[i];
 				rendered.push(render(item));
 			}
-			assert.deepEqual(rendered, ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape'], 'rendered');
+			assert.deepEqual(rendered, ['Apple', 'Banana', 'Cherry', 'Date', 'Fig', 'Grape', 'Jackfruit', 'Kiwi', 'Lemon', 'Mango'], 'rendered');
 
 			function randomize () {
 				after.sort((a, b) => {
