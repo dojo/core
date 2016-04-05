@@ -264,6 +264,22 @@ module.exports = function (grunt) {
 		'copy:staticTestFiles',
 		'updateTsconfig'
 	]);
+
+	grunt.registerTask('test-es6', function () {
+		tsOptions.target = 'es6';
+		grunt.config('intern.options.nodeOptions', [
+			'--harmony',
+			'--harmony_default_parameters',
+			'--harmony_destructuring'
+		]);
+		grunt.task.run('test');
+	});
+
+	grunt.registerTask('dev-es6', function () {
+		tsOptions.target = 'es6';
+		grunt.task.run('dev');
+	});
+
 	grunt.registerTask('dist', [
 		'tslint',
 		'ts:dist',
