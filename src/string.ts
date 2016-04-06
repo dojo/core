@@ -96,14 +96,18 @@ export function endsWith(text: string, search: string, endPosition?: number): bo
 		endPosition = text.length;
 	}
 
-	[ text, search, endPosition ] = normalizeSubstringArgs('endsWith', text, search, endPosition, true);
+	// V8 Bug: https://bugs.chromium.org/p/v8/issues/detail?id=4636
+	// StackOverlow: http://stackoverflow.com/questions/36076782/array-destructuring-assignment-not-working-in-v8-with-harmony-option-in-node-js
+	// Node v.5 does not fully implement assignment_destructuring, only with var / let / const
+	// Fixed in V8, can be put back to [text,search,endPosition] when Node v.6 released.
+	const [ nText, nSearch, nEndPosition ] = normalizeSubstringArgs('endsWith', text, search, endPosition, true);
 
-	const start = endPosition - search.length;
+	const start = nEndPosition - nSearch.length;
 	if (start < 0) {
 		return false;
 	}
 
-	return text.slice(start, endPosition) === search;
+	return nText.slice(start, nEndPosition) === nSearch;
 }
 
 /**
@@ -190,8 +194,9 @@ export function fromCodePoint(...codePoints: number[]): string {
  * @return Boolean indicating if the search string was found within the given string
  */
 export function includes(text: string, search: string, position: number = 0): boolean {
-	[ text, search, position ] = normalizeSubstringArgs('includes', text, search, position);
-	return text.indexOf(search, position) !== -1;
+	// V8 Bug: https://bugs.chromium.org/p/v8/issues/detail?id=4636
+	const [ nText, nSearch, nPosition ] = normalizeSubstringArgs('includes', text, search, position);
+	return nText.indexOf(nSearch, nPosition) !== -1;
 }
 
 /**
@@ -287,12 +292,13 @@ export function repeat(text: string, count: number = 0): string {
  */
 export function startsWith(text: string, search: string, position: number = 0): boolean {
 	search = String(search);
-	[ text, search, position ] = normalizeSubstringArgs('startsWith', text, search, position);
+	// V8 Bug: https://bugs.chromium.org/p/v8/issues/detail?id=4636
+	const [ nText, nSearch, nPosition ] = normalizeSubstringArgs('startsWith', text, search, position);
 
-	const end = position + search.length;
-	if (end > text.length) {
+	const end = nPosition + nSearch.length;
+	if (end > nText.length) {
 		return false;
 	}
 
-	return text.slice(position, end) === search;
+	return nText.slice(nPosition, end) === nSearch;
 }
