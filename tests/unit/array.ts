@@ -10,17 +10,9 @@ function assertFrom(arrayable: any, expected: any[]) {
 	assert.deepEqual(expected, actual);
 }
 
-// This breaks in the ES6 version for chrome,
-// read-only prototype error
-//
-// class MyArray {
-// 	constructor() {
-// 		Array.apply(this, arguments);
-// 		return this;
-// 	}
-// 	static from = array.from;
-// }
-// MyArray.prototype = Object.create(Array.prototype);
+class MyArray extends Array {
+	static from = <any> array.from;
+}
 
 function createDojoTests(feature: string, tests: {}) {
 	const hasConfiguration: TestResult = has(feature);
@@ -439,13 +431,12 @@ registerSuite({
 				assert.isFalse(array.includes([ 1, 2, 3 ], NaN));
 			}
 		};
-	})())
-	// ,
+	})()),
 
-	// 'extension support': createDojoTests('es6-array-from', {
-	// 	'.from()': function () {
-	// 		let actual = MyArray.from([ 1, 2, 3 ]);
-	// 		assert.instanceOf(actual, MyArray);
-	// 	}
-	// })
+	'extension support': createDojoTests('es6-array-from', {
+		'.from()': function () {
+			let actual = MyArray.from([ 1, 2, 3 ]);
+			assert.instanceOf(actual, MyArray);
+		}
+	})
 });
