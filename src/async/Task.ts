@@ -32,6 +32,7 @@ export default class Task<T> extends Promise<T> {
 	}
 
 	constructor(executor: Executor<T>, canceler?: () => void) {
+		// TDYE: ES6 - 'this' is undefined in both cases
 		super((resolve, reject) => {
 			// Don't let the Task resolve if it's been canceled
 			executor(
