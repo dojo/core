@@ -40,20 +40,25 @@ export default class Task<T> extends Promise<T> {
 		});
 
 		// Don't let the Task resolve if it's been canceled
-		executor(
-			(value) => {
-				if (this._state === Canceled) {
-					return;
+		try {
+			executor(
+				(value) => {
+					if (this._state === Canceled) {
+						return;
+					}
+					resolve(value);
+				},
+				(reason) => {
+					if (this._state === Canceled) {
+						return;
+					}
+					reject(reason);
 				}
-				resolve(value);
-			},
-			(reason) => {
-				if (this._state === Canceled) {
-					return;
-				}
-				reject(reason);
-			}
-		);
+			);
+		}
+		catch (error) {
+			reject(error);
+		}
 
 		this.children = [];
 		this.canceler = () => {
