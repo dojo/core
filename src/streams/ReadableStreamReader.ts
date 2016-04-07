@@ -130,7 +130,8 @@ export default class ReadableStreamReader<T> {
 			});
 		}
 		else {
-			const readPromise = new Promise<ReadResult<T>>((resolve, reject) => {
+			let readPromise: Promise<ReadResult<T>>;
+			readPromise = new Promise<ReadResult<T>>((resolve, reject) => {
 				this._readRequests.push({
 					promise: readPromise,
 					resolve: resolve,
