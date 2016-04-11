@@ -1,3 +1,4 @@
+import { HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX } from './string';
 import Symbol from './Symbol';
 
 export interface IteratorResult<T> {
@@ -48,6 +49,10 @@ export class ShimIterator<T> {
 		}
 		return staticDone;
 	};
+
+	[Symbol.iterator](): IterableIterator<T> {
+		return this;
+	}
 }
 
 /**
@@ -107,7 +112,7 @@ export function forOf<T>(iterable: Iterable<T> | ArrayLike<T> | string, callback
 			let char = iterable[i];
 			if ((i + 1) < l) {
 				const code = char.charCodeAt(0);
-				if ((code >= 0xD800) && (code <= 0xDBFF)) {
+				if ((code >= HIGH_SURROGATE_MIN) && (code <= HIGH_SURROGATE_MAX)) {
 					char += iterable[++i];
 				}
 			}

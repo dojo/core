@@ -1,8 +1,7 @@
-import global from './global';
-import Symbol from './Symbol';
-import { IterableIterator, Iterable, ShimIterator } from './iterator';
 import { hasClass } from './decorators';
-import { forOf } from './iterator';
+import global from './global';
+import { forOf, IterableIterator, Iterable, ShimIterator } from './iterator';
+import Symbol from './Symbol';
 
 export namespace Shim {
 	export class Set<T> {
@@ -36,11 +35,7 @@ export namespace Shim {
 		};
 
 		entries(): IterableIterator<[T, T]> {
-			const ent = new ShimIterator(this._setData.map((value) => [ value, value ]));
-			(<any> ent)[Symbol.iterator] = function (): IterableIterator<[T, T]> {
-				return <any> ent;
-			};
-			return <any> ent;
+			return new ShimIterator<[any, any]>(this._setData.map<[any, any]>((value) => [ value, value ]));
 		};
 
 		forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void {
@@ -57,11 +52,7 @@ export namespace Shim {
 		};
 
 		keys(): IterableIterator<T> {
-			const keys = new ShimIterator(this._setData);
-			(<any> keys)[Symbol.iterator] = function (): IterableIterator<T> {
-				return <any> keys;
-			};
-			return <any> keys;
+			return new ShimIterator(this._setData);
 		};
 
 		get size(): number {
@@ -69,19 +60,11 @@ export namespace Shim {
 		};
 
 		values(): IterableIterator<T> {
-			const values = new ShimIterator(this._setData);
-			(<any> values)[Symbol.iterator] = function (): IterableIterator<T> {
-				return <any> values;
-			};
-			return <any> values;
+			return new ShimIterator(this._setData);
 		};
 
 		[Symbol.iterator](): IterableIterator<T> {
-			const iterator = new ShimIterator(this._setData);
-			(<any> iterator)[Symbol.iterator] = function (): IterableIterator<T> {
-				return <any> iterator;
-			};
-			return <any> iterator;
+			return new ShimIterator(this._setData);
 		};
 
 		[Symbol.toStringTag]: string = 'Set';

@@ -163,6 +163,16 @@ export namespace Shim {
 
 const SymbolShim: Shim.SymbolShimConstructor = has('es6-symbol') ? global.Symbol : Shim.Exposed;
 
+/**
+ * Fill any missing well known symbols if the native Symbol is missing the well known
+ */
+[ 'hasInstance', 'isConcatSpreadable', 'iterator', 'species', 'replace', 'search', 'split', 'match', 'toPrimitive',
+	'toStringTag', 'unscopables' ].forEach((wellKnown) => {
+		if (!(<any> SymbolShim)[wellKnown]) {
+			Object.defineProperty(SymbolShim, wellKnown, getValueDescriptor(SymbolShim(wellKnown), false, false));
+		}
+	});
+
 export const isSymbol = Shim.isSymbol;
 
 export default SymbolShim;
