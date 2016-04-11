@@ -279,7 +279,6 @@ module.exports = function (grunt) {
 	grunt.registerTask('config-es6', function () {
 		tsOptions.target = 'es6';
 		if (this.flags.test) {
-			console.log('Setting nodeOptions');
 			grunt.config('intern.options.nodeOptions', [
 				'--harmony',
 				'--harmony_default_parameters',
