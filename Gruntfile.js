@@ -278,6 +278,11 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('config-es6', function () {
 		tsOptions.target = 'es6';
+
+		if (this.flags.es6Modules) {
+			tsOptions['module'] = 'es6';
+		}
+
 		if (this.flags.test) {
 			grunt.config('intern.options.nodeOptions', [
 				'--harmony',
@@ -289,7 +294,13 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('test-es6', [ 'config-es6:test', 'test' ]);
 	grunt.registerTask('dev-es6', [ 'config-es6', 'dev' ]);
-	grunt.registerTask('dist-es6', [ 'config-es6', 'dist' ]);
+	grunt.registerTask('dist-es6', function () {
+		var configArgs = this.flags.es6 ? ':es6Modules' : '';
+		grunt.task.run([
+			'config-es6' + configArgs,
+			'dist'
+		]);
+	});
 
 	grunt.registerTask('test-proxy', [ 'dev', 'intern:proxy' ]);
 	grunt.registerTask('default', [ 'clean', 'dev' ]);
