@@ -266,6 +266,7 @@ module.exports = function (grunt) {
 		'copy:staticTestFiles',
 		'updateTsconfig'
 	]);
+
 	grunt.registerTask('dist', [
 		'tslint',
 		'ts:dist',
@@ -276,6 +277,22 @@ module.exports = function (grunt) {
 		'dtsGenerator:dist',
 		'updatePackageJson'
 	]);
+
+	grunt.registerTask('config-es6', function () {
+		tsOptions.target = 'es6';
+		if (this.flags.test) {
+			grunt.config('intern.options.nodeOptions', [
+				'--harmony',
+				'--harmony_default_parameters',
+				'--harmony_destructuring'
+			]);
+		}
+	});
+
+	grunt.registerTask('test-es6', [ 'config-es6:test', 'test' ]);
+	grunt.registerTask('dev-es6', [ 'config-es6', 'dev' ]);
+	grunt.registerTask('dist-es6', [ 'config-es6', 'dist' ]);
+
 	grunt.registerTask('test-proxy', [ 'dev', 'intern:proxy' ]);
 	grunt.registerTask('default', [ 'clean', 'dev' ]);
 };

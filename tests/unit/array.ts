@@ -10,14 +10,9 @@ function assertFrom(arrayable: any, expected: any[]) {
 	assert.deepEqual(expected, actual);
 }
 
-class MyArray {
-	constructor() {
-		Array.apply(this, arguments);
-		return this;
-	}
-	static from = array.from;
+class MyArray extends Array {
+	static from = <any> array.from;
 }
-MyArray.prototype = Object.create(Array.prototype);
 
 function createDojoTests(feature: string, tests: {}) {
 	const hasConfiguration: TestResult = has(feature);
