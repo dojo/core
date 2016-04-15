@@ -293,7 +293,7 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 				let dfd = this.async();
 				let error = new Error('foo');
 				let foreign = <any> {
-					then: (f: Function) => {
+					then(f: Function) {
 						throw error;
 					}
 				};
@@ -310,7 +310,7 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 				let dfd = this.async();
 				let error = new Error('foo');
 				let foreign = <any> {
-					then: (f: Function) => {
+					then(f: Function) {
 						throw error;
 					}
 				};
@@ -329,7 +329,7 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 					let dfd = this.async();
 					let error = new Error('foo');
 					let foreign = <any> {
-						then: (f: Function) => {
+						then(f: Function) {
 							throw error;
 						}
 					};
@@ -346,7 +346,7 @@ export function addPromiseTests(suite: any, Promise: PromiseType) {
 					let dfd = this.async();
 					let error = new Error('foo');
 					let foreign = <any> {
-						then: (f: Function) => {
+						then(f: Function) {
 							throw error;
 						}
 					};
