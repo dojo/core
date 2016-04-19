@@ -32,7 +32,8 @@ if (has('host-browser')) {
 	};
 }
 else if (has('host-node')) {
-	let fs = (<any> require).nodeRequire ? (<any> require).nodeRequire('fs') : require('fs');
+	const nodeReq = (<any> require).nodeRequire || (<any> require);
+	const fs = nodeReq('fs');
 	getText = function(url: string, callback: (value: string) => void): void {
 		fs.readFile(url, { encoding: 'utf8' }, function(error: Error, data: string): void {
 			if (error) {
