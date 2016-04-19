@@ -32,8 +32,15 @@ export default class Task<T> extends Promise<T> {
 	}
 
 	constructor(executor: Executor<T>, canceler?: () => void) {
-		super((resolve, reject) => {
-			// Don't let the Task resolve if it's been canceled
+		let resolve: any, reject: any;
+
+		super((_resolve, _reject) => {
+			resolve = _resolve;
+			reject = _reject;
+		});
+
+		// Don't let the Task resolve if it's been canceled
+		try {
 			executor(
 				(value) => {
 					if (this._state === Canceled) {
@@ -48,7 +55,10 @@ export default class Task<T> extends Promise<T> {
 					reject(reason);
 				}
 			);
-		});
+		}
+		catch (error) {
+			reject(error);
+		}
 
 		this.children = [];
 		this.canceler = () => {
