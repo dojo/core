@@ -291,23 +291,6 @@ registerSuite({
 	},
 
 	headers: {
-		'request header normalization'(): void {
-			const dfd = this.async();
-			nodeRequest(getRequestUrl('foo.json'), {
-				headers: {
-					someThingCrAzY: 'some-arbitrary-value'
-				}
-			}).then(
-				dfd.callback(function (response: any) {
-					const header: any = response.nativeResponse.req._header;
-
-					assert.include(header, 'somethingcrazy: some-arbitrary-value');
-					assert.match(header, /dojo\/[^\s]+ Node\.js/);
-				}),
-				dfd.reject.bind(dfd)
-			);
-		},
-
 		'response headers': {
 			'before response'(): void {
 				const dfd = this.async();
