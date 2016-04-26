@@ -149,7 +149,7 @@ let suite = {
 		}
 	},
 
-	'Task#resolve': {
+	'Task.resolve': {
 		'returns a task'() {
 			const task = Task.resolve('foo');
 
