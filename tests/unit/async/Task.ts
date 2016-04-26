@@ -9,10 +9,9 @@ let suite = {
 
 	'isTask()'() {
 		const task = new Task((resolve) => resolve(), () => {});
-		const promise = new Promise((resolve) => resolve());
 
 		assert.isTrue(isTask(task), 'Should return true');
-		assert.isFalse(isTask(promise), 'Should return false');
+		assert.isFalse(isTask(Promise.resolve()), 'Should return false');
 		assert.isFalse(isTask(true), 'Should return false');
 		assert.isFalse(isTask(null), 'Should return false');
 		assert.isFalse(isTask({}), 'Should return false');
