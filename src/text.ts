@@ -69,15 +69,32 @@ export function get(url: string): Promise <string> {
 	return promise;
 }
 
-export function normalize(id: string, toAbsMid: (moduleId: string) => string): string {
-	let parts = id.split('!');
+/**
+ * AMD Plugin API to Normalize the module ID
+ * @param resourceId The resource ID to normalize.
+ * @param normalize A normalization function that accepts a string ID to normalize using the
+ *                  standard relative module normalization rules using the loader's current
+ *                  configuration.
+ */
+export function normalize(resourceId: string, normalize: (moduleId: string) => string): string {
+	let parts = resourceId.split('!');
 	let url = parts[0];
 
-	return (/^\./.test(url) ? toAbsMid(url) : url) + (parts[1] ? '!' + parts[1] : '');
+	return (/^\./.test(url) ? normalize(url) : url) + (parts[1] ? '!' + parts[1] : '');
 }
 
-export function load(id: string, require: DojoLoader.Require, load: (value?: any) => void, config?: DojoLoader.Config): void {
-	let parts = id.split('!');
+/**
+ * A function called by the AMD loader when used as a plugin
+ * @param resourceId The resource ID that the plugin should load. This ID MUST be normalized.
+ * @param require A local require function to use to load other modules. This require function
+ *                has some utilities on it:
+ *                * **require.toUrl('moduleId+extension')** See the `require.toUrl` API notes
+ *                  for more information.
+ * @param load A function to call once the value of the resource ID has been determined. This
+ *             tells the loader that the plugin is done loading the resource.
+ */
+export function load(resourceId: string, require: DojoLoader.Require, load: (value?: any) => void): void {
+	let parts = resourceId.split('!');
 	let stripFlag = parts.length > 1;
 	let mid = parts[0];
 	let url = require.toUrl(mid);
