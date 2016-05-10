@@ -1,8 +1,9 @@
 import has from './has';
+import { BuilderWriteAsModuleFunction, BuilderWriteFileAsModuleFunction } from './interfaces';
 import request, { Response } from './request';
 import Promise from './Promise';
 
-/*
+/**
  * Strips <?xml ...?> declarations so that external SVG and XML
  * documents can be added to a document without worry. Also, if the string
  * is an HTML document, only the part inside the body tag is returned.
@@ -19,7 +20,24 @@ function strip(text: string): string {
 	return text;
 }
 
-/*
+/**
+ * Ensures that escaped charecters are properly encoded when being written to a file
+ * to be loaded later on.
+ * @param text The text to encode
+ */
+function jsEscape(text: string): string {
+	return text
+		.replace(/(['\\])/g, '\\$1')
+		.replace(/[\f]/g, '\\f')
+		.replace(/[\b]/g, '\\b')
+		.replace(/[\n]/g, '\\n')
+		.replace(/[\t]/g, '\\t')
+		.replace(/[\r]/g, '\\r')
+		.replace(/[\u2028]/g, '\\u2028')
+		.replace(/[\u2029]/g, '\\u2029');
+}
+
+/**
  * Host-specific method to retrieve text
  */
 let getText: (url: string, callback: (value: string) => void) => void;
@@ -49,10 +67,12 @@ else {
 	};
 }
 
+export type TextCacheValue = string | ((text: string) => void);
+
 /*
  * Cache of previously-loaded text resources
  */
-let textCache: { [key: string]: any; } = {};
+let textCache: { [key: string]: TextCacheValue; } = {};
 
 /*
  * Cache of pending text resources
@@ -94,28 +114,23 @@ export function normalize(resourceId: string, normalize: (moduleId: string) => s
  *             tells the loader that the plugin is done loading the resource.
  */
 export function load(resourceId: string, require: DojoLoader.Require, load: (value?: any) => void): void {
-	let parts = resourceId.split('!');
-	let stripFlag = parts.length > 1;
-	let mid = parts[0];
-	let url = require.toUrl(mid);
-	let text: string;
+	const parts = resourceId.split('!');
+	const stripFlag = parts.length > 1;
+	const [ mid ] = parts;
+	const url = require.toUrl(mid);
 
 	function finish(text: string): void {
 		load(stripFlag ? strip(text) : text);
 	}
 
-	if (mid in textCache) {
-		text = textCache[mid];
-	}
-	else if (url in textCache) {
-		text = textCache[url];
-	}
+	const text = mid in textCache ? textCache[mid] : textCache[url];
 
-	if (!text) {
+	if (!text || typeof text !== 'string') {
 		if (pending[url]) {
 			pending[url].push(finish);
-		} else {
-			let pendingList = pending[url] = [finish];
+		}
+		else {
+			const pendingList = pending[url] = [ finish ];
 			getText(url, function(value: string) {
 				textCache[mid] = textCache[url] = value;
 				for (let i = 0; i < pendingList.length; ) {
@@ -124,7 +139,30 @@ export function load(resourceId: string, require: DojoLoader.Require, load: (val
 				delete pending[url];
 			});
 		}
-	} else {
+	}
+	else {
 		finish(text);
 	}
+}
+
+export function write(pluginName: string, moduleName: string, write: BuilderWriteAsModuleFunction): void {
+	const textCacheValue = textCache[moduleName];
+	if (textCacheValue && typeof textCacheValue === 'string') {
+		write.asModule(
+			`${pluginName}!${moduleName}`,
+			`define(function () { return '${jsEscape(textCacheValue)}'; });`
+		);
+	}
+}
+
+export function writeFile(pluginName: string, moduleName: string, req: DojoLoader.Require, fileWrite: BuilderWriteFileAsModuleFunction): void {
+	const parts = moduleName.split('!');
+	const [ partModuleName ] = parts;
+	const fileName = req.toUrl(partModuleName) + '.js';
+
+	load(partModuleName, req, (value) => {
+		const textWrite = (contents: string) => fileWrite(fileName, contents);
+		(<BuilderWriteAsModuleFunction> textWrite).asModule = (moduleName, contents) => fileWrite.asModule(moduleName, fileName, contents);
+		write(pluginName, partModuleName, textWrite as BuilderWriteAsModuleFunction);
+	});
 }

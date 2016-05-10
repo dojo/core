@@ -60,7 +60,7 @@ export interface BuilderLoaderPlugin extends DojoLoader.LoaderPlugin {
 	 *              for the optimized file. asModule is useful for text transform plugins, like a
 	 *              TypeScript plugin.
 	 */
-	write?(pluginName: string, moduleName: string, write: BuilderWriteAsModuleFunction): void;
+	write?(pluginName: string, moduleName: string, write: BuilderWriteAsModuleFunction, config?: { [ prop: string ]: any; }): void;
 
 	/**
 	 * Called only by an optimizer and only needs to be implemented if the plugin needs to write some code
@@ -84,7 +84,7 @@ export interface BuilderLoaderPlugin extends DojoLoader.LoaderPlugin {
 	 *                      generate file paths that are inside the build directory
 	 * @param write A function that can be called to write out the write out a module
 	 */
-	writeFile?(pluginName: string, name: string, parentRequire: DojoLoader.Require, write: BuilderWriteFileAsModuleFunction): void;
+	writeFile?(pluginName: string, name: string, parentRequire: DojoLoader.Require, write: BuilderWriteFileAsModuleFunction, config?: { [ prop: string ]: any; }): void;
 
 	/**
 	 * A string that points to an alternative plugin module to use instead of the current plugin.
