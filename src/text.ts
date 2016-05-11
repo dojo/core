@@ -49,8 +49,16 @@ if (has('host-browser')) {
 		});
 	};
 }
-else if (has('host-node') && require.nodeRequire || !(define && (<any> define).amd)) {
-	const nodeReq = require.nodeRequire || require;
+else if (has('host-node')) {
+	let nodeReq: any;
+
+	if (has('host-rjs')) {
+		nodeReq = global.requirejsVars.nodeRequire;
+	}
+	else {
+		nodeReq = require.nodeRequire || require;
+	}
+
 	const fs = nodeReq('fs');
 	getText = function(url: string, callback: (value: string) => void): void {
 		fs.readFile(url, { encoding: 'utf8' }, function(error: Error, data: string): void {

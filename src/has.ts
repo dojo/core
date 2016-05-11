@@ -131,6 +131,7 @@ add('host-node', function () {
 		return process.versions.node;
 	}
 });
+add('host-rjs', has('host-node') && global && global.requirejsVars);
 add('float32array', 'Float32Array' in global);
 add('setimmediate', typeof global.setImmediate !== 'undefined');
 add('dom-mutationobserver', function(): boolean {
