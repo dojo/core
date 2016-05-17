@@ -168,7 +168,8 @@ module.exports = function (grunt) {
 			dist: {
 				options: {
 					inlineSourceMap: true,
-					inlineSources: true
+					inlineSources: true,
+					sourceMap: false
 				},
 				outDir: 'dist',
 				src: [ '<%= skipTests %>' ]
