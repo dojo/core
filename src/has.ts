@@ -88,8 +88,11 @@ export function exists(feature: string): boolean {
  * @return if the feature test was successfully added
  */
 export function add(feature: string, value: TestResult | TestMethod, overwrite: boolean = false): boolean {
+
+	feature = feature.toLowerCase();
+
 	if (exists(feature) && !overwrite) {
-		return false;
+		throw new Error(`${feature} already exists and no overwrite flag was passed`);
 	}
 
 	if (typeof value === 'function') {
@@ -111,6 +114,12 @@ export function add(feature: string, value: TestResult | TestMethod, overwrite: 
  */
 export default function has(feature: string): TestResult {
 	let result: any;
+
+	feature = feature.toLowerCase();
+
+	if (!exists(feature)) {
+		throw new Error(`${feature} does not exist`);
+	}
 
 	if (testFunctions[feature]) {
 		result = cache[feature] = testFunctions[feature].call(null);
