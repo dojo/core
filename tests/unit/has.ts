@@ -46,15 +46,29 @@ registerSuite({
 			}
 		},
 
+		'throws when no value in cache and no test'() {
+			const feature = 'abc';
+			let err: Error;
+			try {
+				has(feature);
+			} catch (e) {
+				err = e;
+			}
+			assert.isTrue(err instanceof Error);
+			assert.equal(err.message, 'abc does not exist');
+		},
+
+		'feature name is lowercased'() {
+			hasAdd('abc', true);
+			assert.isTrue(has('ABC'));
+		},
+
 		'has.cache': {
 			'basic true/false tests'() {
 				hasAdd('abc', true);
 				assert.isTrue(hasCache['abc']);
 				hasAdd('def', false);
 				assert.isFalse(hasCache['def']);
-
-				delete hasCache['abc'];
-				assert.isUndefined(has('abc'), 'Feature should be undefined after being removed from cache');
 			},
 
 			'deferred feature test should not populate cache until evaluated'() {
@@ -112,9 +126,21 @@ registerSuite({
 				}, TypeError);
 			},
 
-			'feature is already defined; returns false'() {
-				assert.isTrue(hasAdd(feature, true));
-				assert.isFalse(hasAdd(feature, false));
+			'throws when feature is already defined'() {
+				let err: Error;
+				assert.isTrue(hasAdd('abc', true));
+				try {
+					assert.isFalse(hasAdd('abc', false));
+				} catch (e) {
+					err = e;
+				}
+				assert.isTrue(err instanceof Error);
+				assert.equal(err.message, 'abc already exists and no overwrite flag was passed');
+			},
+
+			'feature name is lowercased'() {
+				hasAdd('ABC', true);
+				assert.isTrue(has('abc'));
 			},
 
 			overwrite: {
