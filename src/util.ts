@@ -9,11 +9,13 @@ import { createHandle } from './lang';
  * @return Handle which can be destroyed to clear the timeout
  */
 export function createTimer(callback: (...args: any[]) => void, delay?: number): Handle {
-	let timerId = setTimeout(callback, delay);
+	let timerId: number | null = setTimeout(callback, delay);
 
 	return createHandle(function () {
-		clearTimeout(timerId);
-		timerId = null;
+		if (timerId) {
+			clearTimeout(timerId);
+			timerId = null;
+		}
 	});
 }
 
@@ -33,7 +35,7 @@ export function debounce<T extends (...args: any[]) => void>(callback: T, delay:
 		timer && clearTimeout(timer);
 
 		let context = this;
-		let args = arguments;
+		let args: IArguments | null = arguments;
 
 		timer = setTimeout(function () {
 			callback.apply(context, args);
@@ -50,7 +52,7 @@ export function debounce<T extends (...args: any[]) => void>(callback: T, delay:
  * @return Throttled function
  */
 export function throttle<T extends (...args: any[]) => void>(callback: T, delay: number): T {
-	let ran: boolean;
+	let ran: boolean | null;
 
 	return <T> function () {
 		if (ran) {
@@ -75,7 +77,7 @@ export function throttle<T extends (...args: any[]) => void>(callback: T, delay:
  * @return Throttled function
  */
 export function throttleAfter<T extends (...args: any[]) => void>(callback: T, delay: number): T {
-	let ran: boolean;
+	let ran: boolean | null;
 
 	return <T> function () {
 		if (ran) {
@@ -85,7 +87,7 @@ export function throttleAfter<T extends (...args: any[]) => void>(callback: T, d
 		ran = true;
 
 		let context = this;
-		let args = arguments;
+		let args: IArguments | null = arguments;
 
 		setTimeout(function () {
 			callback.apply(context, args);
