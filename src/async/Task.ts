@@ -136,8 +136,9 @@ export default class Task<T> extends Promise<T> {
 		return task;
 	}
 
-	then<U>(onFulfilled?: (value: T) => U | Thenable<U>,  onRejected?: (error: Error) => U | Thenable<U>): Task<U> {
-		const task = <Task<U>> super.then<U>(
+	then<U>(onFulfilled?: (value: T | undefined) => U | Thenable<U>,  onRejected?: (error: Error | undefined) => U | Thenable<U>): Task<U> {
+		//FIXME
+		var task = <Task<U>> super.then<U>(
 			// Don't call the onFulfilled or onRejected handlers if this Task is canceled
 			function (value) {
 				if (task._state === Canceled) {
