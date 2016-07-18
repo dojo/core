@@ -9,7 +9,7 @@ import { ParamList } from './UrlSearchParams';
 declare var require: any;
 
 export class FilterRegistry extends Registry<RequestFilter> {
-	register(test: string | RegExp | RequestFilterTest, value: RequestFilter, first?: boolean): Handle {
+	register(test: string | RegExp | RequestFilterTest | null, value: RequestFilter, first?: boolean): Handle {
 		let entryTest: Test;
 
 		if (typeof test === 'string') {
@@ -19,7 +19,7 @@ export class FilterRegistry extends Registry<RequestFilter> {
 		}
 		else if (test instanceof RegExp) {
 			entryTest = (response, url, options) => {
-				return test.test(url);
+				return test ? (<RegExp> test).test(url) : null;
 			};
 		}
 		else {
@@ -49,8 +49,10 @@ export class ProviderRegistry extends Registry<RequestProvider> {
 					if (canceled) {
 						return;
 					}
-					actualResponse = provider(url, options);
-					actualResponse.then(resolve, reject);
+					if (provider) {
+						actualResponse = provider(url, options);
+						actualResponse.then(resolve, reject);
+					}
 				});
 			}, function () {
 				if (!canceled) {
@@ -75,7 +77,7 @@ export class ProviderRegistry extends Registry<RequestProvider> {
 		};
 	}
 
-	register(test: string | RegExp | RequestProviderTest, value: RequestProvider, first?: boolean): Handle {
+	register(test: string | RegExp | RequestProviderTest | null, value: RequestProvider, first?: boolean): Handle {
 		let entryTest: Test;
 
 		if (typeof test === 'string') {
@@ -85,7 +87,7 @@ export class ProviderRegistry extends Registry<RequestProvider> {
 		}
 		else if (test instanceof RegExp) {
 			entryTest = (url, options) => {
-				return test.test(url);
+				return test ? (<RegExp> test).test(url) : null;
 			};
 		}
 		else {
@@ -117,7 +119,7 @@ export interface RequestFilter {
 }
 
 export interface RequestFilterTest extends Test {
-	<T>(response: Response<any>, url: string, options?: RequestOptions): boolean;
+	<T>(response: Response<any>, url: string, options?: RequestOptions): boolean | null;
 }
 
 export interface RequestOptions {
@@ -138,7 +140,7 @@ export interface RequestProvider {
 }
 
 export interface RequestProviderTest extends Test {
-	(url: string, options?: RequestOptions): boolean;
+	(url: string, options?: RequestOptions): boolean | null;
 }
 
 export interface Response<T> {

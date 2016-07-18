@@ -83,5 +83,5 @@ export default class Registry<T> {
  * The interface that a test function must implement.
  */
 export interface Test {
-	(...args: any[]): boolean;
+	(...args: any[]): boolean | null;
 }
