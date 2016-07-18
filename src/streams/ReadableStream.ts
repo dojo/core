@@ -141,7 +141,7 @@ export default class ReadableStream<T> {
 		return this.queue.totalSize;
 	}
 
-	protected _pullingPromise: Promise<void>;
+	protected _pullingPromise: Promise<void> | undefined;
 	protected _started: boolean;
 	protected _startedPromise: Promise<void>;
 	protected _strategy: Strategy<T>;
@@ -304,7 +304,8 @@ export default class ReadableStream<T> {
 
 		function doPipe(): void {
 			lastRead = reader.read();
-			Promise.all([ lastRead, dest.ready ]).then(function ([ readResult ]) {
+			Promise.all([ lastRead, dest.ready ]).then(function (result) {
+				const readResult = result ?  result[0] : null;
 				if (readResult.done) {
 					closeDest();
 				}
