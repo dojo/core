@@ -148,10 +148,10 @@ export interface Response<T> {
 	nativeResponse?: any;
 	requestOptions: RequestOptions;
 	statusCode: number | null | undefined;
-	statusText?: string;
+	statusText?: string | null;
 	url: string;
 
-	getHeader(name: string): string;
+	getHeader(name: string): null | string;
 }
 
 /**
