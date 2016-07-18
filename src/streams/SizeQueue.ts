@@ -30,9 +30,9 @@ export default class SizeQueue<T> {
 		this._queue.push({ value: value, size: size });
 	}
 
-	dequeue(): T {
+	dequeue(): T | null {
 		const pair = this._queue.shift();
-		return pair.value;
+		return pair ? pair.value : null;
 	}
 
 	peek(): T {
