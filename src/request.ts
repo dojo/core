@@ -144,10 +144,10 @@ export interface RequestProviderTest extends Test {
 }
 
 export interface Response<T> {
-	data: T;
+	data: T | null;
 	nativeResponse?: any;
 	requestOptions: RequestOptions;
-	statusCode: number;
+	statusCode: number | null | undefined;
 	statusText?: string;
 	url: string;
 
