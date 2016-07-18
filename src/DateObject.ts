@@ -36,7 +36,7 @@ export interface DateProperties {
 	year: number;
 }
 
-const days = [ null, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+const days = [ -1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
 const isLeapYear = (function () {
 	const date = new Date();
