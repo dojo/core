@@ -224,7 +224,7 @@ registerSuite({
 				let cacheBustStringB: string;
 				return xhrRequest('/__echo/xhr?foo=bar', {
 					cacheBust: true
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
 					cacheBustStringA = response.url.split('&')[1];
 					assert.isFalse(isNaN(Number(cacheBustStringA)));
@@ -235,7 +235,7 @@ registerSuite({
 							}).then(resolve, reject);
 						}, 5);
 					});
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
 					cacheBustStringB = response.url.split('&')[1];
 					assert.isFalse(isNaN(Number(cacheBustStringB)));
@@ -255,7 +255,7 @@ registerSuite({
 					query: {
 						bar: 'baz'
 					}
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
 					cacheBustStringA = response.url.split('&')[2];
 					assert.isFalse(isNaN(Number(cacheBustStringA)));
@@ -270,7 +270,7 @@ registerSuite({
 							}).then(resolve, reject);
 						}, 5);
 					});
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar&bar=baz'), 0);
 					cacheBustStringB = response.url.split('&')[2];
 					assert.isFalse(isNaN(Number(cacheBustStringB)));
@@ -290,7 +290,7 @@ registerSuite({
 					query: {
 						foo: 'bar'
 					}
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
 					cacheBustStringA = response.url.split('&')[1];
 					assert.isFalse(isNaN(Number(cacheBustStringA)));
@@ -305,7 +305,7 @@ registerSuite({
 							}).then(resolve, reject);
 						}, 5);
 					});
-				}).then(function (response) {
+				}).then(function (response: any) {
 					assert.strictEqual(response.url.indexOf('/__echo/xhr?foo=bar'), 0);
 					cacheBustStringB = response.url.split('&')[1];
 					assert.isFalse(isNaN(Number(cacheBustStringB)));

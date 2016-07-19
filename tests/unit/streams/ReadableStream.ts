@@ -70,7 +70,7 @@ registerSuite({
 
 		'noSource'() {
 			assert.throws(function () {
-				new ReadableStream<string>(null);
+				new ReadableStream<string>(<any> null);
 			});
 		},
 
@@ -167,10 +167,11 @@ registerSuite({
 			let stream: ReadableStream<string>;
 			let source = new BaseStringSource();
 			stream = new ReadableStream<string>(source, strategy);
+			assert.isNotNull(stream);
 			assert.isNotNull(stream.strategy);
 			assert.isNotNull(stream.strategy.size);
 			assert.strictEqual(stream.strategy.highWaterMark, 2);
-			assert.strictEqual(stream.strategy.size('test'), 1);
+			assert.strictEqual((<any> stream).strategy.size('test'), 1);
 
 			// changing the source's strategy does not affect the stream that has already been created.
 			strategy = {
@@ -180,7 +181,7 @@ registerSuite({
 				highWaterMark: 25
 			};
 			assert.strictEqual(stream.strategy.highWaterMark, 2);
-			assert.strictEqual(stream.strategy.size('test'), 1);
+			assert.strictEqual((<any> stream).strategy.size('test'), 1);
 		},
 
 		'strategy size() throw error'() {

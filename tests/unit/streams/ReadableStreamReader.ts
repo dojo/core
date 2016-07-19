@@ -28,7 +28,7 @@ registerSuite({
 	'constructor': {
 		'throws an error if no stream is present'() {
 			assert.throws(function () {
-				new ReadableStreamReader(null);
+				new ReadableStreamReader(<any> null);
 			});
 		},
 

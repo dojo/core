@@ -48,7 +48,7 @@ registerSuite({
 		};
 
 		server = http.createServer(function (_request, response) {
-			const urlInfo = url.parse(_request.url, true);
+			const urlInfo = url.parse(<string> _request.url, true);
 			const dataKey: string = urlInfo.query.dataKey;
 			request = _request;
 

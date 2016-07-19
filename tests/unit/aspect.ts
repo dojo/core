@@ -40,7 +40,7 @@ registerSuite({
 			},
 
 			'no return value from advising function'() {
-				let receivedArgs: string[];
+				let receivedArgs: string[] = [];
 				let beforeCalled = false;
 				let obj = {
 					method: function (...args: string[]) {
@@ -79,11 +79,13 @@ registerSuite({
 			'multiple aspect.before() with removal inside handler'() {
 				let count = 0;
 
-				const handle1 = aspect.before(obj, 'method', function () {
+				//FIXME
+				var handle1 = aspect.before(obj, 'method', function () {
 					count++;
 				});
 
-				const handle2 = aspect.before(obj, 'method', function () {
+				//FIXME
+				var handle2 = aspect.before(obj, 'method', function () {
 					handle2.destroy();
 					handle1.destroy();
 					count++;
@@ -122,7 +124,8 @@ registerSuite({
 				let count = 0;
 
 				let handle2: Handle;
-				const handle1 = aspect.after(obj, 'method', function () {
+				//FIXME
+				var handle1 = aspect.after(obj, 'method', function () {
 					handle1.destroy();
 					handle2.destroy();
 					count++;

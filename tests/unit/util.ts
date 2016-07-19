@@ -27,7 +27,7 @@ registerSuite({
 	name: 'utility functions',
 
 	createTimer: (function () {
-		let timer: Handle;
+		let timer: Handle | null;
 
 		return {
 			afterEach() {
@@ -41,7 +41,9 @@ registerSuite({
 				timer = util.createTimer(spy, 100);
 
 				setTimeout(function () {
-					timer.destroy();
+					if (timer) {
+						timer.destroy();
+					}
 				}, 50);
 
 				setTimeout(dfd.callback(function () {
@@ -64,7 +66,7 @@ registerSuite({
 	debounce: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
-			const foo = {
+			var foo = {
 				bar: util.debounce(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
@@ -120,7 +122,7 @@ registerSuite({
 	throttle: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
-			const foo = {
+			var foo = {
 				bar: util.throttle(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
@@ -143,7 +145,7 @@ registerSuite({
 
 		'throttles callback'() {
 			const dfd = this.async(TIMEOUT);
-			const spy = sinon.spy(function (a: string) {
+			var spy = sinon.spy(function (a: string) {
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?
 				// Technically, the time diff should be greater than 24ms, but in some cases
@@ -182,7 +184,7 @@ registerSuite({
 	throttleAfter: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
-			const foo = {
+			var foo = {
 				bar: util.throttleAfter(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
@@ -205,7 +207,7 @@ registerSuite({
 
 		'throttles callback'() {
 			const dfd = this.async(TIMEOUT);
-			const spy = sinon.spy(function (a: string) {
+			var spy = sinon.spy(function (a: string) {
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?
 				// Technically, the time diff should be greater than 24ms, but in some cases

@@ -19,15 +19,11 @@ registerSuite(function () {
 
 		beforeEach(): void {
 			parts = [];
-		},
-
-		afterEach(): void {
-			parts = scheduler = null;
+			scheduler = new Scheduler();
 		},
 
 		'callback handling': function () {
 			const dfd = this.async(5000);
-			scheduler = new Scheduler();
 
 			function c() {
 				a();
@@ -73,7 +69,6 @@ registerSuite(function () {
 
 		'when deferWhileProcessing is true': function () {
 			const dfd = this.async(5000);
-			scheduler = new Scheduler();
 
 			function test() {
 				scheduler.schedule(function () {
@@ -121,7 +116,6 @@ registerSuite(function () {
 
 		'scheduler.schedule() => handle.destroy()': function () {
 			const dfd = this.async(5000);
-			scheduler = new Scheduler();
 
 			function test() {
 				scheduler.schedule(function () {

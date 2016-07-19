@@ -12,7 +12,7 @@ function executeTest(suite: Suite, htmlTestPath: string, testFn: (result: any) =
 		.get(require.toUrl(htmlTestPath))
 		.then(pollUntil<any>(function() {
 			return (<any> window).loaderTestResults;
-		}, null, timeout), undefined)
+		}, undefined, timeout), undefined)
 		.then(testFn, function() {
 			throw new Error('loaderTestResult was not set.');
 		});
