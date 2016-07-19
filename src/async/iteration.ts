@@ -167,7 +167,7 @@ export function filter<T>(items: Iterable<T | Promise<T>> | (T | Promise<T>)[], 
 export function find<T>(items: Iterable<T | Promise<T>> | (T | Promise<T>)[], callback: Filterer<T>): Promise<T> {
 	const list: (T | Thenable<T>)[] = isArrayLike(items) ? items : <(T | Thenable<T>)[]> array.from(items);
 	return findIndex<T>(list, callback).then(function (i?: number): T | Thenable<T> | undefined {
-		return i && i >= 0 ? list[i] : undefined;
+		return i !== undefined && i >= 0 ? list[i] : undefined;
 	});
 }
 

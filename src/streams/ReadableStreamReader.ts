@@ -76,10 +76,9 @@ export default class ReadableStreamReader<T> {
 			return Promise.resolve();
 		}
 
+		const storedError = <Error> this._storedError;
 		if (this.state === State.Errored) {
-			if (this._storedError) {
-				return Promise.reject(this._storedError);
-			}
+			return Promise.reject(storedError);
 		}
 
 		if (this._ownerReadableStream && this._ownerReadableStream.state === State.Readable) {
