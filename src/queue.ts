@@ -10,7 +10,7 @@ function executeTask(item: QueueItem | undefined): void {
 
 function getQueueHandle(item: QueueItem, destructor?: (...args: any[]) => any): Handle {
 	return {
-		destroy: function () {
+		destroy: function (this: Handle) {
 			this.destroy = function () {};
 			item.isActive = false;
 			item.callback = null;
