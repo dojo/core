@@ -118,12 +118,12 @@ export default class UrlSearchParams {
 	 * @param key The key to return the first value for
 	 * @return The first string value for the key
 	 */
-	get(key: string): string | null | undefined {
+	get(key: string): string |  undefined {
 		if (!this.has(key)) {
-			return null;
+			return undefined;
 		}
 		const value = this._list[key];
-		return value ? value[0] : null;
+		return value ? value[0] : undefined;
 	}
 
 	/**
@@ -131,9 +131,9 @@ export default class UrlSearchParams {
 	 * @param key The key to return all values for
 	 * @return An array of strings containing all values for the key
 	 */
-	getAll(key: string): string[] | null | undefined {
+	getAll(key: string): string[] | undefined {
 		if (!this.has(key)) {
-			return null;
+			return undefined;
 		}
 		return this._list[key];
 	}

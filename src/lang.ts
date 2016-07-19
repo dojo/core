@@ -266,7 +266,7 @@ export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs
  */
 export function createHandle(destructor: () => void): Handle {
 	return {
-		destroy: function (this: any) {
+		destroy: function (this: Handle) {
 			this.destroy = function () {};
 			destructor.call(this);
 		}
