@@ -123,7 +123,8 @@ export default function on(target: any, type: any, listener: any, capture?: bool
 export function once(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
 export function once(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): Handle;
 export function once(target: any, type: any, listener: any, capture?: boolean): Handle {
-	//FIXME
+	// FIXME
+	// tslint:disable-next-line:no-var-keyword
 	var handle = on(target, type, function () {
 		handle.destroy();
 		return listener.apply(this, arguments);

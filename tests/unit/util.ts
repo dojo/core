@@ -1,3 +1,5 @@
+/* tslint:disable:no-var-keyword */
+
 /*
  * While setTimeout and setInterval work well enough for typical application demands on reasonably modern computers,
  * JavaScript runtimes make no guarantee of timely execution. The delay passed to these functions only guarantees
@@ -66,6 +68,7 @@ registerSuite({
 	debounce: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
+			// FIXME
 			var foo = {
 				bar: util.debounce(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
@@ -122,6 +125,7 @@ registerSuite({
 	throttle: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
+			// FIXME
 			var foo = {
 				bar: util.throttle(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
@@ -145,6 +149,7 @@ registerSuite({
 
 		'throttles callback'() {
 			const dfd = this.async(TIMEOUT);
+			// FIXME
 			var spy = sinon.spy(function (a: string) {
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?
@@ -184,6 +189,7 @@ registerSuite({
 	throttleAfter: {
 		'preserves context'() {
 			const dfd = this.async(TIMEOUT);
+			// FIXME
 			var foo = {
 				bar: util.throttleAfter(dfd.callback(function() {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
@@ -207,6 +213,7 @@ registerSuite({
 
 		'throttles callback'() {
 			const dfd = this.async(TIMEOUT);
+			// FIXME
 			var spy = sinon.spy(function (a: string) {
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?

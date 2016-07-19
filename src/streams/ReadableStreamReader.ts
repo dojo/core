@@ -131,7 +131,8 @@ export default class ReadableStreamReader<T> {
 			});
 		}
 		else {
-			//FIXME
+			// FIXME
+			// tslint:disable-next-line:no-var-keyword
 			var readPromise = new Promise<ReadResult<T>>((resolve, reject) => {
 				this._readRequests.push({
 					promise: readPromise,

@@ -14,7 +14,7 @@ function parseQueryString(input: string): ParamList {
 	for (const entry of input.split('&')) {
 		const indexOfFirstEquals = entry.indexOf('=');
 		let key: string;
-		let value: string = '';
+		let value = '';
 
 		if (indexOfFirstEquals >= 0) {
 			key = entry.slice(0, indexOfFirstEquals);

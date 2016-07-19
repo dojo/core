@@ -1,3 +1,5 @@
+/* tslint:disable:no-var-keyword */
+
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import * as sinon from 'sinon';
@@ -79,12 +81,12 @@ registerSuite({
 			'multiple aspect.before() with removal inside handler'() {
 				let count = 0;
 
-				//FIXME
+				// FIXME
 				var handle1 = aspect.before(obj, 'method', function () {
 					count++;
 				});
 
-				//FIXME
+				// FIXME
 				var handle2 = aspect.before(obj, 'method', function () {
 					handle2.destroy();
 					handle1.destroy();
@@ -124,7 +126,7 @@ registerSuite({
 				let count = 0;
 
 				let handle2: Handle;
-				//FIXME
+				// FIXME
 				var handle1 = aspect.after(obj, 'method', function () {
 					handle1.destroy();
 					handle2.destroy();

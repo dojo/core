@@ -169,7 +169,7 @@ export function around(target: any, methodName: string, advice: null | ((previou
 
 	dispatcher.around = {
 		advice: function (target: any, args: any[]): any {
-			return advised ? advised.apply(target, args) : previous && previous.advice ? previous.advice(target, args): null;
+			return advised ? advised.apply(target, args) : previous && previous.advice ? previous.advice(target, args) : null;
 		}
 	};
 
