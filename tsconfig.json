@@ -10,7 +10,8 @@
 		"experimentalDecorators": true,
 		"sourceMap": true,
 		"moduleResolution": "classic",
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"noImplicitThis": true
 	},
 	"filesGlob": [
 		"./src/**/*.ts",

@@ -332,7 +332,7 @@ registerSuite({
 			method?: (...args: string[]) => string;
 		} = <any> {};
 		const method = lang.lateBind(object, 'method');
-		object.method = function (): any {
+		object.method = function (this: any): any {
 			return this;
 		};
 
@@ -360,13 +360,13 @@ registerSuite({
 
 	'.partial()'() {
 		const ending = 'jumps over the lazy dog';
-		const finish = lang.partial(function () {
+		const finish = lang.partial(function (this: any) {
 			const start = this && this.start ? [ this.start ] : [];
 
 			return start.concat(Array.prototype.slice.call(arguments)).join(' ');
 		}, 'jumps', 'over');
 
-		function Sentence(start: string = '') {
+		function Sentence(this: any, start: string = '') {
 			this.start = start;
 		}
 		Sentence.prototype.finish = finish;

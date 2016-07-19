@@ -39,7 +39,7 @@ registerSuite({
 	},
 
 	'HTTP methods': {
-		specified() {
+		specified(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -49,7 +49,7 @@ registerSuite({
 				});
 		},
 
-		'default'() {
+		'default'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -59,7 +59,7 @@ registerSuite({
 				});
 		},
 
-		'.get with URL query'() {
+		'.get with URL query'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -78,7 +78,7 @@ registerSuite({
 			});
 		},
 
-		'.post': function () {
+		'.post': function (this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -98,7 +98,7 @@ registerSuite({
 	},
 
 	'request options': {
-		'"timeout"'() {
+		'"timeout"'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -113,7 +113,7 @@ registerSuite({
 				);
 		},
 
-		'user and password'() {
+		'user and password'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -126,7 +126,7 @@ registerSuite({
 			});
 		},
 
-		'auth, without user or password'() {
+		'auth, without user or password'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -139,7 +139,7 @@ registerSuite({
 		},
 
 		'query': {
-			'.get with query URL and query option string'() {
+			'.get with query URL and query option string'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -166,7 +166,7 @@ registerSuite({
 				});
 			},
 
-			'.get with query option string'() {
+			'.get with query option string'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -191,7 +191,7 @@ registerSuite({
 				});
 			},
 
-			'.get with query option object'() {
+			'.get with query option object'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -216,7 +216,7 @@ registerSuite({
 				});
 			},
 
-			'.get with cacheBust w/query string w/o/query option'() {
+			'.get with cacheBust w/query string w/o/query option'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -244,7 +244,7 @@ registerSuite({
 				});
 			},
 
-			'.get with cacheBust w/query string w/query option'() {
+			'.get with cacheBust w/query string w/query option'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -279,7 +279,7 @@ registerSuite({
 				});
 			},
 
-			'.get with cacheBust w/o/query string w/query option'() {
+			'.get with cacheBust w/o/query string w/query option'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -314,7 +314,7 @@ registerSuite({
 				});
 			},
 
-			'.get with cacheBust and no query'() {
+			'.get with cacheBust and no query'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -340,7 +340,7 @@ registerSuite({
 		},
 
 		'headers': {
-			'normalize header names'() {
+			'normalize header names'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -355,7 +355,7 @@ registerSuite({
 				});
 			},
 
-			'custom headers'() {
+			'custom headers'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -369,7 +369,7 @@ registerSuite({
 				});
 			},
 
-			'default headers'() {
+			'default headers'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -385,7 +385,7 @@ registerSuite({
 		},
 
 		'responseType': {
-			'xml'() {
+			'xml'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -395,7 +395,7 @@ registerSuite({
 				});
 			},
 
-			'blob'() {
+			'blob'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -407,7 +407,7 @@ registerSuite({
 				});
 			},
 
-			'arrayBuffer'() {
+			'arrayBuffer'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
@@ -422,7 +422,7 @@ registerSuite({
 	},
 
 	'response object': {
-		properties() {
+		properties(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}
@@ -435,7 +435,7 @@ registerSuite({
 			});
 		},
 
-		'.getHeader'() {
+		'.getHeader'(this: any) {
 			if (!echoServerAvailable) {
 				this.skip('No echo server available');
 			}

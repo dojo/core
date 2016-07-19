@@ -81,7 +81,7 @@ registerSuite({
 			});
 		},
 
-		'verify start called'() {
+		'verify start called'(this: any) {
 
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream: ReadableStream<string>;
@@ -100,7 +100,7 @@ registerSuite({
 			}));
 		},
 
-		'verify pull called'() {
+		'verify pull called'(this: any) {
 
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream: ReadableStream<string>;
@@ -118,7 +118,7 @@ registerSuite({
 			}));
 		},
 
-		'source start rejects'() {
+		'source start rejects'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.start = function () {
@@ -131,7 +131,7 @@ registerSuite({
 			}));
 		},
 
-		'source pull rejects'() {
+		'source pull rejects'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.pull = function () {
@@ -362,7 +362,7 @@ registerSuite({
 	},
 
 	'cancel': {
-		'not readable'() {
+		'not readable'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource(), strategy);
 			stream.underlyingSource = null;
@@ -384,7 +384,7 @@ registerSuite({
 			return stream.cancel();
 		},
 
-		'closed'() {
+		'closed'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource(), strategy);
 			stream.requestClose();
@@ -399,7 +399,7 @@ registerSuite({
 			);
 		},
 
-		'errored'() {
+		'errored'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource(), strategy);
 			stream.error(new Error('test'));
@@ -414,7 +414,7 @@ registerSuite({
 			);
 		},
 
-		'populated queue'() {
+		'populated queue'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource(), strategy);
 			stream.enqueue('test');
@@ -431,7 +431,7 @@ registerSuite({
 			);
 		},
 
-		'verify cancel called on source'() {
+		'verify cancel called on source'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.cancel = dfd.callback(source.cancel);
@@ -441,7 +441,7 @@ registerSuite({
 	},
 
 	'allowPull': {
-		'started'() {
+		'started'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource());
 			stream.started.then(dfd.callback(function () {
@@ -449,7 +449,7 @@ registerSuite({
 			}));
 		},
 
-		'closed'() {
+		'closed'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource());
 			stream.started.then(dfd.callback(function () {
@@ -458,7 +458,7 @@ registerSuite({
 			}));
 		},
 
-		'closedRequested'() {
+		'closedRequested'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource(), {
 				highWaterMark: 10
@@ -470,7 +470,7 @@ registerSuite({
 			}));
 		},
 
-		'errored'() {
+		'errored'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource());
 			stream.started.then(dfd.callback(function () {
@@ -479,7 +479,7 @@ registerSuite({
 			}));
 		},
 
-		'queue full'() {
+		'queue full'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource());
 			stream.started.then(dfd.callback(function () {
@@ -489,7 +489,7 @@ registerSuite({
 			}));
 		},
 
-		'pull requested'() {
+		'pull requested'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.pull = function (controller: ReadableStreamController<string>): Promise<void> {
@@ -525,7 +525,7 @@ registerSuite({
 			assert.isObject(tees[1]);
 		},
 
-		'cancel'() {
+		'cancel'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let stream = new ReadableStream(new BaseStringSource());
 			let [ stream1, stream2 ] = stream.tee();
@@ -542,7 +542,7 @@ registerSuite({
 				}));
 		},
 
-		'pull'() {
+		'pull'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.start = function (controller: ReadableStreamController<string>): Promise<void> {
@@ -564,7 +564,7 @@ registerSuite({
 			);
 		},
 
-		'one cancelled'() {
+		'one cancelled'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.start = function (controller: ReadableStreamController<string>): Promise<void> {
@@ -591,7 +591,7 @@ registerSuite({
 			}));
 		},
 
-		'two cancelled'() {
+		'two cancelled'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			source.start = function (controller: ReadableStreamController<string>): Promise<void> {
@@ -618,7 +618,7 @@ registerSuite({
 			}));
 		},
 
-		'error'() {
+		'error'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let source = new BaseStringSource();
 			let stream = new ReadableStream(source);
@@ -639,7 +639,7 @@ registerSuite({
 	},
 
 	'pipeTo': {
-		'basic'() {
+		'basic'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -654,7 +654,7 @@ registerSuite({
 			}));
 		},
 
-		'source start rejects'() {
+		'source start rejects'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -673,7 +673,7 @@ registerSuite({
 			);
 		},
 
-		'source pull rejects'() {
+		'source pull rejects'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -699,7 +699,7 @@ registerSuite({
 			);
 		},
 
-		'sink rejects'() {
+		'sink rejects'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			sink.write = function () {
@@ -719,7 +719,7 @@ registerSuite({
 			);
 		},
 
-		'prevent close'() {
+		'prevent close'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -733,7 +733,7 @@ registerSuite({
 			}));
 		},
 
-		'prevent cancel'() {
+		'prevent cancel'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			sink.write = function () {
@@ -753,7 +753,7 @@ registerSuite({
 			);
 		},
 
-		'prevent abort'() {
+		'prevent abort'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -779,7 +779,7 @@ registerSuite({
 			);
 		},
 
-		'writable closed'() {
+		'writable closed'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -797,7 +797,7 @@ registerSuite({
 			);
 		},
 
-		'writable closed with prevent cancel'() {
+		'writable closed with prevent cancel'(this: any) {
 			let dfd = this.async(ASYNC_TIMEOUT);
 			let sink = new ArraySink<string>();
 			let outStream = new WritableStream(sink);
@@ -816,7 +816,7 @@ registerSuite({
 		}
 	},
 
-	'pipeThrough'() {
+	'pipeThrough'(this: any) {
 		let dfd = this.async(ASYNC_TIMEOUT);
 		let sink = new ArraySink<string>();
 		let outStream = new WritableStream(sink);

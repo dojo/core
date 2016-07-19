@@ -211,13 +211,13 @@ export function map<T, U>(items: Iterable<T | Promise<T>> | (T | Promise<T>)[], 
  * @param [initialValue] the first value to pass to the callback
  * @return a promise eventually containing a value that is the result of the reduction
  */
-export function reduce<T, U>(items: Iterable<T | Promise<T>> | (T | Promise<T>)[], callback: Reducer<T, U>, initialValue?: U): Promise<U> {
+export function reduce<T, U>(this: any, items: Iterable<T | Promise<T>> | (T | Promise<T>)[], callback: Reducer<T, U>, initialValue?: U): Promise<U> {
 	let args: any[] = <any[]> array.from(arguments);
 	args.unshift(findNextValueIndex);
 	return generalReduce.apply(this, args);
 }
 
-export function reduceRight<T, U>(items: Iterable<T | Promise<T>> | (T | Promise<T>)[], callback: Reducer<T, U>, initialValue?: U): Promise<U> {
+export function reduceRight<T, U>(this: any, items: Iterable<T | Promise<T>> | (T | Promise<T>)[], callback: Reducer<T, U>, initialValue?: U): Promise<U> {
 	let args: any[] = <any[]> array.from(arguments);
 	args.unshift(findLastValueIndex);
 	return generalReduce.apply(this, args);

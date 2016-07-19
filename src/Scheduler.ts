@@ -3,7 +3,7 @@ import { QueueItem, queueTask } from './queue';
 
 function getQueueHandle(item: QueueItem): Handle {
 	return {
-		destroy: function () {
+		destroy: function (this: any) {
 			this.destroy = function () {};
 			item.isActive = false;
 			item.callback = null;

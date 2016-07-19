@@ -23,25 +23,25 @@ const text = 'abc';
 registerSuite({
 	name: 'text plugin',
 
-	'correct text'() {
+	'correct text'(this: any) {
 		return executeTest(this, './textPlugin.html', function(results: any) {
 			assert.strictEqual(results.text, text);
 		});
 	},
 
-	'strips XML'() {
+	'strips XML'(this: any) {
 		return executeTest(this, './textPluginXML.html', function(results: any) {
 			assert.strictEqual(results.text, text);
 		});
 	},
 
-	'strips HTML'() {
+	'strips HTML'(this: any) {
 		return executeTest(this, './textPluginHTML.html', function(results: any) {
 			assert.strictEqual(results.text, text);
 		});
 	},
 
-	'strips empty file'() {
+	'strips empty file'(this: any) {
 		return executeTest(this, './textPluginEmpty.html', function(results: any) {
 			assert.strictEqual(results.text, '');
 		});

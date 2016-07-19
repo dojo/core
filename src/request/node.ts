@@ -113,7 +113,7 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 	const request = (parsedUrl.protocol === 'https:' ? https : http).request(requestOptions);
 	const response: Response<T> = {
 		data: null,
-		getHeader: function (name: string): string {
+		getHeader: function (this: Response<T>, name: string): string {
 			return (this.nativeResponse && this.nativeResponse.headers[name.toLowerCase()]) || null;
 		},
 		requestOptions: options,

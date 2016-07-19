@@ -65,7 +65,7 @@ export default class Registry<T> {
 		(<any> entries)[(first ? 'unshift' : 'push')](entry);
 
 		return {
-			destroy: function () {
+			destroy: function (this: any) {
 				this.destroy = function (): void {};
 				let i = 0;
 				if (entries && entry) {

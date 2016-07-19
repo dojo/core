@@ -82,7 +82,7 @@ function getDispatcher(target: any, methodName: string): Dispatcher {
 
 	if (!existing || existing.target !== target) {
 		// no dispatcher
-		target[methodName] = dispatcher = <Dispatcher> function (): any {
+		target[methodName] = dispatcher = <Dispatcher> function (this: Dispatcher): any {
 			let executionId = nextId;
 			let args = arguments;
 			let results: any;
@@ -160,7 +160,7 @@ export function around(target: any, methodName: string, advice: null | ((previou
 	let previous = dispatcher.around;
 	let advised: Function | null;
 	if (advice) {
-		advised = advice(function (): any {
+		advised = advice(function (this: Dispatcher): any {
 			if (previous && previous.advice) {
 				return previous.advice(this, arguments);
 			}

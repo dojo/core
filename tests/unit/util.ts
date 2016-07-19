@@ -37,7 +37,7 @@ registerSuite({
 				timer = null;
 			},
 
-			destroy() {
+			destroy(this: any) {
 				const dfd = this.async(1000);
 				const spy = sinon.spy();
 				timer = util.createTimer(spy, 100);
@@ -53,7 +53,7 @@ registerSuite({
 				}), 110);
 			},
 
-			timeout() {
+			timeout(this: any) {
 				const dfd = this.async(1000);
 				const spy = sinon.spy();
 				timer = util.createTimer(spy, 100);
@@ -66,11 +66,11 @@ registerSuite({
 	})(),
 
 	debounce: {
-		'preserves context'() {
+		'preserves context'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.debounce(dfd.callback(function() {
+				bar: util.debounce(dfd.callback(function(this: any) {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
 			};
@@ -78,7 +78,7 @@ registerSuite({
 			foo.bar();
 		},
 
-		'receives arguments'() {
+		'receives arguments'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			const testArg1 = 5;
 			const testArg2 = 'a';
@@ -90,7 +90,7 @@ registerSuite({
 			debouncedFunction(testArg1, testArg2);
 		},
 
-		'debounces callback'() {
+		'debounces callback'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			const debouncedFunction = util.debounce(dfd.callback(function () {
 				assert.isAbove(Date.now() - lastCallTick, 24,
@@ -123,11 +123,11 @@ registerSuite({
 	},
 
 	throttle: {
-		'preserves context'() {
+		'preserves context'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttle(dfd.callback(function() {
+				bar: util.throttle(dfd.callback(function(this: any) {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
 			};
@@ -135,7 +135,7 @@ registerSuite({
 			foo.bar();
 		},
 
-		'receives arguments'() {
+		'receives arguments'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			const testArg1 = 5;
 			const testArg2 = 'a';
@@ -147,7 +147,7 @@ registerSuite({
 			throttledFunction(testArg1, testArg2);
 		},
 
-		'throttles callback'() {
+		'throttles callback'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var spy = sinon.spy(function (a: string) {
@@ -187,11 +187,11 @@ registerSuite({
 	},
 
 	throttleAfter: {
-		'preserves context'() {
+		'preserves context'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttleAfter(dfd.callback(function() {
+				bar: util.throttleAfter(dfd.callback(function(this: any) {
 					assert.strictEqual(this, foo, 'Function should be executed with correct context');
 				}), 0)
 			};
@@ -199,7 +199,7 @@ registerSuite({
 			foo.bar();
 		},
 
-		'receives arguments'() {
+		'receives arguments'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			const testArg1 = 5;
 			const testArg2 = 'a';
@@ -211,7 +211,7 @@ registerSuite({
 			throttledFunction(testArg1, testArg2);
 		},
 
-		'throttles callback'() {
+		'throttles callback'(this: any) {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var spy = sinon.spy(function (a: string) {

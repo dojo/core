@@ -26,7 +26,7 @@ export function createTimer(callback: (...args: any[]) => void, delay?: number):
  * @param delay Number of milliseconds to wait after any invocations before calling the original callback
  * @return Debounced function
  */
-export function debounce<T extends (...args: any[]) => void>(callback: T, delay: number): T {
+export function debounce<T extends (this: any, ...args: any[]) => void>(callback: T, delay: number): T {
 	// node.d.ts clobbers setTimeout/clearTimeout with versions that return/receive NodeJS.Timer,
 	// but browsers return/receive a number
 	let timer: any;
@@ -51,7 +51,7 @@ export function debounce<T extends (...args: any[]) => void>(callback: T, delay:
  * @param delay Number of milliseconds to wait before allowing the original callback to be called again
  * @return Throttled function
  */
-export function throttle<T extends (...args: any[]) => void>(callback: T, delay: number): T {
+export function throttle<T extends (this: any, ...args: any[]) => void>(callback: T, delay: number): T {
 	let ran: boolean | null;
 
 	return <T> function () {
@@ -76,7 +76,7 @@ export function throttle<T extends (...args: any[]) => void>(callback: T, delay:
  * @param delay Number of milliseconds to wait before calling the original callback and allowing it to be called again
  * @return Throttled function
  */
-export function throttleAfter<T extends (...args: any[]) => void>(callback: T, delay: number): T {
+export function throttleAfter<T extends (this: any, ...args: any[]) => void>(callback: T, delay: number): T {
 	let ran: boolean | null;
 
 	return <T> function () {
