@@ -16,7 +16,7 @@ registerSuite({
 			empty() {
 				// Empty UrlSearchParams should have no properties
 				const params = new UrlSearchParams();
-				assert.isNull(params.get('foo'));
+				assert.isUndefined(params.get('foo'));
 			},
 
 			// Next three tests should generate 'params' objects with same contents
@@ -65,7 +65,7 @@ registerSuite({
 	'#delete'() {
 		const params = new UrlSearchParams({ foo: 'bar' });
 		params.delete('foo');
-		assert.isNull(params.get('foo'));
+		assert.isUndefined(params.get('foo'));
 	},
 
 	'#get'() {
@@ -74,13 +74,13 @@ registerSuite({
 		const params2 = new UrlSearchParams({ foo: [ 'baz', 'bar' ] });
 		assert.strictEqual(params1.get('foo'), 'bar');
 		assert.strictEqual(params2.get('foo'), 'baz');
-		assert.isNull(params2.get('bar'));
+		assert.isUndefined(params2.get('bar'));
 	},
 
 	'#getAll'() {
 		const params = new UrlSearchParams({ foo: [ 'bar', 'baz' ] });
 		assert.deepEqual(params.getAll('foo'), [ 'bar', 'baz' ]);
-		assert.isNull(params.getAll('bar'));
+		assert.isUndefined(params.getAll('bar'));
 	},
 
 	'#has'() {
