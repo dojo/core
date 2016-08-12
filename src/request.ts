@@ -11,19 +11,20 @@ declare var require: any;
 export class FilterRegistry extends Registry<RequestFilter> {
 	register(test: string | RegExp | RequestFilterTest | null, value: RequestFilter, first?: boolean): Handle {
 		let entryTest: Test;
+		const inTest = test;
 
-		if (typeof test === 'string') {
+		if (typeof inTest === 'string') {
 			entryTest = (response, url, options) => {
-				return test === url;
+				return inTest === url;
 			};
 		}
-		else if (test instanceof RegExp) {
+		else if (inTest instanceof RegExp) {
 			entryTest = (response, url, options) => {
-				return test ? (<RegExp> test).test(url) : null;
+				return inTest.test(url);
 			};
 		}
 		else {
-			entryTest = <RequestFilterTest> test;
+			entryTest = <RequestFilterTest> inTest;
 		}
 
 		return super.register(entryTest, value, first);
