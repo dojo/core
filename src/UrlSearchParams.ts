@@ -118,7 +118,7 @@ export default class UrlSearchParams {
 	 * @param key The key to return the first value for
 	 * @return The first string value for the key
 	 */
-	get(key: string): string |  undefined {
+	get(key: string): string | undefined {
 		if (!this.has(key)) {
 			return undefined;
 		}

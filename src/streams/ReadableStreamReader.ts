@@ -206,7 +206,7 @@ export default class ReadableStreamReader<T> {
 	 */
 	resolveReadRequest(chunk: T): boolean {
 		if (this._readRequests.length > 0) {
-				const readRequest = this._readRequests.shift();
+			const readRequest = this._readRequests.shift();
 			if (readRequest) {
 				readRequest.resolve({
 					value: chunk,
