@@ -13,7 +13,7 @@
 		"url": "https://github.com/dojo/core.git"
 	},
 	"scripts": {
-		"prepublish": "grunt dist",
+		"prepublish": "grunt peerDepInstall dist",
 		"test": "grunt test"
 	},
 	"typings": "./dist/umd/dojo-core.d.ts",
