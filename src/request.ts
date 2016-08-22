@@ -197,7 +197,7 @@ export default request;
  */
 filterRegistry.register(
 	function (response: Response<any>, url: string, options: RequestOptions): boolean {
-		return !!(typeof response.data) && options && options.responseType === 'json';
+		return Boolean(typeof response.data && options && options.responseType === 'json');
 	},
 	function (response: Response<any>, url: string, options: RequestOptions): Object {
 		return {

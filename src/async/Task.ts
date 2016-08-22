@@ -10,7 +10,7 @@ export const Canceled = <State> 4;
  * @param value The value to guard
  */
 export function isTask<T>(value: any): value is Task<T> {
-	return Boolean(isThenable(value) && typeof (<any> value).cancel === 'function' && Array.isArray((<any> value).children));
+	return Boolean(value && typeof value.cancel === 'function' && Array.isArray(value.children) && isThenable(value));
 }
 
 /**
