@@ -23,7 +23,7 @@ import * as sinon from 'sinon';
 import { Handle } from 'src/interfaces';
 import * as util from 'src/util';
 
-const TIMEOUT = 6000;
+const TIMEOUT = 3000;
 
 registerSuite({
 	name: 'utility functions',
