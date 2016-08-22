@@ -18,8 +18,8 @@
 	},
 	"typings": "./dist/umd/dojo-core.d.ts",
 	"peerDependencies": {
-		"dojo-has": "next",
-		"dojo-shim": "next"
+		"dojo-has": ">=2.0.0-alpha.3",
+		"dojo-shim": ">=2.0.0-alpha.3"
 	},
 	"devDependencies": {
 		"benchmark": "^1.0.0",
