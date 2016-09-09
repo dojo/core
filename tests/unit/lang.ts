@@ -1,115 +1,270 @@
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
-import has from 'src/has';
+import * as registerSuite from 'intern!object';
+import * as assert from 'intern/chai!assert';
 import * as lang from 'src/lang';
-import { PropertyEvent } from 'src/observers/interfaces';
 
 registerSuite({
 	name: 'lang functions',
 
-	'.copy() invalid arguments': function () {
-		assert.throw(function () {
-			lang.copy({
-				sources: []
-			});
-		});
-	},
-
-	'.copy() simple': function () {
-		var copyOfObject = lang.copy({
-			sources: [{a: 1}]
-		});
-		assert.equal(copyOfObject.a, 1);
-	},
-
-	'.copy() inherited': function () {
-		var prototype = {
-			a: 1
-		};
-		var inheriting = Object.create(prototype);
-		inheriting.b = 2;
-		var copyofInherited = lang.copy({
-			inherited: true,
-			sources: [ inheriting ]
-		});
-		assert.equal(copyofInherited.a, 1);
-		assert.equal(copyofInherited.b, 2);
-	},
-
-	'.copy() deep': function () {
-		var nested = {
-			a: {
-				b: 1
+	'.assign()'() {
+		const source: {
+			a: number
+			b: {
+				enumerable: boolean,
+				configurable: boolean,
+				writable: boolean,
+				value: number
 			}
-		};
-		var copyOfObject: any = lang.copy({
-			deep: true,
-			sources: [ nested ]
-		});
-		assert.equal(copyOfObject.a.b, 1);
-		assert.notEqual(copyOfObject.a, nested.a);
-	},
-
-	'.copy() deep arrays': function () {
-		var nested = {
-			a: {
-				b: [ 1 ]
-			}
-		};
-		var copyOfObject: any = lang.copy({
-			deep: true,
-			sources: [ nested ]
-		});
-
-		assert.equal(copyOfObject.a.b[0], 1);
-		assert.notEqual(copyOfObject.a.b, nested.a.b);
-	},
-
-	'.copy() descriptors': function () {
-		var object: any = {
-			a: 1
-		};
-		Object.defineProperty(object, 'b', {
-				get: function () {
-					return 2;
-				}
-			});
-		Object.defineProperty(object, 'c', {
-				enumerable: true,
+		} = Object.create({ a: 1 }, {
+			b: {
+				enumerable: false,
 				configurable: true,
 				writable: true,
-				value: 3
-			});
-		Object.defineProperty(object, 'hidden', {
-				enumerable: false,
-				value: 4
-			});
-		Object.defineProperty(object, 'nested', {
-				value: {
-					a: 5
-				}
-			});
-		var copyOfObject: any = lang.copy({
-			descriptors: true,
-			inherited: true,
-			sources: [object]
+				value: 2
+			}
 		});
-		assert.equal(copyOfObject.a, 1);
-		assert.equal(copyOfObject.b, 2);
-		assert.isFunction(Object.getOwnPropertyDescriptor(copyOfObject, 'b').get);
-		assert.equal(copyOfObject.c, 3);
-		assert.equal(copyOfObject.hidden, 4);
-		assert.equal(copyOfObject.nested, object.nested);
-		assert.equal(copyOfObject.nested.a, 5);
-		assert.sameMembers(Object.getOwnPropertyNames(copyOfObject), [ 'a', 'b', 'c', 'hidden', 'nested' ]);
+		(<any> source).c = 3;
+		(<any> source).nested = { a: 5 };
+
+		const object: {
+			c: number,
+			nested: {
+				a: number
+			}
+		} = Object.create(null);
+		const assignedObject: typeof object & typeof source = lang.assign(object, source);
+
+		assert.strictEqual(object, assignedObject, 'assign should return the modified target object');
+		assert.isUndefined(assignedObject.a, 'assign should not copy inherited properties');
+		assert.isUndefined(assignedObject.b, 'assign should not copy non-enumerable properties');
+		assert.strictEqual(assignedObject.c, 3);
+		assert.strictEqual(assignedObject.nested, (<any> source).nested, 'assign should perform a shallow copy');
+		assert.strictEqual(assignedObject.nested.a, 5);
 	},
 
-	'.create()': function () {
-		var prototype = {
+	'.assign() with multiple sources'() {
+		let source1 = {
+			property3: 'value3',
+			property4: 'value4'
+		};
+
+		let source3 = {
+			property7: 'value7',
+			property8: 'value8'
+		};
+
+		const object = {
+			property1: 'value1',
+			property2: 'value2'
+		};
+
+		lang.assign<typeof object, typeof source1 | typeof source3>(object, source1, <any> null, source3);
+
+		assert.deepEqual(object, {
+			property1: 'value1',
+			property2: 'value2',
+			property3: 'value3',
+			property4: 'value4',
+			property7: 'value7',
+			property8: 'value8'
+		});
+	},
+
+	'.assign() with inferred type from multiple sources'() {
+		let source1: { a: number, b: number } | { c: number, d: number } = {
+			a: 1,
+			b: 2,
+			c: 3,
+			d: 4
+		};
+
+		let source2 = {
+			a: 3,
+			b: 2
+		};
+
+		let source3 = {
+			c: 3,
+			d: 4
+		};
+
+		const object = {};
+
+		const assignedObject = lang.assign(object, source1, source2, source3);
+
+		assert(assignedObject);
+
+		// Verify that the inferred type is what we expect
+		const alsoAssigned: {} & ({ a: number, b: number } | { c: number, d: number }) = lang.assign(object, source1, source2, source3);
+
+		assert(alsoAssigned);
+	},
+
+	'.deepAssign()'() {
+		const source: {
+			a: number,
+			b: {
+				enumerable: boolean,
+				configurable: boolean,
+				writable: boolean,
+				value: number
+			},
+			c: {
+				d: number,
+				e: any[]
+			}
+		} = Object.create({ a: 1 }, {
+			b: {
+				enumerable: false,
+				configurable: true,
+				writable: true,
+				value: 2
+			}
+		});
+
+		source.c = {
+			d: 3,
+			e: [ 4, [ 5 ], { f: 6 } ]
+		};
+
+		const object: {} = Object.create(null);
+		const assignedObject: {} & typeof source = lang.deepAssign(object, source);
+
+		assert.strictEqual(object, assignedObject, 'deepAssign should return the modified target object');
+		assert.isUndefined(assignedObject.a, 'deepAssign should not copy inherited properties');
+		assert.isUndefined(assignedObject.b, 'deepAssign should not copy non-enumerable properties');
+		assert.strictEqual(assignedObject.c.d, 3);
+		assert.strictEqual(assignedObject.c.e.length, 3);
+		assert.notStrictEqual(assignedObject.c.e[1], source.c.e[1], 'deepAssign should perform a deep copy');
+		assert.notStrictEqual(assignedObject.c.e[2], source.c.e[2], 'deepAssign should perform a deep copy');
+		assert.notStrictEqual(assignedObject.c.e, source.c.e, 'deepAssign should perform a deep copy');
+	},
+
+	'.mixin()'() {
+		const source: {
+			a: number,
+			c: number,
+			nested: {
+				a: number
+			},
+			b: number,
+			hidden: number
+		} = <any> Object.create({
+			a: 1
+		});
+		source.c = 3;
+		source.nested = { a: 5 };
+		Object.defineProperty(source, 'b', {
+			enumerable: true,
+			get: function () {
+				return 2;
+			}
+		});
+		Object.defineProperty(source, 'hidden', {
+			enumerable: false,
+			value: 4
+		});
+
+		const object: {} = Object.create(null);
+		const mixedObject = lang.mixin(object, source);
+
+		assert.strictEqual(object, mixedObject, 'mixin should return the modified target object');
+		assert.strictEqual(mixedObject.a, 1, 'mixin should copy inherited properties');
+		assert.strictEqual(mixedObject.b, 2);
+		assert.strictEqual(mixedObject.c, 3);
+		assert.isUndefined(mixedObject.hidden, 'mixin should not copy non-enumerable properties');
+		assert.strictEqual(mixedObject.nested, source.nested, 'mixin should perform a shallow copy');
+		assert.strictEqual(mixedObject.nested.a, 5);
+	},
+
+	'.mixin() - multiple sources'() {
+		const source1 = {
+			a: 12,
+			b: false
+		};
+		const source2 = {
+			c: 'string'
+		};
+		const mixedObject = lang.mixin({}, source1, source2);
+
+		assert.strictEqual(mixedObject.a, 12);
+		assert.strictEqual(mixedObject.b, false);
+		assert.strictEqual(mixedObject.c, 'string');
+	},
+
+	'.deepMixin()'() {
+		const source: {
+			nested: {
+				a: number,
+				b: any[]
+			},
+			a: number,
+			b: number,
+			c: number,
+			d: Date,
+			e: RegExp,
+			hidden: number
+		} = <any> Object.create({
+			nested: {
+				a: 1,
+				b: [ 2, [ 3 ], { f: 4 } ]
+			}
+		});
+		source.a = 1;
+		source.c = 3;
+		source.d = new Date();
+		source.e = /abc/;
+		Object.defineProperty(source, 'b', {
+			enumerable: true,
+			get: function () {
+				return 2;
+			}
+		});
+		Object.defineProperty(source, 'hidden', {
+			enumerable: false,
+			value: 4
+		});
+
+		const object: {} = Object.create(null);
+		const mixedObject: {} & typeof source = lang.deepMixin(object, source);
+
+		assert.strictEqual(object, mixedObject, 'deepMixin should return the modified target object');
+		assert.strictEqual(mixedObject.a, 1);
+		assert.strictEqual(mixedObject.b, 2);
+		assert.strictEqual(mixedObject.c, 3);
+		assert.strictEqual(mixedObject.d, source.d, 'deepMixin should not deep copy Date object');
+		assert.strictEqual(mixedObject.e, source.e, 'deepMixin should not deep copy RegExp object');
+		assert.isUndefined(mixedObject.hidden, 'deepMixin should not copy non-enumerable properties');
+		assert.strictEqual(mixedObject.nested.a, 1, 'deepMixin should copy inherited properties');
+		assert.notStrictEqual(mixedObject.nested, source.nested, 'deepMixin should perform a deep copy');
+		assert.notStrictEqual(mixedObject.nested.b, source.nested.b, 'deepMixin should perform a deep copy');
+		assert.notStrictEqual(mixedObject.nested.b[1], source.nested.b[1], 'deepMixin should perform a deep copy');
+		assert.notStrictEqual(mixedObject.nested.b[2], source.nested.b[2], 'deepMixin should perform a deep copy');
+	},
+
+	'.create()'() {
+		const prototype = {
 			a: 1
 		};
-		var mixinPrototype = { lorem: 'ipsum' };
-		var mixin: any = Object.create(mixinPrototype, {
+		const mixin: {
+			lorem: string,
+			b: {
+				enumerable: boolean,
+				configurable: boolean,
+				writable: boolean,
+				value: {
+					c: number
+				}
+			},
+			d: {
+				enumerable: boolean,
+				configurable: boolean,
+				writable: boolean,
+				value: number
+			},
+			e: {
+				value: number
+			}
+		} = Object.create({ lorem: 'ipsum' }, {
 			b: {
 				enumerable: true,
 				configurable: true,
@@ -126,10 +281,10 @@ registerSuite({
 				value: 4
 			}
 		});
-		var object: any = lang.create(prototype, mixin);
+		const object: typeof prototype & typeof mixin = lang.create(prototype, mixin);
 
-		assert.equal(Object.getPrototypeOf(object), prototype);
-		assert.equal(object.b, mixin.b);
+		assert.strictEqual(Object.getPrototypeOf(object), prototype);
+		assert.strictEqual(object.b, mixin.b);
 		assert.isTrue(Object.getOwnPropertyDescriptor(object, 'd').writable);
 		assert.isUndefined(object.e);
 		assert.isUndefined(object.lorem);
@@ -138,72 +293,33 @@ registerSuite({
 		});
 	},
 
-	'.duplicate()': function () {
-		var prototype = {
+	'.duplicate()'() {
+		const prototype = {
 			a: 1
 		};
-		var object: any = Object.create(prototype, {
-			b: { value: 2 },
-			c: {
-				configurable: false,
-				value: 3
+		const source: {
+			a: number,
+			b: {
+				value: number
 			},
-			d: {
-				value: {
-					e: 4
-				}
-			}
-		});
-		var copyOfObject: any = lang.duplicate(object);
-
-		assert.equal(Object.getPrototypeOf(copyOfObject), prototype);
-		assert.equal(copyOfObject.a, 1);
-		assert.equal(copyOfObject.b, 2);
-		assert.equal(copyOfObject.c, 3);
-		assert.equal(copyOfObject.d.e, 4);
-		assert.notEqual(copyOfObject.d, object.d);
-		assert.isFalse(Object.getOwnPropertyDescriptor(copyOfObject, 'c').configurable);
-	},
-
-	'.getPropertyDescriptor()': function () {
-		var object1 = {
-			get foo() { return 'bar'; }
-		};
-		var object2 = Object.create(object1);
-		var object3 = Object.create(object1, {
-			foo: {
-				get: function () { return 'baz'; }
-			}
-		});
-
-		assert.deepEqual(lang.getPropertyDescriptor(object1, 'foo'), Object.getOwnPropertyDescriptor(object1, 'foo'));
-		assert.deepEqual(lang.getPropertyDescriptor(object2, 'foo'), Object.getOwnPropertyDescriptor(object1, 'foo'));
-		assert.deepEqual(lang.getPropertyDescriptor(object3, 'foo'), Object.getOwnPropertyDescriptor(object3, 'foo'));
-	},
-
-	'.getPropertyNames()': function () {
-		var prototype = {
-			a: 1,
-			b: 7
-		};
-		var object: any = Object.create(prototype, {
-			b: { value: 2 },
 			c: {
-				configurable: false,
-				value: 3
-			},
-			d: {
-				value: {
-					e: 4
-				}
+				d: number
 			}
+		} = Object.create(prototype, {
+			b: { value: 2 }
 		});
-		var names: string[] = lang.getPropertyNames(object);
+		source.c = { d: 4 };
 
-		assert.sameMembers(names, [ 'a', 'b', 'c', 'd' ]);
+		const copyOfObject: typeof source = lang.duplicate(source);
+
+		assert.strictEqual(Object.getPrototypeOf(copyOfObject), prototype);
+		assert.strictEqual(copyOfObject.a, 1);
+		assert.isUndefined(copyOfObject.b);
+		assert.strictEqual(copyOfObject.c.d, 4);
+		assert.notStrictEqual(copyOfObject.c, source.c);
 	},
 
-	'.isIdentical()': function () {
+	'.isIdentical()'() {
 		assert.isTrue(lang.isIdentical(2, 2));
 		assert.isTrue(lang.isIdentical(NaN, NaN));
 		assert.isFalse(lang.isIdentical(3, NaN));
@@ -211,54 +327,87 @@ registerSuite({
 		assert.isTrue(lang.isIdentical(Infinity, Infinity));
 	},
 
-	'.lateBind() context': function () {
-		var object: {
+	'.lateBind() context'() {
+		const object: {
 			method?: (...args: string[]) => string;
 		} = <any> {};
-		var method = lang.lateBind(object, 'method');
-		object.method = function (): any {
+		const method = lang.lateBind(object, 'method');
+		object.method = function (this: any): any {
 			return this;
 		};
 
-		assert.equal(method(), object, 'lateBind\'s context should be `object`.');
+		assert.strictEqual(method(), object, 'lateBind\'s context should be `object`.');
 	},
 
-	'.lateBind() arguments': function () {
-		var object: {
+	'.lateBind() arguments'() {
+		const object: {
 			method?: (...args: string[]) => string;
 		} = <any> {};
-		var method = lang.lateBind(object, 'method', 'The', 'quick', 'brown');
-		var methodNoArgs = lang.lateBind(object, 'method');
-		var suffix = 'fox jumped over the lazy dog';
+		const method = lang.lateBind(object, 'method', 'The', 'quick', 'brown');
+		const methodNoArgs = lang.lateBind(object, 'method');
+		const suffix = 'fox jumped over the lazy dog';
 		object.method = function (...parts: string[]): string {
 			return parts.join(' ');
 		};
 
-		assert.equal(method(suffix), 'The quick brown ' + suffix,
+		assert.strictEqual(method(suffix), 'The quick brown ' + suffix,
 			'lateBind\'s additional arguments should be prepended to the wrapped function.');
-		assert.equal(methodNoArgs(suffix), suffix,
+		assert.strictEqual(methodNoArgs(suffix), suffix,
 			'lateBind\'s additional arguments should be prepended to the wrapped function.');
-		assert.equal(method(), 'The quick brown',
+		assert.strictEqual(method(), 'The quick brown',
 			'lateBind\'s additional arguments should be prepended to the wrapped function.');
 	},
 
-	'.partial()': function () {
-		var ending = 'jumped over the lazy dog';
-		var finish = lang.partial(function () {
-			var start = this.start ? [ this.start ] : [];
+	'.partial()'() {
+		const ending = 'jumps over the lazy dog';
+		const finish = lang.partial(function (this: any) {
+			const start = this && this.start ? [ this.start ] : [];
 
 			return start.concat(Array.prototype.slice.call(arguments)).join(' ');
-		}, 'jumped', 'over');
+		}, 'jumps', 'over');
 
-		function Sentence(start: string = '') {
+		function Sentence(this: any, start: string = '') {
 			this.start = start;
 		}
 		Sentence.prototype.finish = finish;
 
-		assert.equal(finish('the lazy dog'), ending, 'The arguments supplied to `lang.partial` should be prepended' +
-			' to the arguments list of the returned function.');
-		assert.equal(new (<any> Sentence)('The quick brown fox').finish('the lazy dog'),
+		assert.strictEqual(finish('the lazy dog'), ending,
+			'The arguments supplied to `lang.partial` should be prepended to the arguments list of the ' +
+			'original function.');
+		assert.strictEqual(finish(), 'jumps over',
+			'The arguments supplied to `lang.partial` should still be used even if no arguments are passed to the ' +
+			'wrapped function.');
+		assert.strictEqual(new (<any> Sentence)('The quick brown fox').finish('the lazy dog'),
 			'The quick brown fox ' + ending,
 			'A function passed to `lang.partial` should inherit its context.');
+	},
+
+	'.createHandle'() {
+		let count = 0;
+		const handle = lang.createHandle(function(): void {
+			++count;
+		});
+
+		handle.destroy();
+		assert.strictEqual(count, 1);
+
+		handle.destroy();
+		assert.strictEqual(count, 1, 'destroy should be a no-op on subsequent calls');
+	},
+
+	'.createCompositeHandle'() {
+		let count = 0;
+		function destructor(): void {
+			++count;
+		}
+		const handle = lang.createCompositeHandle(
+			lang.createHandle(destructor),
+			lang.createHandle(destructor)
+		);
+
+		handle.destroy();
+		assert.strictEqual(count, 2, 'both destructors in the composite handle should have been called');
+		handle.destroy();
+		assert.strictEqual(count, 2, 'destructors are not called after handle destruction');
 	}
 });

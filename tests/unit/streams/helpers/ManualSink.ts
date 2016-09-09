@@ -1,5 +1,5 @@
 import { Sink } from 'src/streams/WritableStream';
-import Promise from 'src/Promise';
+import Promise from 'dojo-shim/Promise';
 
 // A sink whose write operations must be manually resolved by calling 'next'
 export default class ManualSink<T> implements Sink<T> {
@@ -20,9 +20,10 @@ export default class ManualSink<T> implements Sink<T> {
 			return;
 		}
 
-		var resolve = this._resolvers.shift();
-
-		resolve();
+		const resolve = this._resolvers.shift();
+		if (resolve) {
+			resolve();
+		}
 	}
 
 	abort(reason: any): Promise<void> {

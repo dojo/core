@@ -1,208 +1,288 @@
-import * as observers from './observers/interfaces';
-import ObjectObserver from './observers/ObjectObserver';
+import has from './has';
+import { Handle } from './interfaces';
 
-var slice = Array.prototype.slice;
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+const slice = Array.prototype.slice;
+const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-function isObject(item: any): boolean {
-	return item && typeof item === 'object' && !Array.isArray(item) && !(item instanceof RegExp);
+/**
+ * Type guard that ensures that the value can be coerced to Object
+ * to weed out host objects that do not derive from Object.
+ * This function is used to check if we want to deep copy an object or not.
+ * Note: In ES6 it is possible to modify an object's Symbol.toStringTag property, which will
+ * change the value returned by `toString`. This is a rare edge case that is difficult to handle,
+ * so it is not handled here.
+ * @param  value The value to check
+ * @return       If the value is coercible into an Object
+ */
+function shouldDeepCopyObject(value: any): value is Object {
+	return Object.prototype.toString.call(value) === '[object Object]';
 }
 
-function copyArray(array: any[], kwArgs: CopyArgs): any[] {
-	return array.map(function (item: any): any {
+function copyArray<T>(array: T[], inherited: boolean): T[] {
+	return array.map(function (item: T): T {
 		if (Array.isArray(item)) {
-			return copyArray(item, kwArgs);
+			return  <any> copyArray(<any> item, inherited);
 		}
 
-		return isObject(item) ?
-			copy({
-				sources: [ item ],
-				deep: kwArgs.deep,
-				descriptors: kwArgs.descriptors,
-				inherited: kwArgs.inherited,
-				assignPrototype: kwArgs.assignPrototype
-			}) :
-			item;
+		return !shouldDeepCopyObject(item) ?
+			item :
+			_mixin({
+				deep: true,
+				inherited: inherited,
+				sources: <Array<T>> [ item ],
+				target: <T> {}
+			});
 	});
 }
 
-export function copy(kwArgs: CopyArgs): any {
-	var target: any;
-	var sources: any[] = kwArgs.sources;
+interface MixinArgs<T extends {}, U extends {}> {
+	deep: boolean;
+	inherited: boolean;
+	sources: U[];
+	target: T;
+}
 
-	if (!sources.length) {
-		throw new RangeError('lang.copy requires at least one source object.');
-	}
+function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
+	const deep = kwArgs.deep;
+	const inherited = kwArgs.inherited;
+	const target = kwArgs.target;
 
-	if (kwArgs.assignPrototype) {
-		// create from the same prototype
-		target = Object.create(Object.getPrototypeOf(sources[0]));
-	}
-	else {
-		// use the target or create a new object
-		target = kwArgs.target || {};
-	}
+	for (let source of kwArgs.sources) {
+		for (let key in source) {
+			if (inherited || hasOwnProperty.call(source, key)) {
+				let value: any = (<any> source)[key];
 
-	for (var i = 0; i < sources.length; i++) {
-		// iterate through all the sources
-		var source: { [index: string]: any } = sources[i];
-		var name: string;
-		var value: any;
-
-		if (kwArgs.descriptors) {
-			// if we are copying descriptors, use to get{Own}PropertyNames so we get every property
-			// (including non enumerables).
-			var names = (kwArgs.inherited ? getPropertyNames : Object.getOwnPropertyNames)(source);
-
-			for (var j = 0; j < names.length; j++) {
-				name = names[j];
-				// get the descriptor
-				var descriptor = (kwArgs.inherited ?
-					getPropertyDescriptor : Object.getOwnPropertyDescriptor)(source, name);
-				value = descriptor.value;
-
-				if (kwArgs.deep) {
+				if (deep) {
 					if (Array.isArray(value)) {
-						descriptor.value = copyArray(value, kwArgs);
+						value = copyArray(value, inherited);
 					}
-					else if (isObject(value)) {
-						descriptor.value = copy({
-							sources: [ value ],
+					else if (shouldDeepCopyObject(value)) {
+						value = _mixin({
 							deep: true,
-							descriptors: true,
-							inherited: kwArgs.inherited,
-							assignPrototype: kwArgs.assignPrototype
+							inherited: inherited,
+							sources: <U[]> [ value ],
+							target: {}
 						});
 					}
 				}
 
-				// and copy to the target
-				Object.defineProperty(target, name, descriptor);
-			}
-		}
-		else {
-			// If we aren't using descriptors, we use a standard for-in to simplify skipping
-			// non-enumerables and inheritance. We could use Object.keys when we aren't inheriting.
-			for (name in source) {
-				if (kwArgs.inherited || hasOwnProperty.call(source, name)) {
-					value = source[name];
-
-					if (kwArgs.deep) {
-						if (Array.isArray(value)) {
-							value = copyArray(value, kwArgs);
-						}
-						else if (isObject(value)) {
-							value = copy({
-								sources: [ value ],
-								deep: true,
-								inherited: kwArgs.inherited,
-								assignPrototype: kwArgs.assignPrototype
-							});
-						}
-					}
-
-					target[name] = value;
-				}
+				(<any> target)[key] = value;
 			}
 		}
 	}
 
-	return target;
+	return <T&U> target;
 }
 
-export interface CopyArgs {
-	deep?: boolean;
-	descriptors?: boolean;
-	inherited?: boolean;
-	assignPrototype?: boolean;
-	target?: any;
-	sources: any[];
+interface ObjectAssignConstructor extends ObjectConstructor {
+	assign<T extends {}, U extends {}>(target: T, ...sources: U[]): T&U;
 }
 
-export function create(prototype: {}, ...mixins: {}[]): {} {
+/**
+ * Copies the values of all enumerable own properties of one or more source objects to the target object.
+ *
+ * @param target The target object to receive values from source objects
+ * @param sources Any number of objects whose enumerable own properties will be copied to the target object
+ * @return The modified target object
+ */
+export const assign = has('object-assign') ?
+	(<ObjectAssignConstructor> Object).assign :
+	function<T extends {}, U extends {}> (target: T, ...sources: U[]): T&U {
+		return _mixin({
+			deep: false,
+			inherited: false,
+			sources: sources,
+			target: target
+		});
+	};
+
+/**
+ * Creates a new object from the given prototype, and copies all enumerable own properties of one or more
+ * source objects to the newly created target object.
+ *
+ * @param prototype The prototype to create a new object from
+ * @param mixins Any number of objects whose enumerable own properties will be copied to the created object
+ * @return The new object
+ */
+export function create<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}, Z extends {}>(prototype: T, mixin1: U, mixin2: V, mixin3: W, mixin4: X, mixin5: Y, mixin6: Z): T & U & V & W & X & Y & Z;
+export function create<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}>(prototype: T, mixin1: U, mixin2: V, mixin3: W, mixin4: X, mixin5: Y): T & U & V & W & X & Y;
+export function create<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}>(prototype: T, mixin1: U, mixin2: V, mixin3: W, mixin4: X): T & U & V & W & X;
+export function create<T extends {}, U extends {}, V extends {}, W extends {}>(prototype: T, mixin1: U, mixin2: V, mixin3: W): T & U & V & W;
+export function create<T extends {}, U extends {}, V extends {}>(prototype: T, mixin1: U, mixin2: V): T & U & V;
+export function create<T extends {}, U extends {}>(prototype: T, mixin: U): T & U;
+export function create<T extends {}>(prototype: T): T;
+export function create(prototype: any, ...mixins: any[]): any {
 	if (!mixins.length) {
 		throw new RangeError('lang.create requires at least one mixin object.');
 	}
 
-	return copy({
-		assignPrototype: false,
-		deep: false,
-		descriptors: false,
-		inherited: false,
-		target: Object.create(prototype),
-		sources: mixins
-	});
+	const args = mixins.slice();
+	args.unshift(Object.create(prototype));
+
+	return assign.apply(null, args);
 }
 
-export function duplicate(source: {}): {} {
-	return copy({
-		assignPrototype: true,
+/**
+ * Copies the values of all enumerable own properties of one or more source objects to the target object,
+ * recursively copying all nested objects and arrays as well.
+ *
+ * @param target The target object to receive values from source objects
+ * @param sources Any number of objects whose enumerable own properties will be copied to the target object
+ * @return The modified target object
+ */
+export function deepAssign<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}, Z extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y, source6: Z): T & U & V & W & X & Y & Z;
+export function deepAssign<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y): T & U & V & W & X & Y;
+export function deepAssign<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}>(target: T, source1: U, source2: V, source3: W, source4: X): T & U & V & W & X;
+export function deepAssign<T extends {}, U extends {}, V extends {}, W extends {}>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+export function deepAssign<T extends {}, U extends {}, V extends {}>(target: T, source1: U, source2: V): T & U & V;
+export function deepAssign<T extends {}, U extends {}>(target: T, source: U): T & U;
+export function deepAssign(target: any, ...sources: any[]): any {
+	return _mixin({
 		deep: true,
-		descriptors: true,
-		sources: [ source ]
+		inherited: false,
+		sources: sources,
+		target: target
 	});
 }
 
-export function getPropertyNames(object: {}): string[] {
-	var setOfNames: {[index: string]: any} = {};
-	var names : string[] = [];
-
-	do {
-		// go through each prototype to add the property names
-		var ownNames = Object.getOwnPropertyNames(object);
-		for (var i = 0, l = ownNames.length; i < l; i++) {
-			var name = ownNames[i];
-			// check to make sure we haven't added it yet
-			if (setOfNames[name] !== true) {
-				setOfNames[name] = true;
-				names.push(name);
-			}
-		}
-		object = Object.getPrototypeOf(object);
-	} while (object && object !== Object.prototype);
-
-	return names;
+/**
+ * Copies the values of all enumerable (own or inherited) properties of one or more source objects to the
+ * target object, recursively copying all nested objects and arrays as well.
+ *
+ * @param target The target object to receive values from source objects
+ * @param sources Any number of objects whose enumerable properties will be copied to the target object
+ * @return The modified target object
+ */
+export function deepMixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}, Z extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y, source6: Z): T & U & V & W & X & Y & Z;
+export function deepMixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y): T & U & V & W & X & Y;
+export function deepMixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}>(target: T, source1: U, source2: V, source3: W, source4: X): T & U & V & W & X;
+export function deepMixin<T extends {}, U extends {}, V extends {}, W extends {}>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+export function deepMixin<T extends {}, U extends {}, V extends {}>(target: T, source1: U, source2: V): T & U & V;
+export function deepMixin<T extends {}, U extends {}>(target: T, source: U): T & U;
+export function deepMixin(target: any, ...sources: any[]): any {
+	return _mixin({
+		deep: true,
+		inherited: true,
+		sources: sources,
+		target: target
+	});
 }
 
-export function getPropertyDescriptor(object: Object, property: string): PropertyDescriptor {
-	var descriptor: PropertyDescriptor;
-	do {
-		descriptor = Object.getOwnPropertyDescriptor(object, property);
-	} while (!descriptor && (object = Object.getPrototypeOf(object)));
+/**
+ * Creates a new object using the provided source's prototype as the prototype for the new object, and then
+ * deep copies the provided source's values into the new target.
+ *
+ * @param source The object to duplicate
+ * @return The new object
+ */
+export function duplicate<T extends {}>(source: T): T {
+	const target = Object.create(Object.getPrototypeOf(source));
 
-	return descriptor;
+	return deepMixin(target, source);
 }
 
+/**
+ * Determines whether two values are the same value.
+ *
+ * @param a First value to compare
+ * @param b Second value to compare
+ * @return true if the values are the same; false otherwise
+ */
 export function isIdentical(a: any, b: any): boolean {
 	return a === b ||
 		/* both values are NaN */
 		(a !== a && b !== b);
 }
 
+/**
+ * Returns a function that binds a method to the specified object at runtime. This is similar to
+ * `Function.prototype.bind`, but instead of a function it takes the name of a method on an object.
+ * As a result, the function returned by `lateBind` will always call the function currently assigned to
+ * the specified property on the object as of the moment the function it returns is called.
+ *
+ * @param instance The context object
+ * @param method The name of the method on the context object to bind to itself
+ * @param suppliedArgs An optional array of values to prepend to the `instance[method]` arguments list
+ * @return The bound function
+ */
 export function lateBind(instance: {}, method: string, ...suppliedArgs: any[]): (...args: any[]) => any {
 	return suppliedArgs.length ?
 		function () {
-			var args: any[] = arguments.length ? suppliedArgs.concat(slice.call(arguments)) : suppliedArgs;
+			const args: any[] = arguments.length ? suppliedArgs.concat(slice.call(arguments)) : suppliedArgs;
 
 			// TS7017
 			return (<any> instance)[method].apply(instance, args);
 		} :
 		function () {
+			// TS7017
 			return (<any> instance)[method].apply(instance, arguments);
 		};
 }
 
-export function observe(target: {}, listener: (events: observers.PropertyEvent[]) => any): ObjectObserver {
-	return new ObjectObserver({
-		target: target,
-		listener: listener
+/**
+ * Copies the values of all enumerable (own or inherited) properties of one or more source objects to the
+ * target object.
+ *
+ * @return The modified target object
+ */
+export function mixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}, Z extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y, source6: Z): T & U & V & W & X & Y & Z;
+export function mixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}, Y extends {}>(target: T, source1: U, source2: V, source3: W, source4: X, source5: Y): T & U & V & W & X & Y;
+export function mixin<T extends {}, U extends {}, V extends {}, W extends {}, X extends {}>(target: T, source1: U, source2: V, source3: W, source4: X): T & U & V & W & X;
+export function mixin<T extends {}, U extends {}, V extends {}, W extends {}>(target: T, source1: U, source2: V, source3: W): T & U & V & W;
+export function mixin<T extends {}, U extends {}, V extends {}>(target: T, source1: U, source2: V): T & U & V;
+export function mixin<T extends {}, U extends {}>(target: T, source: U): T & U;
+export function mixin(target: any, ...sources: any[]): any {
+	return _mixin({
+		deep: false,
+		inherited: true,
+		sources: sources,
+		target: target
 	});
 }
 
+/**
+ * Returns a function which invokes the given function with the given arguments prepended to its argument list.
+ * Like `Function.prototype.bind`, but does not alter execution context.
+ *
+ * @param targetFunction The function that needs to be bound
+ * @param suppliedArgs An optional array of arguments to prepend to the `targetFunction` arguments list
+ * @return The bound function
+ */
 export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs: any[]): (...args: any[]) => any {
-	return function () {
-		var args: any[] = arguments.length ? suppliedArgs.concat(slice.call(arguments)) : suppliedArgs;
+	return function (this: any) {
+		const args: any[] = arguments.length ? suppliedArgs.concat(slice.call(arguments)) : suppliedArgs;
 
 		return targetFunction.apply(this, args);
 	};
+}
+
+/**
+ * Returns an object with a destroy method that, when called, calls the passed-in destructor.
+ * This is intended to provide a unified interface for creating "remove" / "destroy" handlers for
+ * event listeners, timers, etc.
+ *
+ * @param destructor A function that will be called when the handle's `destroy` method is invoked
+ * @return The handle object
+ */
+export function createHandle(destructor: () => void): Handle {
+	return {
+		destroy: function (this: Handle) {
+			this.destroy = function () {};
+			destructor.call(this);
+		}
+	};
+}
+
+/**
+ * Returns a single handle that can be used to destroy multiple handles simultaneously.
+ *
+ * @param handles An array of handles with `destroy` methods
+ * @return The handle object
+ */
+export function createCompositeHandle(...handles: Handle[]): Handle {
+	return createHandle(function () {
+		for (let handle of handles) {
+			handle.destroy();
+		}
+	});
 }

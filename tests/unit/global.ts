@@ -1,13 +1,11 @@
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
+import * as registerSuite from 'intern!object';
+import * as assert from 'intern/chai!assert';
 import global from 'src/global';
 
 registerSuite({
 	name: 'global',
 
 	'global references the global object for the target environment'() {
-		(function () {
-			assert.strictEqual(global, this);
-		})();
+		assert.strictEqual(global, Function('return this')());
 	}
 });

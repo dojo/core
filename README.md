@@ -1,75 +1,134 @@
 # Dojo 2 core
 
+[![Build Status](https://travis-ci.org/dojo/core.svg?branch=master)](https://travis-ci.org/dojo/core)
+[![codecov.io](https://codecov.io/github/dojo/core/coverage.svg?branch=master)](https://codecov.io/github/dojo/core?branch=master)
+[![npm version](https://badge.fury.io/js/dojo-core.svg)](https://badge.fury.io/js/dojo-core)
+
 This package provides a set of language helpers, utility functions, and classes for writing TypeScript applications.
 It includes APIs for feature detection, asynchronous and streaming operations, basic event handling,
 and making HTTP requests.
+
+## Installation
+
+This package is currently in Alpha with a initial stable release scheduled for later this year. You can download
+the Alpha by cloning or downloading this repository.
+
+## Usage
+
+### TypeScript
+
+To access modules use after cloning or downloading the repository, you can reference it by:
+
+```ts
+import * as lang from 'src/lang'; // this imports all exports of the module as the object lang
+
+import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin from the module
+```
+
+### Compile To JavaScript
+
+Once downloaded, you can compile the TypesScript files by first installing the project dependencies with:
+
+```
+npm install
+```
+
+The by running this command:
+
+```
+grunt dev
+```
+
+This will run the grunt 'dev' task.
 
 ## Features
 
 ### Feature Detection
 
 Using the latest Web technologies isn't always as straightforward as developers would like due to differing support
-across platforms. `dojo-core/has` provides a simple feature detection API that makes it easy to detect which platforms
-support which features.
+across platforms. [`dojo-core/has`](docs/has.md) provides a simple feature detection API that makes it easy to
+detect which platforms support which features.
 
-#### Detecting Features
+### Language Utilities
 
-The default export of `dojo-core/has` is a function which accepts a single parameter: the name of the feature to test for.
-If the feature is available, a truthy value is returned, otherwise a falsy value is returned:
+The core package provides modules offering language utilities.  Some of these are heavily based
+on methods in the ES2015 proposal; others are additional APIs for commonly-performed tasks.
 
-```ts
-if (has('dom-addeventlistener')) {
-    element.addEventListener('click', function () { /* ... */ });
-}
-```
+#### array
 
-#### Adding Feature Detections
+The [`dojo-core/array` module](docs/array.md) contains analogues to some of the ES2015 Array APIs.
 
-It's important to be able to add new feature tests that aren't provided out-of-the-box by `dojo-core/has`.
-This can be done easily by using the `add` function exported by the `has` module. It accepts two parameters:
-the name of the feature, and either an immediate value indicating its availability or a function that resolves to a
-value.
+#### lang
 
-When a function is passed, the feature will be lazily evaluated - i.e. the function is not executed until the feature is
-actually requested. The return value is then cached for future calls for the same feature.
+The [`dojo-core/lang` module](docs/lang.md) contains various utility functions for tasks such as copying objects
+and creating late-bound or partially applied functions.
 
-```ts
-import { add as hasAdd } from 'dojo-core/has';
-hasAdd('dom-queryselector', 'querySelector' in document && 'querySelectorAll' in document);
+#### math
 
-// Lazily executed; useful if a polyfill is loaded after page load
-hasAdd('typedarray', function () {
-    return 'ArrayBuffer' in window;
-});
-```
+The [`dojo-core/math` module](docs/math.md) contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
+functions.
 
-#### Accessing the Feature Cache
+#### string
 
-`dojo-core/has` maintains object hashes containing keys that correspond to all features that have been both
-registered _and_ requested. The value associated with each feature name key corresponds to that feature's availability
-in the current environment. The object hash containing evaluated features is accessible via the `cache` export.
+The [`dojo-core/string` module](docs/string.md) contains analogues to the some of the ES2015 String APIs.
 
-## Promises and Asynchronous Operations
+#### UrlSearchParams
 
-`dojo-core/Promise` implements an extensible, ES2015-compatible Promise shim,
-which includes state reporting and a `finally` method.
+The [`dojo-core/UrlSearchParams` class](docs/UrlSearchParams.md) can be used to parse and generate URL query strings.
 
-`dojo-core/async` contains a number of utilities to simplify working with asynchronous operations.
+#### Event handling
 
-## How do I use this package?
+The [`dojo-core/on` module](docs/on.md) contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
+once and pauseable events.
 
-Users will need to download and compile directly from the repository for the time being. Precompiled AMD/CommonJS modules will be provided in the near future as our release tools are improved.
+#### HTTP requests
+
+The [`dojo-core/request` module](docs/request.md) contains methods to simplify making http requests. It can handle
+making requests in both node and the browser through the same methods.
+
+### Promises and Asynchronous Operations
+
+#### Promise
+
+The `dojo-core/Promise` class is an implementation of the ES2015 Promise API that also includes static state
+inspection and a `finally` method for cleanup actions.
+
+`dojo-core/async` contains a number of classes and utility modules to simplify working with asynchronous operations.
+
+#### Task
+
+The `dojo-core/async/Task` class is an extension of `dojo-core/Promise` that provides cancelation support.
+
+### Data Structures
+
+#### Map
+
+The [`dojo-core/Map` class](docs/Map.md) is an implementation of the ES2015 Map specification
+without iterators for use in older browsers.
+
+#### WeakMap
+
+The `dojo-core/WeakMap` class is an implementation of the ES2015 WeakMap specification
+without iterators for use in older browsers. The main difference between WeakMap and Map
+is that WeakMap's keys can only be objects and that the store has a weak reference
+to the key/value pair. This allows for the garbage collector to remove pairs.
+
+Look at [Map](docs/Map.md) for more information on how to use WeakMap.
 
 ## How do I contribute?
 
-We appreciate your interest!  Please see the [contributing guidelines](CONTRIBUTING.md).
+We appreciate your interest! Please see the [Dojo 2 Meta Repository](https://github.com/dojo/meta#readme)
+for the Contributing Guidelines and Style Guide.
 
-## Testing
+Dojo core's continuous integration tests use the [BrowserStack](http://www.browserstack.com) cloud.
 
-Test cases MUST be written using Intern using the Object test interface and Assert assertion interface.
-
-90% branch coverage MUST be provided for all code submitted to this repository, as reported by istanbul’s combined coverage results for all supported platforms.
+[![BrowserStack](resources/BrowserStackLogo.png)](http://www.browserstack.com)
 
 ## Licensing information
 
 © 2004–2015 Dojo Foundation & contributors. [New BSD](http://opensource.org/licenses/BSD-3-Clause) license.
+
+Some string functions (`codePointAt`, `fromCodePoint`, and `repeat`) adopted from polyfills by Mathias Bynens,
+under the [MIT](http://opensource.org/licenses/MIT) license.
+
+See [LICENSE](LICENSE) for details.

@@ -9,7 +9,7 @@
 	"authors": [
 		"Kris Zyp"
 	],
-	"main": "main.js",
+	"main": "dist/umd/main.js",
 	"homepage": "http://dojotoolkit.org/",
 	"repository": {
 		"type": "git",
@@ -19,7 +19,7 @@
 	},
 	"ignore": [
 		".*",
-		"test"
+		"tests"
 	],
 	"license": [ "BSD-3-Clause" ],
 	"moduleType": [ "amd" ]

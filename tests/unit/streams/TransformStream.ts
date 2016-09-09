@@ -1,9 +1,10 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
-import Promise from 'src/Promise';
+
+import Promise from 'dojo-shim/Promise';
 import { Strategy } from 'src/streams/interfaces';
 import { State as ReadableState } from 'src/streams/ReadableStream';
-import { ReadResult } from 'src/streams/ReadableStreamReader';
+import ReadableStreamReader, { ReadResult } from 'src/streams/ReadableStreamReader';
 import TransformStream, { Transform } from 'src/streams/TransformStream';
 import { State as WritableState } from 'src/streams/WritableStream';
 
@@ -16,14 +17,14 @@ class CharToCodeTransform implements Transform<number, string> {
 			size(chunk: number) {
 				return 1;
 			},
-			highwaterMark: Infinity
+			highWaterMark: Infinity
 		};
 
 		this.writableStrategy = {
 			size(chunk: string) {
 				return 1;
 			},
-			highwaterMark: Infinity
+			highWaterMark: Infinity
 		};
 	}
 
@@ -37,46 +38,48 @@ class CharToCodeTransform implements Transform<number, string> {
 	}
 }
 
+let transform: Transform<number, string>;
+let stream: TransformStream<number, string>;
+let reader: ReadableStreamReader<number>;
+
 registerSuite({
 	name: 'TransformStream',
 
-	'simple transform'() {
-		var testValue = 'a';
-		var transform = new CharToCodeTransform();
-		var stream = new TransformStream(transform);
-		var reader = stream.readable.getReader();
+	beforeEach() {
+		transform = new CharToCodeTransform();
+		stream = new TransformStream(transform);
+		reader = stream.readable.getReader();
+	},
 
-		return stream.writable.write(testValue).then(() => {
-			return reader.read().then((result: ReadResult<number>) => {
+	'simple transform'() {
+		let testValue = 'a';
+
+		return stream.writable.write(testValue).then(function () {
+			return reader.read().then(function (result: ReadResult<number>) {
 				assert.strictEqual(result.value, testValue.charCodeAt(0));
 			});
 		});
 	},
 
 	'async transform'() {
-		var testValues = ['a', 'b', 'c'];
-		var transform = new CharToCodeTransform();
+		let testValues = ['a', 'b', 'c'];
+		let results: (undefined | number)[] = [];
 
-		// This change must be made before instantiating the stream as the stream will immediately create a reference
-		// to the 'transform' method
 		transform.transform = (chunk: string, enqueue: (chunk: number) => void, transformDone: () => void): void => {
-			setTimeout(() => {
+			setTimeout(function () {
 				enqueue(chunk.charCodeAt(0));
 				transformDone();
 			}, 20);
 		};
-		var stream = new TransformStream(transform);
-		var reader = stream.readable.getReader();
-		var results: number[] = [];
 
-		for (let i = 0; i < testValues.length; i++) {
-			stream.writable.write(testValues[i]);
+		for (let testValue of testValues) {
+			stream.writable.write(testValue);
 		}
 
 		stream.writable.close();
 
 		function readNext(): Promise<void> {
-			return reader.read().then((result: ReadResult<number>) => {
+			return reader.read().then(function (result: ReadResult<number>) {
 				if (result.done) {
 					return Promise.resolve();
 				}
@@ -87,7 +90,7 @@ registerSuite({
 			});
 		}
 
-		return readNext().then(() => {
+		return readNext().then(function () {
 			for (let i = 0; i < results.length; i++) {
 				assert.strictEqual(results[i], testValues[i].charCodeAt(0));
 			}
@@ -95,42 +98,26 @@ registerSuite({
 	},
 
 	'transform.flush throws error'() {
-		var testValue = 'a';
-		var transform = new CharToCodeTransform();
-
-		// This change must be made before instantiating the stream as the stream will immediately create a reference
-		// to the 'flush' method
-		transform.flush = () => {
+		transform.flush = function () {
 			throw new Error('Transform#flush test error');
 		};
 
-		var stream = new TransformStream(transform);
-		var reader = stream.readable.getReader();
-
-		return stream.writable.close().then(() => {
+		return stream.writable.close().then(function () {
 			assert.fail(null, null, 'Errored stream should not resolve call to \'close\'');
-		}, (error: Error) => {
+		}, function (error: Error) {
 			assert.strictEqual(stream.readable.state, ReadableState.Errored);
 			assert.strictEqual(stream.writable.state, WritableState.Errored);
 		});
 	},
 
 	'transform.transform throws error'() {
-		var testValue = 'a';
-		var transform = new CharToCodeTransform();
-
-		// This change must be made before instantiating the stream as the stream will immediately create a reference
-		// to the 'transform' method
-		transform.transform = () => {
+		transform.transform = function () {
 			throw new Error('Transform#transform test error');
 		};
 
-		var stream = new TransformStream(transform);
-		var reader = stream.readable.getReader();
-
-		return stream.writable.write('a').then(() => {
+		return stream.writable.write('a').then(function () {
 			assert.fail(null, null, 'Errored stream should not resolve call to \'write\'');
-		}, (error: Error) => {
+		}, function (error: Error) {
 			assert.strictEqual(stream.readable.state, ReadableState.Errored);
 			assert.strictEqual(stream.writable.state, WritableState.Errored);
 		});

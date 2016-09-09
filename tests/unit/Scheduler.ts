@@ -1,12 +1,11 @@
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
-import { Handle } from 'src/interfaces';
-import { queueTask } from 'src/queue';
+import * as assert from 'intern/chai!assert';
+import * as registerSuite from 'intern!object';
+import { queueMicroTask, queueTask } from 'src/queue';
 import Scheduler from 'src/Scheduler';
 
 registerSuite(function () {
-	let scheduler: Scheduler;
 	let parts: string[];
+	let scheduler: Scheduler;
 
 	function a() {
 		parts.push('a');
@@ -20,15 +19,11 @@ registerSuite(function () {
 
 		beforeEach(): void {
 			parts = [];
-		},
-
-		afterEach(): void {
-			parts = scheduler = null;
-		},
-
-		'callback handling': function () {
-			let dfd = this.async(300);
 			scheduler = new Scheduler();
+		},
+
+		'callback handling': function (this: any) {
+			const dfd = this.async(5000);
 
 			function c() {
 				a();
@@ -51,10 +46,10 @@ registerSuite(function () {
 			}), 300);
 		},
 
-		'scheduler type': function () {
-			let dfd = this.async(300);
-			let macroScheduler = new Scheduler();
-			scheduler = new Scheduler({ type: 'micro' });
+		'scheduler type': function (this: any) {
+			const dfd = this.async(5000);
+			const macroScheduler = new Scheduler();
+			scheduler = new Scheduler({ queueFunction: queueMicroTask });
 
 			function test() {
 				macroScheduler.schedule(function () {
@@ -72,9 +67,8 @@ registerSuite(function () {
 			}), 300);
 		},
 
-		'when deferWhileProcessing is true': function () {
-			let dfd = this.async(300);
-			scheduler = new Scheduler();
+		'when deferWhileProcessing is true': function (this: any) {
+			const dfd = this.async(5000);
 
 			function test() {
 				scheduler.schedule(function () {
@@ -96,8 +90,8 @@ registerSuite(function () {
 			}), 300);
 		},
 
-		'when deferWhileProcessing is false': function () {
-			let dfd = this.async(300);
+		'when deferWhileProcessing is false': function (this: any) {
+			const dfd = this.async(5000);
 			scheduler = new Scheduler({ deferWhileProcessing: false });
 
 			function test() {
@@ -120,36 +114,8 @@ registerSuite(function () {
 			}), 300);
 		},
 
-		'optional ID': function () {
-			let dfd = this.async(300);
-			scheduler = new Scheduler({ deferWhileProcessing: false });
-
-			function test() {
-				scheduler.schedule(function () {
-					parts.push('first');
-				}, 'first');
-				scheduler.schedule(function () {
-					parts.push('second');
-				}, 'second');
-				scheduler.schedule(function () {
-					parts.push('third');
-
-					scheduler.schedule(function () {
-						parts.push('fourth');
-					}, 'second');
-				}, 'first');
-			}
-
-			test();
-			setTimeout(dfd.callback(function () {
-				assert.equal(parts.join(','), 'second,third,fourth',
-					'Callbacks registered with IDs should be deduped.');
-			}), 300);
-		},
-
-		'scheduler.schedule() => handle.destroy()': function () {
-			let dfd = this.async(300);
-			scheduler = new Scheduler();
+		'scheduler.schedule() => handle.destroy()': function (this: any) {
+			const dfd = this.async(5000);
 
 			function test() {
 				scheduler.schedule(function () {

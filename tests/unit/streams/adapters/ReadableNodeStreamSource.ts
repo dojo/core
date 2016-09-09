@@ -1,7 +1,9 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import { Readable } from 'stream';
+import Promise from 'dojo-shim/Promise';
 import ReadableStream from 'src/streams/ReadableStream';
+import { ReadResult } from 'src/streams/ReadableStreamReader';
 import ReadableStreamController from 'src/streams/ReadableStreamController';
 import ReadableNodeStreamSource from 'src/streams/adapters/ReadableNodeStreamSource';
 
@@ -11,13 +13,14 @@ class Controller extends ReadableStreamController<string> {
 	stream: any;
 
 	constructor() {
-		this.stream = {
+		let stream = {
 			readable: true,
 			_requestClose() {
 			},
-			_controller: undefined
+			_controller: <any> undefined
 		};
-		super(<any> this.stream);
+		super(<any> stream);
+		this.stream = stream;
 		this.closed = false;
 	}
 
@@ -36,43 +39,44 @@ class CountStream extends Readable {
 
 	constructor(options?: {}) {
 		super(options);
-		this._max = 10000;
+		// The `_read` method will be called (by Node's `Readable` class?) until it pushes `null`, which means it will
+		// always be called `_max` times, so ensure this number is not too big
+		this._max = 10;
 		this._index = 0;
 		this.setEncoding('utf8');
 	}
 
 	_read() {
-		var i = this._index++;
+		let i = this._index++;
 
 		if (i > this._max) {
 			// pushing null signals the end of data
 			this.push(null);
 		}
 		else {
-			var str = '' + i;
-			var buf = new Buffer(str, 'ascii');
+			let str = String(i);
+			let buf = new Buffer(str, 'ascii');
 			this.push(buf);
 		}
 	}
 }
 
-var nodeStream: CountStream;
-var stream: ReadableStream<string>;
-var source: ReadableNodeStreamSource;
-var controller: Controller;
+let nodeStream: CountStream;
+let stream: ReadableStream<string>;
+let source: ReadableNodeStreamSource;
+let controller: Controller;
 
 registerSuite({
-	name: 'Node Readable Stream adapter',
+	name: 'ReadableNodeStreamSource',
 
 	beforeEach() {
 		nodeStream = new CountStream();
-		// source = new ReadableNodeStreamSource(nodeStream);
 		source = new ReadableNodeStreamSource(nodeStream);
 		controller = new Controller();
 	},
 
-	'start()'() {
-		var dfd = this.async(1000);
+	'start()'(this: any) {
+		let dfd = this.async(1000);
 		source.start(controller).then(dfd.resolve.bind(dfd), dfd.reject.bind(dfd));
 	},
 
@@ -84,27 +88,35 @@ registerSuite({
 		assert.strictEqual(controller.enqueuedValue, '1');
 	},
 
-	'cancel()'() {
-		var dfd = this.async(1000);
-		source.start(controller).then(() => {
-			source.cancel().then(dfd.callback(() => {
+	'cancel()'(this: any) {
+		let dfd = this.async(1000);
+		source.start(controller).then(function () {
+			source.cancel().then(dfd.callback(function () {
 				assert.isTrue(controller.closed);
 			}));
 		});
 	},
 
 	'retrieve new data'() {
-		var dfd = this.async(1000);
-		stream = new ReadableStream<string>(source);
-		var reader = stream.getReader();
-		reader.read().then((value: any) => {
-			var num = +value.value;
-			assert.isNumber(num);
-			return num + 1;
-		}).then((newValue) => {
-			reader.read().then(dfd.callback((value: any) => {
-				assert.strictEqual(+value.value, newValue);
-			}));
+		stream = new ReadableStream<string>(source, { highWaterMark: 1 });
+		let reader = stream.getReader();
+		let readIndex = 0;
+
+		function readNext(): Promise<void> {
+			return reader.read().then(function (result: ReadResult<string>) {
+				if (result.done) {
+					return Promise.resolve();
+				}
+
+				assert.strictEqual(result.value, String(readIndex));
+				readIndex += 1;
+
+				return readNext();
+			});
+		}
+
+		return stream.started.then(function () {
+			return readNext();
 		});
 	}
 });

@@ -1,5 +1,9 @@
-import Promise from '../Promise';
+import Promise from 'dojo-shim/Promise';
 import { Sink } from './WritableStream';
+
+// Since this Sink is doing no asynchronous operations,
+// use a single resolved promise for all returned promises.
+let resolved = Promise.resolve();
 
 /**
  * A WritableStream sink that collects the chunks it receives and
@@ -23,10 +27,6 @@ export default class ArraySink<T> implements Sink<T> {
 		return resolved;
 	}
 
-	/**
-	 *
-	 * @param chunk
-	 */
 	write(chunk: T): Promise<void> {
 		if (chunk) {
 			this.chunks.push(chunk);
@@ -34,7 +34,3 @@ export default class ArraySink<T> implements Sink<T> {
 		return resolved;
 	}
 }
-
-// Since this Sink is doing no asynchronous operations,
-// use a single resolved promise for all returned promises.
-var resolved = Promise.resolve();

@@ -1,5 +1,4 @@
-import Promise from '../Promise';
-import { Identity } from './async';
+import Promise from 'dojo-shim/Promise';
 
 /**
  * Used for delaying a Promise chain for a specific number of milliseconds.
@@ -17,6 +16,10 @@ export function delay<T>(milliseconds: number): Identity<T> {
 	};
 }
 
+export interface Identity<T> {
+	(value: T): Promise<T>;
+}
+
 /**
  * Reject a promise chain if a result hasn't been found before the timeout
  *
@@ -25,7 +28,7 @@ export function delay<T>(milliseconds: number): Identity<T> {
  * @return {function(T): Promise<T>} a function that produces a promise that is rejected or resolved based on your timeout
  */
 export function timeout<T>(milliseconds: number, reason: Error): Identity<T> {
-	var start = Date.now();
+	const start = Date.now();
 	return function (value: T): Promise<T> {
 		if (Date.now() - milliseconds > start) {
 			return Promise.reject<T>(reason);
@@ -44,7 +47,7 @@ export class DelayedRejection extends Promise<any> {
 	 * @param reason the reason for the rejection
 	 */
 	constructor(milliseconds: number, reason?: Error) {
-		super(function (resolve, reject) {
+		super(function (this: DelayedRejection, resolve: Function, reject: Function) {
 			setTimeout(reason ? reject.bind(this, reason) : reject.bind(this), milliseconds);
 		});
 	}

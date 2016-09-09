@@ -1,14 +1,14 @@
-import registerSuite = require('intern!object');
-import assert = require('intern/chai!assert');
+import * as registerSuite from 'intern!object';
+import * as assert from 'intern/chai!assert';
 import has from 'src/has';
-import { queueTask, queueDomTask, queueMicroTask } from 'src/queue';
+import { queueTask, queueAnimationTask, queueMicroTask } from 'src/queue';
 
 registerSuite({
 	name: 'queue functions',
 
-	'.queueTask()': function () {
-		let parts: string[] = [];
-		let dfd = this.async(300);
+	'.queueTask()': function (this: any) {
+		const dfd = this.async(5000);
+		const parts: string[] = [];
 
 		function a() {
 			queueTask(function () {
@@ -34,9 +34,9 @@ registerSuite({
 		}), 300);
 	},
 
-	'.queueTask() => handle.destroy()': function () {
+	'.queueTask() => handle.destroy()': function (this: any) {
+		const dfd = this.async(5000);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];
@@ -54,21 +54,21 @@ registerSuite({
 		}), 100);
 	},
 
-	'.queueDomTask()': function () {
+	'.queueAnimationTask()': function (this: any) {
 		if (!has('host-browser')) {
 			this.skip('browser required.');
 		}
 
-		let parts: string[] = [];
-		let dfd = this.async(300);
+		const dfd = this.async(5000);
+		const parts: string[] = [];
 
 		function a() {
-			queueDomTask(function () {
-				parts.push('queueDomTask 1');
+			queueAnimationTask(function () {
+				parts.push('queueAnimationTask 1');
 			});
 			parts.push('start');
-			queueDomTask(function () {
-				parts.push('queueDomTask 2');
+			queueAnimationTask(function () {
+				parts.push('queueAnimationTask 2');
 			});
 		}
 		function b() {
@@ -81,25 +81,25 @@ registerSuite({
 
 		c();
 		setTimeout(dfd.callback(function () {
-			assert.equal(parts.join(','), 'start,end,queueDomTask 1,queueDomTask 2',
-				'queueDomTasks should be executed to the beginning of the next loop.');
+			assert.equal(parts.join(','), 'start,end,queueAnimationTask 1,queueAnimationTask 2',
+				'queueAnimationTasks should be executed to the beginning of the next loop.');
 		}), 300);
 	},
 
-	'.queueDomTask() => handle.destroy()': function () {
+	'.queueAnimationTask() => handle.destroy()': function (this: any) {
 		if (!has('host-browser')) {
 			this.skip('browser required.');
 		}
 
+		const dfd = this.async(5000);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];
 
 			parts.push('start');
-			queueDomTask(function () {
-				parts.push('queueDomTask');
+			queueAnimationTask(function () {
+				parts.push('queueAnimationTask');
 			}).destroy();
 			parts.push('end');
 		}
@@ -110,13 +110,16 @@ registerSuite({
 		}), 100);
 	},
 
-	'.queueMicroTask()': function () {
-		let parts: string[] = [];
-		let dfd = this.async(300);
+	'.queueMicroTask()': function (this: any) {
+		const dfd = this.async(5000);
+		const parts: string[] = [];
 
 		function a() {
 			queueTask(function () {
 				parts.push('queueTask 1');
+			});
+			queueAnimationTask(function () {
+				parts.push('queueAnimationTask 1');
 			});
 			queueMicroTask(function () {
 				parts.push('queueMicroTask');
@@ -136,14 +139,18 @@ registerSuite({
 
 		c();
 		setTimeout(dfd.callback(function () {
-			assert.equal(parts.join(','), 'start,end,queueMicroTask,queueTask 1,queueTask 2',
-				'queueMicroTask should be executed at the end of the current event loop.');
+			const actual = parts.join(',');
+			// Different browsers implement rAF differently, so there's no way to predict exactly
+			// when in the macrotask queue any callback registered with queueAnimationTask will be
+			// executed. As a result, the following just tests that queueMicroTask executes its
+			// callbacks before either queueTask or queueAnimationTask.
+			assert.equal(actual.indexOf('start,end,queueMicroTask'), 0);
 		}), 300);
 	},
 
-	'.queueMicroTask() => handle.destroy()': function () {
+	'.queueMicroTask() => handle.destroy()': function (this: any) {
+		const dfd = this.async(5000);
 		let parts: string[];
-		let dfd = this.async(100);
 
 		function test() {
 			parts = [];

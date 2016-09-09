@@ -1,2 +1,2 @@
-var globalObject: any = (function () { return this; })();
+const globalObject: any = Function('return this')();
 export default globalObject;

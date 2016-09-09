@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>Text Plugin Test</title>
+	</head>
+
+	<body>
+		<script src="../../../../node_modules/dojo-loader/dist/umd/loader.js"></script>
+		<script>
+			require.config({
+				baseUrl: '../../../../',
+				packages: [
+					{ name: 'src', location: '_build/src' },
+					{ name: 'tests', location: '_build/tests' },
+					{ name: 'dojo-has', location: 'node_modules/dojo-has' },
+					{ name: 'dojo-shim', location: 'node_modules/dojo-shim' }
+				]
+			});
+			require([
+				'src/text!./_build/tests/support/data/correctText.txt'
+			], function (result) {
+				window.loaderTestResults = {
+					text: result
+				};
+			});
+		</script>
+	</body>
+</html>
