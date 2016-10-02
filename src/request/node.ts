@@ -29,6 +29,7 @@ interface Options {
 }
 
 interface HttpsOptions extends Options {
+	body?: any;
 	ca?: any;
 	cert?: string;
 	ciphers?: string;
@@ -70,6 +71,7 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 	const requestOptions: HttpsOptions = {
 		agent: options.agent,
 		auth: parsedUrl.auth || options.auth,
+		body: options.data,
 		ca: options.ca,
 		cert: options.cert,
 		ciphers: options.ciphers,
