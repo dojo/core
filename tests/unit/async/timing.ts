@@ -9,9 +9,29 @@ registerSuite({
 	name: 'async/timing',
 
 	'delay()': {
-		'resolves a promise after the given timeout': function () {
+		'delay returning a value after the given timeout': function () {
 			return timing.delay(251)(Date.now()).then(function (start: number) {
 				const diff: number = Date.now() - start;
+				assert.isAbove(diff, 249);
+			});
+		},
+		'delay executing a function that returns a value after the given timeout': function () {
+			const now = Date.now();
+			const getNow = function() {
+				return Date.now();
+			};
+			return timing.delay(251)( getNow ).then(function (finish: number) {
+				const diff: number = finish - now;
+				assert.isAbove(diff, 249);
+			});
+		},
+		'delay executing a function that returns another promise after the given timeout': function () {
+			const now = Date.now();
+			const getNow = function() {
+				return Promise.resolve( Date.now() );
+			};
+			return timing.delay(251)( getNow ).then(function (finish: number) {
+				const diff: number = finish - now;
 				assert.isAbove(diff, 249);
 			});
 		}
