@@ -3,8 +3,8 @@
   "version": "2.0.0-pre",
   "description": "Basic utilites for common TypeScript development",
   "engines": {
-    "node": "^6.5.0",
-    "npm": "^3.10.0"
+    "node": "^6.0.0",
+    "npm": "^3.0.0"
   },
   "homepage": "http://dojotoolkit.org",
   "bugs": {
@@ -26,12 +26,12 @@
     "dojo-shim": ">=2.0.0-alpha.4"
   },
   "devDependencies": {
-    "@types/benchmark": "1.0.*",
-    "@types/chai": "3.4.*",
-    "@types/formidable": "1.0.*",
-    "@types/glob": "5.0.*",
-    "@types/grunt": "0.4.*",
-    "@types/sinon": "1.16.*",
+    "@types/benchmark": "~1.0.0",
+    "@types/chai": "~3.4.0",
+    "@types/formidable": "~1.0.0",
+    "@types/glob": "~5.0.0",
+    "@types/grunt": "~0.4.0",
+    "@types/sinon": "~1.16.0",
     "benchmark": "^1.0.0",
     "dojo-interfaces": ">=2.0.0-alpha.2",
     "dojo-loader": ">=2.0.0-beta.7",
