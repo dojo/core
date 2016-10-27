@@ -8,7 +8,7 @@ import { Thenable } from 'dojo-shim/interfaces';
  * @return {function (value: T | (() => T | Thenable<T>)): Promise<T>} a function producing a promise that eventually returns the value or executes the value function passed to it; usable with Thenable.then()
  */
 export function delay<T>(milliseconds: number): Identity<T> {
-	return function (value: T | (() => T | Thenable<T>)): Promise<T> {
+	return function (value?: T | (() => T | Thenable<T>)): Promise<T> {
 		return new Promise(function (resolve) {
 			setTimeout(function () {
 				resolve(typeof value === 'function' ? value() : value);
@@ -18,7 +18,7 @@ export function delay<T>(milliseconds: number): Identity<T> {
 }
 
 export interface Identity<T> {
-	(value: T | (() => T | Thenable<T>)): Promise<T>;
+	(value?: T | (() => T | Thenable<T>)): Promise<T>;
 }
 
 /**
