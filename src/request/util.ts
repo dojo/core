@@ -9,8 +9,8 @@ import UrlSearchParams from '../UrlSearchParams';
  */
 export function generateRequestUrl(url: string,
 		{ query, cacheBust }: RequestOptions = {}): string {
+	query = new UrlSearchParams(query).toString();
 	if (cacheBust) {
-		query = new UrlSearchParams(query).toString();
 		const bustString = String(Date.now());
 		query += query ? `&${bustString}` : bustString;
 	}
