@@ -28,11 +28,6 @@ export interface DeprecatedOptions {
 }
 
 /**
- * Reference to console.warn
- */
-let consoleWarn = console.warn;
-
-/**
  * A function that will console warn that a function has been deprecated
  *
  * @param options Provide options which change the display of the message
@@ -44,7 +39,12 @@ export function deprecated({ message, name, warn, url }: DeprecatedOptions = {})
 		if (url) {
 			warning += `\n\n    See ${url} for more details.\n\n`;
 		}
-		(warn || consoleWarn)(warning);
+		if (warn) {
+			warn(warning);
+		}
+		else {
+			console.warn(warning);
+		}
 	}
 }
 
@@ -79,11 +79,4 @@ export function deprecatedDecorator(options?: DeprecatedOptions): MethodDecorato
 		}
 		return descriptor;
 	};
-}
-
-/**
- * Overwrite the console.warn, needed for some browsers which have issues when calling global objects.
- */
-export function setConsoleWarn(warn: (message?: any, ...optionalParams: any[]) => void): void {
-	consoleWarn = warn;
 }

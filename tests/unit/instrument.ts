@@ -5,8 +5,7 @@ import { spy, SinonSpy } from 'sinon';
 import {
 	deprecated,
 	deprecatedAdvice,
-	deprecatedDecorator,
-	setConsoleWarn
+	deprecatedDecorator
 } from '../../src/instrument';
 
 let consoleWarnSpy: SinonSpy;
@@ -16,12 +15,10 @@ registerSuite({
 
 	beforeEach() {
 		consoleWarnSpy = spy(console, 'warn');
-		setConsoleWarn(console.warn);
 	},
 
 	afterEach() {
 		(<any> console.warn).restore && (<any> console.warn).restore();
-		setConsoleWarn(console.warn);
 	},
 
 	'deprecated()': {
