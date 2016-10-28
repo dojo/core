@@ -33,6 +33,7 @@ export interface DeprecatedOptions {
  * @param options Provide options which change the display of the message
  */
 export function deprecated({ message, name, warn, url }: DeprecatedOptions = {}): void {
+	/* istanbul ignore else: testing with debug off is difficult */
 	if (has('debug')) {
 		message = message || DEFAULT_DEPRECATED_MESSAGE;
 		let warning = `DEPRECATED: ${name ? name + ': ' : ''}${message}`;
