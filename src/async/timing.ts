@@ -1,4 +1,4 @@
-import Promise from 'dojo-shim/Promise';
+import Promise from './ExtensiblePromise';
 import { Thenable } from 'dojo-shim/interfaces';
 
 /**
