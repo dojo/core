@@ -5,6 +5,11 @@ import has from './has';
  */
 const DEFAULT_DEPRECATED_MESSAGE = 'This function will be removed in future versions.';
 
+/**
+ * When set, globalWarn will be used instead of `console.warn`
+ */
+let globalWarn: ((message?: any, ...optionalParams: any[]) => void) | undefined;
+
 export interface DeprecatedOptions {
 	/**
 	 * The message to use when warning
@@ -43,6 +48,9 @@ export function deprecated({ message, name, warn, url }: DeprecatedOptions = {})
 		if (warn) {
 			warn(warning);
 		}
+		else if (globalWarn) {
+			globalWarn(warning);
+		}
 		else {
 			console.warn(warning);
 		}
@@ -80,4 +88,14 @@ export function deprecatedDecorator(options?: DeprecatedOptions): MethodDecorato
 		}
 		return descriptor;
 	};
+}
+
+/**
+ * A function that will set the warn function that will be used instead of `console.warn` when
+ * logging warning messages
+ *
+ * @param warn The function (or `undefined`) to use instead of `console.warn`
+ */
+export function setWarn(warn?: ((message?: any, ...optionalParams: any[]) => void)): void {
+	globalWarn = warn;
 }

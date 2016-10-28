@@ -5,7 +5,8 @@ import { spy, SinonSpy } from 'sinon';
 import {
 	deprecated,
 	deprecatedAdvice,
-	deprecatedDecorator
+	deprecatedDecorator,
+	setWarn
 } from '../../src/instrument';
 
 let consoleWarnSpy: SinonSpy;
@@ -150,5 +151,27 @@ registerSuite({
 				assert.strictEqual(callStack[0][0], 'DEPRECATED: method: This function will be removed in future versions.');
 			}
 		}
+	},
+
+	'setWarn()'() {
+		const callStack: any[][] = [];
+
+		function warn(...args: any[]): void {
+			callStack.push(args);
+		}
+
+		setWarn(warn);
+		deprecated();
+		assert.isTrue(consoleWarnSpy.notCalled);
+		assert.strictEqual(callStack.length, 1);
+		assert.strictEqual(callStack[0].length, 1);
+		assert.strictEqual(callStack[0][0], 'DEPRECATED: This function will be removed in future versions.');
+
+		setWarn();
+		deprecated();
+		assert.isTrue(consoleWarnSpy.calledOnce);
+		assert.strictEqual(callStack.length, 1);
+		assert.strictEqual(consoleWarnSpy.lastCall.args.length, 1);
+		assert.strictEqual(consoleWarnSpy.lastCall.args[0], 'DEPRECATED: This function will be removed in future versions.');
 	}
 });
