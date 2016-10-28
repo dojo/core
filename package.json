@@ -22,7 +22,7 @@
     "test": "grunt test"
   },
   "peerDependencies": {
-    "dojo-has": ">=2.0.0-alpha.4",
+    "dojo-has": ">=2.0.0-alpha.6",
     "dojo-shim": ">=2.0.0-alpha.4"
   },
   "devDependencies": {
