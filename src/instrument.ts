@@ -28,6 +28,11 @@ export interface DeprecatedOptions {
 }
 
 /**
+ * Reference to console.warn
+ */
+let consoleWarn = console.warn;
+
+/**
  * A function that will console warn that a function has been deprecated
  *
  * @param options Provide options which change the display of the message
@@ -39,7 +44,7 @@ export function deprecated({ message, name, warn, url }: DeprecatedOptions = {})
 		if (url) {
 			warning += `\n\n    See ${url} for more details.\n\n`;
 		}
-		(warn || console.warn)(warning);
+		(warn || consoleWarn)(warning);
 	}
 }
 
@@ -65,7 +70,8 @@ export function deprecatedDecorator(options?: DeprecatedOptions): MethodDecorato
 		if (has('debug')) {
 			const { value: originalFn } = descriptor;
 			options = options || {};
-			options.name = `${target.constructor.name}#${propertyKey}`;
+			/* IE 10/11 don't have the name property on functions */
+			options.name = target.constructor.name ? `${target.constructor.name}#${propertyKey}` : propertyKey;
 			descriptor.value = function(...args: any[]) {
 				deprecated(options);
 				return originalFn.apply(target, args);
@@ -73,4 +79,11 @@ export function deprecatedDecorator(options?: DeprecatedOptions): MethodDecorato
 		}
 		return descriptor;
 	};
+}
+
+/**
+ * Overwrite the console.warn, needed for some browsers which have issues when calling global objects.
+ */
+export function setConsoleWarn(warn: (message?: any, ...optionalParams: any[]) => void): void {
+	consoleWarn = warn;
 }

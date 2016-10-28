@@ -1,10 +1,12 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
+import { hasClassName } from '../support/util';
 import { spy, SinonSpy } from 'sinon';
 import {
 	deprecated,
 	deprecatedAdvice,
-	deprecatedDecorator
+	deprecatedDecorator,
+	setConsoleWarn
 } from '../../src/instrument';
 
 let consoleWarnSpy: SinonSpy;
@@ -14,21 +16,23 @@ registerSuite({
 
 	beforeEach() {
 		consoleWarnSpy = spy(console, 'warn');
+		setConsoleWarn(console.warn);
 	},
 
 	afterEach() {
-		consoleWarnSpy && consoleWarnSpy.restore && consoleWarnSpy.restore();
+		(<any> console.warn).restore && (<any> console.warn).restore();
+		setConsoleWarn(console.warn);
 	},
 
 	'deprecated()': {
-		'no options'() {
+		'no options'(this: any) {
 			deprecated();
 			assert.isTrue(consoleWarnSpy.calledOnce);
 			assert.strictEqual(consoleWarnSpy.lastCall.args.length, 1);
 			assert.strictEqual(consoleWarnSpy.lastCall.args[0], 'DEPRECATED: This function will be removed in future versions.');
 		},
 
-		'message in options'() {
+		'message in options'(this: any) {
 			const message = 'foo';
 			deprecated({ message });
 			assert.isTrue(consoleWarnSpy.calledOnce);
@@ -36,7 +40,7 @@ registerSuite({
 			assert.strictEqual(consoleWarnSpy.lastCall.args[0], `DEPRECATED: ${message}`);
 		},
 
-		'name in options'() {
+		'name in options'(this: any) {
 			const name = 'foo';
 			deprecated({ name });
 			assert.isTrue(consoleWarnSpy.calledOnce);
@@ -44,7 +48,7 @@ registerSuite({
 			assert.strictEqual(consoleWarnSpy.lastCall.args[0], `DEPRECATED: ${name}: This function will be removed in future versions.`);
 		},
 
-		'url in options'() {
+		'url in options'(this: any) {
 			const url = 'foo';
 			deprecated({ url });
 			assert.isTrue(consoleWarnSpy.calledOnce);
@@ -68,7 +72,7 @@ registerSuite({
 	},
 
 	'deprecatedAdvice()': {
-		'no options'() {
+		'no options'(this: any) {
 			const advice = deprecatedAdvice();
 			assert.isTrue(consoleWarnSpy.notCalled);
 
@@ -100,7 +104,7 @@ registerSuite({
 	},
 
 	'deprecatedDecorator()': {
-		'no options'() {
+		'no options'(this: any) {
 			const callStack: any[][] = [];
 
 			class Foo {
@@ -115,7 +119,12 @@ registerSuite({
 			foo.method('foo');
 			assert.isTrue(consoleWarnSpy.calledOnce);
 			assert.strictEqual(consoleWarnSpy.lastCall.args.length, 1);
-			assert.strictEqual(consoleWarnSpy.lastCall.args[0], 'DEPRECATED: Foo#method: This function will be removed in future versions.');
+			if (hasClassName()) {
+				assert.strictEqual(consoleWarnSpy.lastCall.args[0], 'DEPRECATED: Foo#method: This function will be removed in future versions.');
+			}
+			else {
+				assert.strictEqual(consoleWarnSpy.lastCall.args[0], 'DEPRECATED: method: This function will be removed in future versions.');
+			}
 			assert.strictEqual(callStack[0].length, 1);
 			assert.strictEqual(callStack[0][0], 'foo');
 		},
@@ -137,7 +146,12 @@ registerSuite({
 			assert.isTrue(consoleWarnSpy.notCalled);
 			assert.strictEqual(callStack.length, 1);
 			assert.strictEqual(callStack[0].length, 1);
-			assert.strictEqual(callStack[0][0], 'DEPRECATED: Foo#method: This function will be removed in future versions.');
+			if (hasClassName()) {
+				assert.strictEqual(callStack[0][0], 'DEPRECATED: Foo#method: This function will be removed in future versions.');
+			}
+			else {
+				assert.strictEqual(callStack[0][0], 'DEPRECATED: method: This function will be removed in future versions.');
+			}
 		}
 	}
 });
