@@ -122,6 +122,12 @@ const responseData: { [url: string]: DummyResponse } = {
 	}
 };
 
+process.on('unhandledRejection', (reason: any, promise: any) => {
+	console.log('*** UNHANDLED PROMISE ***');
+	console.log(promise);
+	console.log(reason);
+});
+
 function buildRedirectTests(methods: RedirectTestData[]) {
 	let tests: { [key: string]: () => void } = {};
 

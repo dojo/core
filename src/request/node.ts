@@ -282,7 +282,8 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 						},
 						function (error: RequestError<T>) {
 							if (options.streamTarget) {
-								options.streamTarget.abort(error);
+								options.streamTarget.abort(error).catch(() => {
+								});
 							}
 							request.abort();
 							error.response = response;
@@ -318,7 +319,8 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 					resolve(response);
 				}
 				else {
-					options.streamTarget.close();
+					options.streamTarget.close().catch(() => {
+					});
 				}
 			});
 		});
@@ -332,7 +334,8 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 				options.data.pipeTo(writableRequest)
 					.catch(function (error: RequestError<T>) {
 						error.response = response;
-						writableRequest.abort(error);
+						writableRequest.abort(error).catch(() => {
+						});
 						reject(error);
 					});
 			}
