@@ -32,7 +32,7 @@ registerSuite({
 			};
 			return timing.delay(251)( getNow ).then(function (finish: number) {
 				const diff: number = finish - now;
-				assert.approximately(diff, 251, 100);
+				assert.approximately(diff, 251, 150);
 			});
 		},
 		'delay should return undefined when the value is not passed in': function () {
@@ -44,15 +44,15 @@ registerSuite({
 			const start = Date.now();
 			const delay = timing.delay(251);
 			const p1 = delay().then(function() {
-				assert.approximately(Date.now() - start, 251, 100);
+				assert.approximately(Date.now() - start, 251, 150);
 			});
 			const p2 = delay('foo').then(function(value) {
 				assert.strictEqual(value, 'foo');
-				assert.approximately(Date.now() - start, 251, 100);
+				assert.approximately(Date.now() - start, 251, 150);
 			});
 			const p3 = delay(() => Promise.resolve('bar')).then(function(value) {
 				assert.strictEqual(value, 'bar');
-				assert.approximately(Date.now() - start, 251, 100);
+				assert.approximately(Date.now() - start, 251, 150);
 			});
 			return Promise.all([p1, p2, p3]);
 		}
