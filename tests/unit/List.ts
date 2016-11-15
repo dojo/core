@@ -2,6 +2,7 @@ import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
 import List from '../../src/List';
 import { forOf } from 'dojo-shim/iterator';
+import Set from 'dojo-shim/Set';
 
 registerSuite(function () {
 	function listWith<T>(...items: T[]): List<T> {
@@ -196,6 +197,31 @@ registerSuite(function () {
 			});
 
 			assert.deepEqual(values, [ 'the', 'quick', 'brown', 'fox' ]);
+		},
+
+		'constructor'() {
+			// empty list
+			let list = new List();
+			assert.equal(list.size, 0);
+
+			// array like
+			list = new List([ 1, 2, 3 ]);
+			assert.equal(list.size, 3);
+			assert.strictEqual(list.indexOf(1), 0);
+			assert.strictEqual(list.indexOf(2), 1);
+			assert.strictEqual(list.indexOf(3), 2);
+
+			// iterable
+			const set = new Set<number>();
+			set.add(1);
+			set.add(2);
+			set.add(3);
+
+			list = new List(set);
+			assert.equal(list.size, 3);
+			assert.strictEqual(list.indexOf(1), 0);
+			assert.strictEqual(list.indexOf(2), 1);
+			assert.strictEqual(list.indexOf(3), 2);
 		}
 	};
 });

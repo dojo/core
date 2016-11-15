@@ -1,26 +1,6 @@
-import { Iterable, IterableIterator, ShimIterator } from 'dojo-shim/iterator';
+import { forOf, Iterable, IterableIterator, ShimIterator } from 'dojo-shim/iterator';
 
-export interface List<T> extends Iterable<T> {
-	readonly size: number;
-
-	add(value: T): this;
-	clear(): void;
-	delete(idx: number): boolean;
-	entries(): IterableIterator<[ number, T ]>;
-	forEach(fn: (value: T, idx: number, list: this) => void, thisArg?: any): void;
-	has(idx: number): boolean;
-	includes(value: T): boolean;
-	indexOf(value: T): number;
-	join(separator?: string): string;
-	keys(): IterableIterator<number>;
-	lastIndexOf(value: T): number;
-	pop(): T | undefined;
-	push(value: T): void;
-	splice(start: number, deleteCount?: number, ...newItems: T[]): T[];
-	values(): IterableIterator<T>;
-}
-
-export default class ArrayList<T> implements List<T> {
+export default class List<T> {
 	private _items: T[];
 
 	[Symbol.iterator]() {
@@ -31,8 +11,14 @@ export default class ArrayList<T> implements List<T> {
 		return this._items.length;
 	}
 
-	constructor() {
+	constructor(source?: Iterable<T> | ArrayLike<T>) {
 		this._items = [];
+
+		if (source) {
+			forOf(source, (item: T) => {
+				this.add(item);
+			});
+		}
 	}
 
 	add(value: T): this {
