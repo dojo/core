@@ -282,6 +282,8 @@ export default function node<T>(url: string, options: NodeRequestOptions<T> = {}
 						},
 						function (error: RequestError<T>) {
 							if (options.streamTarget) {
+								// abort the stream, swallowing any errors,
+								// (because we've already got an error, and we can't catch this one)
 								options.streamTarget.abort(error).catch(() => {
 								});
 							}
