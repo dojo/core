@@ -1,18 +1,23 @@
 import { forOf, Iterable, IterableIterator, ShimIterator } from 'dojo-shim/iterator';
+import WeakMap from 'dojo-shim/WeakMap';
+
+const listItems: WeakMap<List<any>, any[]> = new WeakMap<List<any>, any[]>();
+
+function getListItems<T>(list: List<T>): T[] {
+	return (listItems.get(list) || []) as T[];
+}
 
 export default class List<T> {
-	private _items: T[];
-
 	[Symbol.iterator]() {
 		return this.values();
 	}
 
 	get size(): number {
-		return this._items.length;
+		return getListItems(this).length;
 	}
 
 	constructor(source?: Iterable<T> | ArrayLike<T>) {
-		this._items = [];
+		listItems.set(this, []);
 
 		if (source) {
 			forOf(source, (item: T) => {
@@ -22,17 +27,17 @@ export default class List<T> {
 	}
 
 	add(value: T): this {
-		this._items.push(value);
+		getListItems(this).push(value);
 		return this;
 	}
 
 	clear(): void {
-		this._items = [];
+		listItems.set(this, []);
 	}
 
 	delete(idx: number): boolean {
-		if (idx < this._items.length) {
-			this._items.splice(idx, 1);
+		if (idx < this.size) {
+			getListItems(this).splice(idx, 1);
 			return true;
 		}
 
@@ -40,35 +45,35 @@ export default class List<T> {
 	}
 
 	entries(): IterableIterator<[number, T]> {
-		return new ShimIterator<[number, T]>(this._items.map<[number, T]>((value, index) => [ index, value ]));
+		return new ShimIterator<[number, T]>(getListItems(this).map<[number, T]>((value, index) => [ index, value ]));
 	}
 
 	forEach(fn: (value: T, idx: number, list: this) => void, thisArg?: any): void {
-		this._items.forEach(fn.bind(thisArg ? thisArg : this));
+		getListItems(this).forEach(fn.bind(thisArg ? thisArg : this));
 	}
 
 	has(idx: number): boolean {
-		return this._items.length > idx;
+		return this.size > idx;
 	}
 
 	includes(value: T): boolean {
-		return this._items.indexOf(value) >= 0;
+		return getListItems(this).indexOf(value) >= 0;
 	}
 
 	indexOf(value: T): number {
-		return this._items.indexOf(value);
+		return getListItems(this).indexOf(value);
 	}
 
 	join(separator: string = ','): string {
-		return this._items.join(separator);
+		return getListItems(this).join(separator);
 	}
 
 	keys(): IterableIterator<number> {
-		return new ShimIterator<number>(this._items.map<number>((_, index) => index));
+		return new ShimIterator<number>(getListItems(this).map<number>((_, index) => index));
 	}
 
 	lastIndexOf(value: T): number {
-		return this._items.lastIndexOf(value);
+		return getListItems(this).lastIndexOf(value);
 	}
 
 	push(value: T): void {
@@ -76,17 +81,17 @@ export default class List<T> {
 	}
 
 	pop(): T | undefined {
-		return this._items.pop();
+		return getListItems(this).pop();
 	}
 
 	splice(start: number, deleteCount?: number, ...newItems: T[]): T[] {
-		return this._items.splice(start,
-			deleteCount === undefined ? (this._items.length - start) : deleteCount,
+		return getListItems(this).splice(start,
+			deleteCount === undefined ? (this.size - start) : deleteCount,
 			...newItems
 		);
 	}
 
 	values(): IterableIterator<T> {
-		return new ShimIterator<T>(this._items.map<T>((value) => value));
+		return new ShimIterator<T>(getListItems(this).map<T>((value) => value));
 	}
 }
