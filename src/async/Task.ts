@@ -117,7 +117,8 @@ export default class Task<T> extends ExtensiblePromise<T> {
 					superReject(reason);
 				}
 			);
-		} catch (reason) {
+		}
+		catch (reason) {
 			this._state = State.Rejected;
 			superReject(reason);
 		}
