@@ -104,7 +104,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 
 			const responseHeaders: ResponseHeaders = {};
 
-			forOf(fetchResponse.headers.enrties(), ([key, value]) => {
+			forOf(fetchResponse.headers.entries(), ([key, value]) => {
 				responseHeaders[ key.toLowerCase() ] = value;
 			});
 
