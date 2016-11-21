@@ -20,13 +20,17 @@ declare function fetch(_: any): any;
 export interface FetchRequestOptions extends RequestOptions {
 }
 
+interface ResponseHeaders {
+	[name: string]: string;
+}
+
 export default function fetchRequest<T>(url: string, options: FetchRequestOptions = {}): ResponsePromise<T> {
 	const fetchRequestOptions: any = {};
 	const fetchRequestHeaders: Headers = new Headers();
 	const requestUrl = generateRequestUrl(url, options);
 
 	if ((!options.user || !options.password) && options.auth) {
-		let auth = options.auth.split(':');
+		const auth = options.auth.split(':');
 		options.user = decodeURIComponent(auth[ 0 ]);
 		options.password = decodeURIComponent(auth[ 1 ]);
 	}
@@ -50,7 +54,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 		let hasContentTypeHeader = false;
 		let hasRequestedWithHeader = false;
 
-		for (let header in headers) {
+		for (const header in headers) {
 			if (header.toLowerCase() === 'content-type') {
 				hasContentTypeHeader = true;
 			} else if (header.toLowerCase() === 'x-requested-with') {
@@ -74,7 +78,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 		fetch(request).then((fetchResponse: any) => {
 			timeout && timeout.destroy();
 
-			let { responseType = '' } = options;
+			const { responseType = '' } = options;
 			let body: Promise<any>;
 
 			switch (responseType) {
@@ -88,7 +92,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 
 				case 'xml':
 					body = fetchResponse.text().then((asText: string) => {
-						let parser = new DOMParser();
+						const parser = new DOMParser();
 						return parser.parseFromString(asText, 'text/xml');
 					});
 					break;
@@ -98,7 +102,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 					break;
 			}
 
-			let responseHeaders: any = {};
+			const responseHeaders: ResponseHeaders = {};
 
 			forOf(fetchResponse.headers.keys(), (key: string) => {
 				responseHeaders[ key.toLowerCase() ] = fetchResponse.headers.get(key);
@@ -120,13 +124,13 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 		}, reject);
 
 		if (options.timeout > 0 && options.timeout !== Infinity) {
-			timeout = (function (): Handle {
+			timeout = ((): Handle => {
 				const timer = setTimeout(function (): void {
-					const error = new RequestTimeoutError('Request timed out after ' + options.timeout + 'ms');
+					const error = new RequestTimeoutError(`Request timed out after ${options.timeout}ms`);
 					reject(error);
 				}, options.timeout);
 
-				return createHandle(function (): void {
+				return createHandle((): void => {
 					clearTimeout(timer);
 				});
 			})();
