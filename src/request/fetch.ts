@@ -86,10 +86,11 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 					break;
 
 				case 'xml':
-					body = fetchResponse.text().then((asText: string) => {
-						const parser = new DOMParser();
-						return parser.parseFromString(asText, 'text/xml');
-					});
+					body = fetchResponse.text()
+						.then((asText: string) => {
+							const parser = new DOMParser();
+							return parser.parseFromString(asText, 'text/xml');
+						});
 					break;
 
 				default:
