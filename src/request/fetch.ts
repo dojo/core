@@ -75,7 +75,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 			timeout && timeout.destroy();
 
 			let { responseType = '' } = options;
-			let body: any = null;
+			let body: Promise<any> = null;
 
 			switch (responseType) {
 				case 'arraybuffer':
@@ -104,7 +104,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 				responseHeaders[ key.toLowerCase() ] = fetchResponse.headers.get(key);
 			});
 
-			Promise.resolve(body).then((body: any) => {
+			body.then((body: any) => {
 				resolve({
 					statusCode: fetchResponse.status,
 					statusText: fetchResponse.statusText,
