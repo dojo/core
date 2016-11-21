@@ -75,7 +75,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 			timeout && timeout.destroy();
 
 			let { responseType = '' } = options;
-			let body: Promise<any> = null;
+			let body: Promise<any>;
 
 			switch (responseType) {
 				case 'arraybuffer':
