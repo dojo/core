@@ -1,5 +1,4 @@
 import Promise from 'dojo-shim/Promise';
-import { forOf } from 'dojo-shim/iterator';
 import RequestTimeoutError from './errors/RequestTimeoutError';
 import Task from '../async/Task';
 import { Handle } from '../interfaces';
@@ -18,10 +17,6 @@ declare class Request {
 declare function fetch(_: any): any;
 
 export interface FetchRequestOptions extends RequestOptions {
-}
-
-interface ResponseHeaders {
-	[name: string]: string;
 }
 
 export default function fetchRequest<T>(url: string, options: FetchRequestOptions = {}): ResponsePromise<T> {
@@ -102,12 +97,6 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 					break;
 			}
 
-			const responseHeaders: ResponseHeaders = {};
-
-			forOf(fetchResponse.headers.entries(), ([key, value]) => {
-				responseHeaders[ key.toLowerCase() ] = value;
-			});
-
 			body.then((body: any) => {
 				resolve({
 					statusCode: fetchResponse.status,
@@ -117,7 +106,7 @@ export default function fetchRequest<T>(url: string, options: FetchRequestOption
 					nativeResponse: fetchResponse,
 					requestOptions: options,
 					getHeader(name: string) {
-						return responseHeaders[ name.toLowerCase() ];
+						return fetchResponse.headers.get(name.toLowerCase());
 					}
 				});
 			}, reject);
