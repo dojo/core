@@ -1,5 +1,3 @@
-// implementation of v4 UUID from https://github.com/kitsonk/hokan/blob/master/util/main.js
-
 /**
  * Returns a v4 compliant UUID.
  *
