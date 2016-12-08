@@ -17,6 +17,9 @@ function unwrapPromises(iterable: Iterable<any> | any[]): any[] {
 	return unwrapped;
 }
 
+export type DictionaryOfPromises<T> = { [_: string]: T | Promise<T> | Thenable<T> };
+export type ListOfPromises<T> = Iterable<(T | Thenable<T>)> | (T | Thenable<T>);
+
 /**
  * An extensible base to allow Promises to be extended in ES5. This class basically wraps a native Promise object,
  * giving an API like a native promise.
@@ -56,12 +59,14 @@ export default class ExtensiblePromise<T> {
 	 * @param iterable    An iterable of values to resolve, or a key/value pair of values to resolve. These can be Promises, ExtensiblePromises, or other objects
 	 * @returns {ExtensiblePromise}
 	 */
-	static all<F extends ExtensiblePromise<T>, T>(iterable: { [_: string]: T | Promise<T> | Thenable<T> } | Iterable<(T | Thenable<T>)> | (T | Thenable<T>)[]): F {
+	static all<F extends ExtensiblePromise<{ [key: string]: T }>, T>(iterable: DictionaryOfPromises<T>): F;
+	static all<F extends ExtensiblePromise<T[]>, T>(iterable: ListOfPromises<T>): F;
+	static all<F extends ExtensiblePromise<any>, T>(iterable: DictionaryOfPromises<T> | ListOfPromises<T>): F {
 		if (!isArrayLike(iterable) && !isIterable(iterable)) {
 			const promiseKeys = Object.keys(iterable);
 
 			return <F> new this((resolve, reject) => {
-				Promise.all(promiseKeys.map(key => iterable[ key ])).then((promiseResults: T[]) => {
+				Promise.all(promiseKeys.map(key => (<DictionaryOfPromises<T>> iterable)[ key ])).then((promiseResults: T[]) => {
 					const returnValue: {[_: string]: T} = {};
 
 					promiseResults.forEach((value: T, index: number) => {
@@ -74,7 +79,7 @@ export default class ExtensiblePromise<T> {
 		}
 
 		return <F> new this((resolve, reject) => {
-			Promise.all(unwrapPromises(iterable)).then(resolve, reject);
+			Promise.all(unwrapPromises(<Iterable<T>> iterable)).then(resolve, reject);
 		});
 	}
 
