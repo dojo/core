@@ -59,9 +59,10 @@ export default class Observable<T> extends ObservableShim<T> {
 			self.subscribe({
 				next(value: T) {
 					try {
-						let result: U = mapFunction(value);
+						const result: U = mapFunction(value);
 						return observer.next(result);
-					} catch (e) {
+					}
+					catch (e) {
 						return observer.error(e);
 					}
 				},
@@ -108,7 +109,7 @@ export default class Observable<T> extends ObservableShim<T> {
 		const self = this;
 
 		return new Observable<T[]>(observer => {
-			let values: T[] = [];
+			const values: T[] = [];
 
 			self.subscribe({
 				next(value: T) {
@@ -152,7 +153,8 @@ export default class Observable<T> extends ObservableShim<T> {
 								checkForComplete();
 							}
 						});
-					} else {
+					}
+					else {
 						observer.next(item);
 						checkForComplete();
 					}
