@@ -166,6 +166,11 @@ export default class Task<T> extends ExtensiblePromise<T> {
 		}
 	}
 
+	catch<U>(onRejected: (reason: Error) => (U | Thenable<U>)): Task<U>;
+	catch<U>(onRejected: (reason: Error) => void): Task<U> {
+		return <Task<U>> super.catch(onRejected);
+	}
+
 	/**
 	 * Allows for cleanup actions to be performed after resolution of a Promise.
 	 */
@@ -195,10 +200,12 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
-	then<U>(onFulfilled?: (value?: T) => U | Thenable<U>, onRejected?: (error: Error) => U | Thenable<U>): this {
+	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => void): Task<U>;
+	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => (U | Thenable<U>)): Task<U>;
+	then<U>(onFulfilled?: (value?: T) => U | Thenable<U>, onRejected?: (error: Error) => U | Thenable<U>): Task<U> {
 		// FIXME
 		// tslint:disable-next-line:no-var-keyword
-		var task = super.then<U>(
+		var task = <Task<U>> super.then<U>(
 			// Don't call the onFulfilled or onRejected handlers if this Task is canceled
 			function (value) {
 				if (task._state === State.Canceled) {
