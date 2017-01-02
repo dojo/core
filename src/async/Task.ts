@@ -229,6 +229,7 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
+	then<U, V>(onFulfilled: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected: (reason: Error) => (V | Thenable<V>)): Task<U | V>;
 	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => void): Task<U>;
 	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => (U | Thenable<U>)): Task<U>;
 	then<U>(onFulfilled?: (value?: T) => U | Thenable<U>, onRejected?: (error: Error) => U | Thenable<U>): Task<U> {

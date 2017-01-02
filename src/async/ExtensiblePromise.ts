@@ -139,6 +139,7 @@ export default class ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
+	then<U, V>(onFulfilled: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected: (reason: Error) => (V | Thenable<V>)): ExtensiblePromise<U | V>;
 	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => void): ExtensiblePromise<U>;
 	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => (U | Thenable<U>)): ExtensiblePromise<U> {
 		const e: Executor<U> = (resolve, reject) => {
