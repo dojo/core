@@ -126,8 +126,8 @@ export default class ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
-	catch<U>(onRejected: (reason: Error) => (U | Thenable<U>)): ExtensiblePromise<U>;
-	catch<U>(onRejected: (reason: Error) => void): ExtensiblePromise<U> {
+	catch(onRejected: (reason: Error) => T | Thenable<T> | void): ExtensiblePromise<T>;
+	catch<U>(onRejected: (reason: Error) => U | Thenable<U>): ExtensiblePromise<U> {
 		return this.then<U>(undefined, onRejected);
 	}
 
