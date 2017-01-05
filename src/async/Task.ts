@@ -195,9 +195,9 @@ export default class Task<T> extends ExtensiblePromise<T> {
 		}
 	}
 
-	catch<U>(onRejected: (reason: Error) => (U | Thenable<U>)): Task<U>;
-	catch<U>(onRejected: (reason: Error) => void): Task<U> {
-		return <Task<U>> super.catch(onRejected);
+	catch(onRejected: (reason: Error) => T | Thenable<T> | void): Task<T>;
+	catch<U>(onRejected: (reason: Error) => U | Thenable<U>): Task<U> {
+		return this.then(undefined, onRejected);
 	}
 
 	/**
