@@ -41,7 +41,7 @@ Object.defineProperty(request, 'setDefaultProvider', {
 providerRegistry.setDefaultProvider(xhr);
 
 export default request;
-export * from './interfaces';
+export * from './request/interfaces';
 export { default as Headers } from './request/Headers';
 export { default as TimeoutError } from './request/TimeoutError';
 export { default as Response, ResponseData } from './request/Response';
