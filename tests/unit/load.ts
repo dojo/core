@@ -11,16 +11,12 @@ declare const require: RootRequire;
 const suite: any = {
 	name: 'load',
 
-	before() {
-		return load('tests/support/load/a', 'tests/support/load/b');
-	},
-
 	'global load'(this: any) {
 		const def = this.async(5000);
 
 		load('src/has', 'dojo-shim/Promise').then(def.callback(function ([ hasModule, promiseModule ]: [ any, any ]) {
-			assert.strictEqual(hasModule.default, has);
-			assert.strictEqual(promiseModule.default, Promise);
+			assert.strictEqual(hasModule, has);
+			assert.strictEqual(promiseModule, Promise);
 		}));
 	},
 
