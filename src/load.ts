@@ -46,17 +46,26 @@ function processModules(modules: any, isDefault: boolean): Object | Object[] {
 }
 
 const load: Load = (function (): Load {
-	if (typeof module === 'object' && typeof module.exports === 'object') {
-		return function (contextualRequire: any, isDefault: any, ...moduleIds: string[]): Promise<any[]> {
-			if (typeof isDefault !== 'boolean') {
+	return function (contextualRequire: any, isDefault: any, ...moduleIds: string[]): Promise<any[]> {
+		if (typeof contextualRequire === 'boolean') {
+			if (typeof isDefault === 'string') {
 				moduleIds.unshift(isDefault);
-				isDefault = true;
 			}
-			if (typeof contextualRequire === 'string') {
-				moduleIds.unshift(contextualRequire);
-				contextualRequire = require;
+			isDefault = contextualRequire;
+			contextualRequire = require;
+		}
+		if (typeof isDefault !== 'boolean') {
+			if (typeof isDefault === 'string') {
+				moduleIds.unshift(isDefault);
 			}
-			return new Promise(function (resolve, reject) {
+			isDefault = true;
+		}
+		if (typeof contextualRequire === 'string') {
+			moduleIds.unshift(contextualRequire);
+			contextualRequire = require;
+		}
+		return new Promise(function (resolve, reject) {
+			if (typeof module === 'object' && typeof module.exports === 'object') {
 				try {
 					resolve(moduleIds.map(function (moduleId): any {
 						return processModules(contextualRequire(moduleId), isDefault);
@@ -65,31 +74,17 @@ const load: Load = (function (): Load {
 				catch (error) {
 					reject(error);
 				}
-			});
-		};
-	}
-	else if (typeof define === 'function' && define.amd) {
-		return function (contextualRequire: any, isDefault: any, ...moduleIds: string[]): Promise<any[]> {
-			if (typeof isDefault !== 'boolean') {
-				moduleIds.unshift(isDefault);
-				isDefault = true;
 			}
-			if (typeof contextualRequire === 'string') {
-				moduleIds.unshift(contextualRequire);
-				contextualRequire = require;
-			}
-			return new Promise(function (resolve) {
+			else if (typeof define === 'function' && define.amd) {
 				// TODO: Error path once https://github.com/dojo/loader/issues/14 is figured out
 				contextualRequire(moduleIds, function (...modules: any[]) {
 					resolve(processModules(modules, isDefault));
 				});
-			});
-		};
-	}
-	else {
-		return function () {
-			return Promise.reject(new Error('Unknown loader'));
-		};
-	}
+			}
+			else {
+				reject(new Error('Unknown loader'));
+			}
+		});
+	};
 })();
 export default load;
