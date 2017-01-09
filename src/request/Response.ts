@@ -7,8 +7,8 @@ import {
 	ProgressEvent
 } from './interfaces';
 import Headers from './Headers';
-import Evented from '../Evented';
 import Task from '../async/Task';
+import QueuingEvented from '../QueuingEvented';
 import { EventObject, Handle } from '@dojo/interfaces/core';
 import Promise from '@dojo/shim/Promise';
 
@@ -17,7 +17,7 @@ export interface ResponseData {
 	used: boolean;
 }
 
-abstract class Response extends Evented implements ResponseInterface {
+abstract class Response extends QueuingEvented implements ResponseInterface {
 	abstract readonly headers: Headers;
 	abstract readonly ok: boolean;
 	abstract readonly status: number;
