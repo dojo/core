@@ -88,7 +88,7 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	/**
 	 * The finally callback for this Task (if it was created by a call to `finally`).
 	 */
-	private _finally: () => any;
+	private _finally: () => void;
 
 	/**
 	 * The state of the task
