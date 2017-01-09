@@ -6,7 +6,6 @@ import TimeoutError from '../TimeoutError';
 import { generateRequestUrl } from '../util';
 import Task, { State } from '../../async/Task';
 import global from '../../global';
-import { queueTask } from '../../queue';
 import { createTimer } from '../../util';
 import { Handle } from '@dojo/interfaces/core';
 import { forOf } from '@dojo/shim/iterator';
@@ -237,11 +236,9 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Task<
 
 					setOnError(request, reject);
 
-					queueTask(() => {
-						response.emit({
-							type: 'start',
-							response
-						});
+					response.emit({
+						type: 'start',
+						response
 					});
 				}, abort);
 

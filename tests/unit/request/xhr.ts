@@ -449,6 +449,10 @@ registerSuite({
 					this.skip('No echo server available');
 				}
 
+				if (!has('arraybuffer')) {
+					this.skip('ArrayBuffer not available');
+				}
+
 				return xhrRequest('/__echo/foo.json').then((response: any) => {
 					return response.arrayBuffer().then((arrayBuffer: any) => {
 						assert.isTrue(arrayBuffer instanceof ArrayBuffer);
@@ -459,6 +463,10 @@ registerSuite({
 			'blob'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
+				}
+
+				if (!has('blob')) {
+					this.skip('Blob not available');
 				}
 
 				return xhrRequest('/__echo/foo.json').then((response: any) => {
