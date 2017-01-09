@@ -449,7 +449,7 @@ registerSuite({
 					this.skip('No echo server available');
 				}
 
-				if (!has('arraybuffer')) {
+				if (!has('blob') || !has('arraybuffer')) {
 					this.skip('ArrayBuffer not available');
 				}
 

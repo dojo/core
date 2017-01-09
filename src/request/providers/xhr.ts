@@ -125,7 +125,6 @@ if (has('blob')) {
 			return <any> this.blob().then(getArrayBufferFromBlob);
 		};
 	}
-
 }
 
 if (has('formdata')) {
