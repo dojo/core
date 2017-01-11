@@ -1,6 +1,6 @@
 import global from './global';
 import has from './has';
-import { Handle } from 'dojo-interfaces/core';
+import { Handle } from '@dojo/interfaces/core';
 
 function executeTask(item: QueueItem | undefined): void {
 	if (item && item.isActive && item.callback) {
@@ -51,7 +51,7 @@ export const queueTask = (function() {
 
 		global.addEventListener('message', function (event: PostMessageEvent): void {
 			// Confirm that the event was triggered by the current window and by this particular implementation.
-			if (event.source === global && event.data === 'dojo-queue-message') {
+			if (event.source === global && event.data === '@dojo/queue-message') {
 				event.stopPropagation();
 
 				if (queue.length) {
@@ -62,7 +62,7 @@ export const queueTask = (function() {
 
 		enqueue = function (item: QueueItem): void {
 			queue.push(item);
-			global.postMessage('dojo-queue-message', '*');
+			global.postMessage('@dojo/queue-message', '*');
 		};
 	}
 	else if (has('setimmediate')) {
