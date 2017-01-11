@@ -1,13 +1,13 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import Task from '../../src/async/Task';
-import request, { providerRegistry, Response, Headers } from '../../src/request';
+import request, { providerRegistry, Response, Headers, RequestOptions } from '../../src/request';
 import 'intern/dojo/has!host-node?./request_node:./request_browser';
 
 const mockData = '{ "foo": "bar" }';
 let handle: any;
 
-function mockProvider(url: string): Task<Response> {
+function mockProvider(url: string, options: RequestOptions): Task<Response> {
 	return Task.resolve(new class extends Response {
 		bodyUsed: boolean = false;
 		headers: Headers = new Headers();
@@ -15,6 +15,7 @@ function mockProvider(url: string): Task<Response> {
 		status: number = 200;
 		statusText: string = 'OK';
 		url: string = url;
+		requestOptions = options;
 
 		arrayBuffer(): Task<ArrayBuffer> {
 			return Task.resolve(<any> null);
@@ -41,6 +42,43 @@ registerSuite({
 		if (handle) {
 			handle.destroy();
 			handle = null;
+		}
+	},
+
+	'helper methods': {
+		beforeEach() {
+			handle = providerRegistry.register('test.html', mockProvider);
+		},
+
+		'get'() {
+			return request.get('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'GET');
+			});
+		},
+		'delete'() {
+			return request.delete('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'DELETE');
+			});
+		},
+		'head'() {
+			return request.head('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'HEAD');
+			});
+		},
+		'options'() {
+			return request.options('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'OPTIONS');
+			});
+		},
+		'post'() {
+			return request.post('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'POST');
+			});
+		},
+		'put'() {
+			return request.put('test.html').then(response => {
+				assert.equal((<any> response).requestOptions.method, 'PUT');
+			});
 		}
 	},
 
