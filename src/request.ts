@@ -69,9 +69,9 @@ export class ProviderRegistry extends MatchRegistry<RequestProvider> {
 		// provider. While that import is in-flight, subsequent requests will queue up while
 		// waiting for the provider to be fulfilled.
 		this._defaultValue = (url: string, options?: RequestOptions): ResponsePromise<any> => {
-			this._providerPromise = load(require, defaultProvider).then(([ providerModule ]: [ { default: RequestProvider } ]): RequestProvider => {
-				this._defaultValue = providerModule.default;
-				return providerModule.default;
+			this._providerPromise = load(require, defaultProvider).then(([ providerModule ]: [ RequestProvider ]): RequestProvider => {
+				this._defaultValue = providerModule;
+				return providerModule;
 			});
 			this._defaultValue = deferRequest;
 			return deferRequest(url, options);
