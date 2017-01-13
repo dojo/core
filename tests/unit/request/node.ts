@@ -1,7 +1,6 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import * as DojoPromise from 'intern/dojo/Promise';
-import Promise from '@dojo/shim/Promise';
 import RequestTimeoutError from '../../../src/request/errors/RequestTimeoutError';
 import { default as nodeRequest, NodeRequestOptions } from '../../../src/request/node';
 import { createServer } from 'http';
