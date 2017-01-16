@@ -1,9 +1,11 @@
+import { RootRequire } from '@dojo/interfaces/loader';
+import Promise from '@dojo/shim/Promise';
 import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
+import * as sinon from 'sinon';
 import has from '../../src/has';
 import load, { useDefault } from '../../src/load';
-import Promise from '@dojo/shim/Promise';
-import { RootRequire } from '@dojo/interfaces/loader';
+import mockPlugin from '../support/load/plugin-default';
 import global from '../../src/global';
 
 declare const require: RootRequire;
@@ -45,6 +47,64 @@ const suite: any = {
 			assert.deepEqual(a, 'A');
 			assert.deepEqual(b, { 'default': 'B', three: 3, four: 4 });
 		});
+	},
+
+	'load plugin': {
+		'without a resource ID'(this: any) {
+			const dfd = this.async(5000);
+
+			load(require, '../support/load/plugin').then(dfd.callback(([ plugin ]: [ any ]) => {
+				assert.isFunction(plugin.load, 'No special behavior without a resource ID.');
+			}));
+		},
+
+		'with a resource ID'(this: any) {
+			const dfd = this.async(5000);
+
+			load(require, '../support/load/plugin!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
+				assert.strictEqual(value, 'some/resource', 'The plugin `load` is passed the resource ID.');
+			}));
+		},
+
+		'non-plugin with resource ID'(this: any) {
+			const dfd = this.async(5000);
+
+			load(require, '../support/load/a!some/resource').then(dfd.callback(([ a ]: [ any ]) => {
+				assert.deepEqual(a, { one: 1, two: 2, 'default': 'A' }, 'Resource ID ignored.');
+			}));
+		},
+
+		'default export used'(this: any) {
+			const dfd = this.async(5000);
+			sinon.spy(mockPlugin, 'load');
+
+			load(require, '../support/load/plugin-default!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
+				assert.isTrue((<any> mockPlugin.load).calledWith('some/resource', load),
+					'Plugin `load` called with resource ID and core `load`.');
+				assert.strictEqual(value, 'some/resource', 'The `load` on the default export is used.');
+
+				(<any> mockPlugin.load).restore();
+			}), dfd.rejectOnError(() => {
+				(<any> mockPlugin.load).restore();
+			}));
+		},
+
+		'normalize method'(this: any) {
+			const dfd = this.async(5000);
+			sinon.spy(mockPlugin, 'normalize');
+
+			load(require, '../support/load/plugin-default!normalize').then(dfd.callback(([ value ]: [ any ]) => {
+				assert.strictEqual(value, 'path/to/normalized', 'The path is passed to the `normalize` method.');
+				assert.isTrue((<any> mockPlugin.normalize).calledWith('normalize'),
+					'`normalize` called with resource ID.');
+				assert.isFunction((<any> mockPlugin.normalize).firstCall.args[1],
+					'`normalize` called with resolver function.');
+
+				(<any> mockPlugin.normalize).restore();
+			}), dfd.rejectOnError(() => {
+				(<any> mockPlugin.normalize).restore();
+			}));
+		}
 	},
 
 	'error handling'() {
