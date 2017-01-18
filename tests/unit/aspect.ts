@@ -574,7 +574,7 @@ registerSuite({
 					return [ a * a ];
 				}
 
-				const fn = aspect.beforeJoinPoint(foo, advice);
+				const fn = aspect.before(foo, advice);
 
 				fn(2);
 
@@ -590,7 +590,7 @@ registerSuite({
 					this.a = 2;
 				}
 
-				const fn = aspect.beforeJoinPoint(foo, advice);
+				const fn = aspect.before(foo, advice);
 				const context = { a: 0 };
 				fn.call(context);
 				assert.strictEqual(context.a, 2, 'context.a should equal 2');
@@ -614,7 +614,7 @@ registerSuite({
 					return [ ++a ];
 				}
 
-				const fn = aspect.beforeJoinPoint(aspect.beforeJoinPoint(foo, advice1), advice2);
+				const fn = aspect.before(aspect.before(foo, advice1), advice2);
 				fn(2);
 				assert.strictEqual(result, 6, '"result" should equal 5');
 				assert.deepEqual(calls, [ '2', '1' ], 'advice should be called in order');
@@ -630,7 +630,7 @@ registerSuite({
 					return prevResult * args[0];
 				}
 
-				const fn = aspect.afterJoinPoint(foo, advice);
+				const fn = aspect.after(foo, advice);
 
 				const result = fn(2);
 
@@ -646,7 +646,7 @@ registerSuite({
 					return this.c;
 				}
 
-				const fn = aspect.afterJoinPoint(foo, advice);
+				const fn = aspect.after(foo, advice);
 				const context = { a: 2, b: 2, c: 0 };
 				const result = fn.call(context);
 				assert.strictEqual(result, 4, '"result" should equal 4');
@@ -668,8 +668,8 @@ registerSuite({
 					return prevResult + args[0] + 1;
 				}
 
-				let fn = aspect.afterJoinPoint(foo, advice1);
-				fn = aspect.afterJoinPoint(fn, advice2);
+				let fn = aspect.after(foo, advice1);
+				fn = aspect.after(fn, advice2);
 				const result = fn(2);
 				assert.strictEqual(result, 7, '"result" should equal 7');
 				assert.deepEqual(calls, [ '1', '2' ], 'call should have been made in order');
@@ -689,7 +689,7 @@ registerSuite({
 					};
 				}
 
-				const fn = aspect.aroundJoinPoint(foo, advice);
+				const fn = aspect.around(foo, advice);
 				const result = fn(2);
 				assert.strictEqual(result, 5, '"result" should equal 5');
 			},
@@ -706,7 +706,7 @@ registerSuite({
 				}
 
 				const context = { a: 2 };
-				const fn = aspect.aroundJoinPoint(foo, advice);
+				const fn = aspect.around(foo, advice);
 				const result = fn.apply(context);
 				assert.strictEqual(result, 2, '"result" should equal 2');
 			},
@@ -732,7 +732,7 @@ registerSuite({
 					};
 				}
 
-				const fn = aspect.aroundJoinPoint(aspect.aroundJoinPoint(foo, advice1), advice2);
+				const fn = aspect.around(aspect.around(foo, advice1), advice2);
 				const result = fn(2);
 				assert.strictEqual(result, 7, '"result" should equal 7');
 				assert.deepEqual(calls, [ '2', '1' ]);
@@ -753,8 +753,8 @@ registerSuite({
 					return origResult + args[0] + 1;
 				}
 
-				let fn = aspect.afterJoinPoint(foo, adviceAfter);
-				fn = aspect.beforeJoinPoint(fn, adviceBefore);
+				let fn = aspect.after(foo, adviceAfter);
+				fn = aspect.before(fn, adviceBefore);
 				const result = fn(2);
 				assert.strictEqual(result, 13, '"result" should equal 13');
 			}
@@ -768,8 +768,8 @@ registerSuite({
 				return origResult + 'foo';
 			}
 
-			const fn = aspect.afterJoinPoint(aspect.afterJoinPoint(foo, adviceAfter), adviceAfter);
-			aspect.afterJoinPoint(fn, adviceAfter);
+			const fn = aspect.after(aspect.after(foo, adviceAfter), adviceAfter);
+			aspect.after(fn, adviceAfter);
 			assert.strictEqual(fn('bar'), 'barfoofoo', 'should only apply advice twice');
 		}
 	}
