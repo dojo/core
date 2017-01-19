@@ -22,13 +22,13 @@ export interface Load {
 
 export interface LoadPlugin<T> {
 	/**
-	 * An optional method that normmalizes a resource ID.
+	 * An optional method that normmalizes a resource id.
 	 *
 	 * @param resourceId
-	 * The raw resource ID.
+	 * The raw resource id.
 	 *
 	 * @param resolver
-	 * A method that can resolve an ID to an absolute path. Depending on the environment, this will
+	 * A method that can resolve an id to an absolute path. Depending on the environment, this will
 	 * usually be either `require.toUrl` or `require.resolve`.
 	 */
 	normalize?: (resourceId: string, resolver: (resourceId: string) => string) => string;
@@ -37,7 +37,7 @@ export interface LoadPlugin<T> {
 	 * A method that loads the specified resource.
 	 *
 	 * @param resourceId
-	 * The ID of the resource to load.
+	 * The id of the resource to load.
 	 *
 	 * @param load
 	 * The `load` method that was used to load and execute the plugin.

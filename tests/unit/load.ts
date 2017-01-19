@@ -61,24 +61,24 @@ const suite: any = {
 	},
 
 	'load plugin': {
-		'without a resource ID'(this: any) {
+		'without a resource id'(this: any) {
 			const dfd = this.async(5000);
 
 			load(require, '../support/load/plugin').then(dfd.callback(([ plugin ]: [ any ]) => {
-				assert.isFunction(plugin.load, 'No special behavior without a resource ID.');
+				assert.isFunction(plugin.load, 'No special behavior without a resource id.');
 			}));
 		},
 
-		'with a resource ID'(this: any) {
+		'with a resource id'(this: any) {
 			const dfd = this.async(5000);
 			const resourceId = require.toUrl('some/resource');
 
 			load(require, '../support/load/plugin!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
-				assert.strictEqual(value, resourceId, 'The plugin `load` is passed the resolved resource ID.');
+				assert.strictEqual(value, resourceId, 'The plugin `load` is passed the resolved resource id.');
 			}));
 		},
 
-		'non-plugin with resource ID'(this: any) {
+		'non-plugin with resource id'(this: any) {
 			const dfd = this.async(5000);
 
 			load(require, '../support/load/a!some/resource').then(dfd.callback(([ a ]: [ any ]) => {
@@ -92,7 +92,7 @@ const suite: any = {
 
 			load(require, '../support/load/plugin-default!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
 				assert.isTrue((<any> mockPlugin.load).calledWith('some/resource', load),
-					'Plugin `load` called with resource ID and core `load`.');
+					'Plugin `load` called with resource id and core `load`.');
 				assert.strictEqual(value, 'some/resource', 'The `load` on the default export is used.');
 
 				(<any> mockPlugin.load).restore();
@@ -108,7 +108,7 @@ const suite: any = {
 			load(require, '../support/load/plugin-default!normalize').then(dfd.callback(([ value ]: [ any ]) => {
 				assert.strictEqual(value, 'path/to/normalized', 'The path is passed to the `normalize` method.');
 				assert.isTrue((<any> mockPlugin.normalize).calledWith('normalize'),
-					'`normalize` called with resource ID.');
+					'`normalize` called with resource id.');
 				assert.isFunction((<any> mockPlugin.normalize).firstCall.args[1],
 					'`normalize` called with resolver function.');
 
