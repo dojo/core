@@ -1,4 +1,5 @@
 import Promise from '@dojo/shim/Promise';
+import { isPlugin } from '../load';
 
 interface ModuleIdMap {
 	[path: string]: { id: number; lazy: boolean };
@@ -104,15 +105,28 @@ export default function load(...args: any[]): Promise<any[]> {
 	const results = args.filter((mid: string | Function) => typeof mid === 'string')
 		.map((mid: string) => resolveRelative(base, mid))
 		.map((mid: string) => {
-			const moduleMeta = modules[mid];
+			let [ moduleId, pluginResourceId ] = mid.split('!');
+			const moduleMeta = modules[mid] || modules[moduleId];
 
 			if (!moduleMeta) {
 				return Promise.reject(new Error(`Missing module: ${mid}`));
 			}
 
-			return moduleMeta.lazy ?
-				new Promise((resolve) => req(moduleMeta.id)(resolve)) :
-				Promise.resolve(req(moduleMeta.id));
+			if (moduleMeta.lazy) {
+				return new Promise((resolve) => req(moduleMeta.id)(resolve));
+			}
+
+			const module = req(moduleMeta.id);
+			const defaultExport = module['default'] || module;
+
+			if (isPlugin(defaultExport)) {
+				if (typeof defaultExport.normalize === 'function') {
+					pluginResourceId = defaultExport.normalize(pluginResourceId, (id: string) => id);
+				}
+				return Promise.resolve(defaultExport.load(pluginResourceId, <any> load));
+			}
+
+			return Promise.resolve(module);
 		});
 
 	return Promise.all(results);

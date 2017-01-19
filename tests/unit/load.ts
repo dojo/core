@@ -4,7 +4,7 @@ import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
 import * as sinon from 'sinon';
 import has from '../../src/has';
-import load, { useDefault } from '../../src/load';
+import load, { isPlugin, useDefault } from '../../src/load';
 import mockPlugin from '../support/load/plugin-default';
 import global from '../../src/global';
 
@@ -15,6 +15,17 @@ const suite: any = {
 
 	before() {
 		return load('tests/support/load/a', 'tests/support/load/b');
+	},
+
+	isPlugin() {
+		assert.isFalse(isPlugin(null));
+		assert.isFalse(isPlugin(2));
+		assert.isFalse(isPlugin([]));
+		assert.isFalse(isPlugin(/\s/));
+		assert.isFalse(isPlugin({}));
+		assert.isTrue(isPlugin({
+			load() {}
+		}));
 	},
 
 	'global load'(this: any) {

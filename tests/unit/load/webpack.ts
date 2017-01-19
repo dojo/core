@@ -1,5 +1,6 @@
 import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
+import * as sinon from 'sinon';
 import global from '../../../src/global';
 import load from '../../../src/load/webpack';
 
@@ -53,8 +54,15 @@ registerSuite({
 			'/other': {
 				value: 'The quick brown fox jumped over the lazy dog.'
 			},
-			'bundle!lazy': function (callback: (value: any) => any) {
+			'bundle!lazy'(callback: (value: any) => any) {
 				callback({ value: 'lazy loaded' });
+			},
+			'plugin!normalize': {
+				normalize: sinon.stub().returns('normalized/path/to/resource'),
+				load: sinon.spy()
+			},
+			'plugin!path/to/resource': {
+				load: sinon.spy()
 			}
 		});
 	},
@@ -140,5 +148,30 @@ registerSuite({
 		}, (error: Error) => {
 			throw new Error(`Promise should not reject\n${error.message}`);
 		});
+	},
+
+	'plugin modules': {
+		'with normalize method'() {
+			const mid = 'plugin!normalize';
+			return load(mid).then(() => {
+				const module = webpackModules[global.__modules__[mid].id];
+				assert.isTrue(module.normalize.calledWith('normalize'));
+				assert.strictEqual(module.normalize.args[0][1]('normalize'), 'normalize',
+					'`normalize` is passed an identity resolver.');
+				assert.isTrue(module.load.calledWith('normalized/path/to/resource', load));
+			}, (error: Error) => {
+				throw new Error(`Promise should not reject\n${error.message}`);
+			});
+		},
+
+		'without normalize method'() {
+			const mid = 'plugin!path/to/resource';
+			return load(mid).then(() => {
+				const module = webpackModules[global.__modules__[mid].id];
+				assert.isTrue(module.load.calledWith('path/to/resource'));
+			}, (error: Error) => {
+				throw new Error(`Promise should not reject\n${error.message}`);
+			});
+		}
 	}
 });

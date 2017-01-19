@@ -20,9 +20,12 @@ export interface Load {
 	(...moduleIds: string[]): Promise<any[]>;
 }
 
-interface LoadPlugin<T> {
+export interface LoadPlugin<T> {
 	normalize?: (resourceId: string, normalize: (resourceId: string) => string) => string;
 	load(resourceId: string, load: Load): Promise<T>;
+}
+export function isPlugin(value: any): value is LoadPlugin<any> {
+	return Boolean(value) && typeof value.load === 'function';
 }
 
 export function useDefault(modules: any[]): any[];
@@ -46,10 +49,6 @@ const load: Load = (function (): Load {
 	const resolver = typeof require.toUrl === 'function' ? require.toUrl :
 		typeof (<any> require).resolve === 'function' ? (<any> require).resolve :
 		(resourceId: string) => resourceId;
-
-	function isPlugin(value: any): value is LoadPlugin<any> {
-		return typeof value.load === 'function';
-	}
 
 	function pluginLoad(moduleIds: string[], load: Load, loader: (modulesIds: string[]) => Promise<any>) {
 		const pluginResourceIds: string[] = [];
