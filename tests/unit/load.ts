@@ -28,6 +28,35 @@ const suite: any = {
 		}));
 	},
 
+	useDefault: {
+		'single es6 module'() {
+			assert.strictEqual(useDefault({
+				'__esModule': true,
+				'default': 42
+			}), 42, 'The default export is returned.');
+		},
+
+		'single non-es6 module'() {
+			const module = { value: 42 };
+			assert.deepEqual(useDefault(module), module, 'The module itself is returned.');
+		},
+
+		'all es6 modules'() {
+			const modules = [ 42, 43 ].map((value: number) => {
+				return { '__esModule': true, 'default': value };
+			});
+			assert.sameMembers(useDefault(modules), [ 42, 43 ], 'The default export is returned for all modules.');
+		},
+
+		'mixed module types'() {
+			const modules: any[] = [ 42, 43 ].map((value: number) => {
+				return { '__esModule': true, 'default': value };
+			});
+			modules.push({ value: 44 });
+			assert.sameDeepMembers(useDefault(modules), [ 42, 43, { value: 44 } ]);
+		}
+	},
+
 	'global load'(this: any) {
 		const def = this.async(5000);
 
