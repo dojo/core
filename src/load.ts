@@ -1,6 +1,6 @@
+import { forOf, isIterable, isArrayLike } from '@dojo/shim/iterator';
 import Promise from '@dojo/shim/Promise';
 import { Require } from '@dojo/interfaces/loader';
-import { isArray } from 'util';
 
 declare const require: Require;
 
@@ -23,10 +23,14 @@ export interface Load {
 export function useDefault(modules: any[]): any[];
 export function useDefault(module: any): any;
 export function useDefault(modules: any | any[]): any[] | any {
-	if (isArray(modules)) {
-		return modules.map((module: any) => {
-			return (module.__esModule && module.default) ? module.default : module;
+	if (isIterable(modules) || isArrayLike(modules)) {
+		let processedModules: any[] = [];
+
+		forOf(modules, (module) => {
+			processedModules.push((module.__esModule && module.default) ? module.default : module);
 		});
+
+		return processedModules;
 	}
 	else {
 		return (modules.__esModule && modules.default) ? modules.default : modules;
