@@ -71,9 +71,10 @@ const suite: any = {
 
 		'with a resource ID'(this: any) {
 			const dfd = this.async(5000);
+			const resourceId = require.toUrl('some/resource');
 
 			load(require, '../support/load/plugin!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
-				assert.strictEqual(value, 'some/resource', 'The plugin `load` is passed the resource ID.');
+				assert.strictEqual(value, resourceId, 'The plugin `load` is passed the resolved resource ID.');
 			}));
 		},
 

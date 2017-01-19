@@ -89,9 +89,9 @@ const load: Load = (function (): Load {
 					const defaultExport = module['default'] || module;
 
 					if (isPlugin(defaultExport)) {
-						if (typeof defaultExport.normalize === 'function') {
-							resourceId = defaultExport.normalize(resourceId, resolver);
-						}
+						resourceId = typeof defaultExport.normalize === 'function' ?
+							defaultExport.normalize(resourceId, resolver) :
+							resolver(resourceId);
 
 						modules[i] = defaultExport.load(resourceId, load);
 					}

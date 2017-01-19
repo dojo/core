@@ -1,5 +1,5 @@
 import Promise from '@dojo/shim/Promise';
-import { isPlugin } from '../load';
+import { isPlugin, useDefault } from '../load';
 
 interface ModuleIdMap {
 	[path: string]: { id: number; lazy: boolean };
@@ -37,7 +37,7 @@ declare const __webpack_require__: WebpackRequire<any>;
  * The resolved absolute module path.
  */
 function resolveRelative(base: string, mid: string): string {
-	const isRelative = mid.match(/\.\//);
+	const isRelative = mid.match(/^\.+\//);
 	let result = base;
 
 	if (isRelative) {
@@ -120,9 +120,10 @@ export default function load(...args: any[]): Promise<any[]> {
 			const defaultExport = module['default'] || module;
 
 			if (isPlugin(defaultExport)) {
-				if (typeof defaultExport.normalize === 'function') {
-					pluginResourceId = defaultExport.normalize(pluginResourceId, (id: string) => id);
-				}
+				pluginResourceId = typeof defaultExport.normalize === 'function' ?
+					defaultExport.normalize(pluginResourceId, (mid: string) => resolveRelative(base, mid)) :
+					resolveRelative(base, pluginResourceId);
+
 				return Promise.resolve(defaultExport.load(pluginResourceId, <any> load));
 			}
 
@@ -131,3 +132,5 @@ export default function load(...args: any[]): Promise<any[]> {
 
 	return Promise.all(results);
 }
+
+export { isPlugin, useDefault };
