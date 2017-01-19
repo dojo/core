@@ -53,7 +53,7 @@ const suite: any = {
 		}, (error: Error) => {
 			assert(error);
 			assert.isTrue(error.message.indexOf('some/bogus/nonexistent/thing') > -1,
-				'The error message contains the module ID.');
+				'The error message contains the module id.');
 		});
 	}
 };
