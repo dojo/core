@@ -21,9 +21,33 @@ export interface Load {
 }
 
 export interface LoadPlugin<T> {
-	normalize?: (resourceId: string, normalize: (resourceId: string) => string) => string;
+	/**
+	 * An optional method that normmalizes a resource ID.
+	 *
+	 * @param resourceId
+	 * The raw resource ID.
+	 *
+	 * @param resolver
+	 * A method that can resolve an ID to an absolute path. Depending on the environment, this will
+	 * usually be either `require.toUrl` or `require.resolve`.
+	 */
+	normalize?: (resourceId: string, resolver: (resourceId: string) => string) => string;
+
+	/**
+	 * A method that loads the specified resource.
+	 *
+	 * @param resourceId
+	 * The ID of the resource to load.
+	 *
+	 * @param load
+	 * The `load` method that was used to load and execute the plugin.
+	 *
+	 * @return
+	 * A promise that resolves to the loaded resource.
+	 */
 	load(resourceId: string, load: Load): Promise<T>;
 }
+
 export function isPlugin(value: any): value is LoadPlugin<any> {
 	return Boolean(value) && typeof value.load === 'function';
 }
