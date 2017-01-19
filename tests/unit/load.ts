@@ -14,7 +14,7 @@ const suite: any = {
 	name: 'load',
 
 	before() {
-		return load('tests/support/load/a', 'tests/support/load/b');
+		return load('tests/support/load/a', 'tests/support/load/b', 'tests/support/load/c');
 	},
 
 	isPlugin() {
@@ -33,19 +33,19 @@ const suite: any = {
 			assert.strictEqual(useDefault({
 				'__esModule': true,
 				'default': 42
-			}), 42, 'The default export is returned.');
+			}), 42, 'The default export should be returned.');
 		},
 
 		'single non-es6 module'() {
 			const module = { value: 42 };
-			assert.deepEqual(useDefault(module), module, 'The module itself is returned.');
+			assert.deepEqual(useDefault(module), module, 'The module itself should be returned.');
 		},
 
 		'all es6 modules'() {
 			const modules = [ 42, 43 ].map((value: number) => {
 				return { '__esModule': true, 'default': value };
 			});
-			assert.sameMembers(useDefault(modules), [ 42, 43 ], 'The default export is returned for all modules.');
+			assert.sameMembers(useDefault(modules), [ 42, 43 ], 'The default export should be returned for all modules.');
 		},
 
 		'mixed module types'() {
@@ -103,7 +103,7 @@ const suite: any = {
 			const resourceId = require.toUrl('some/resource');
 
 			load(require, '../support/load/plugin!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
-				assert.strictEqual(value, resourceId, 'The plugin `load` is passed the resolved resource id.');
+				assert.strictEqual(value, resourceId, 'The plugin `load` should receive the resolved resource id.');
 			}));
 		},
 
@@ -111,7 +111,7 @@ const suite: any = {
 			const dfd = this.async(5000);
 
 			load(require, '../support/load/a!some/resource').then(dfd.callback(([ a ]: [ any ]) => {
-				assert.deepEqual(a, { one: 1, two: 2, 'default': 'A' }, 'Resource ID ignored.');
+				assert.deepEqual(a, { one: 1, two: 2, 'default': 'A' }, 'The resource id should be ignored.');
 			}));
 		},
 
@@ -122,7 +122,7 @@ const suite: any = {
 			load(require, '../support/load/plugin-default!some/resource').then(dfd.callback(([ value ]: [ any ]) => {
 				assert.isTrue((<any> mockPlugin.load).calledWith('some/resource', load),
 					'Plugin `load` called with resource id and core `load`.');
-				assert.strictEqual(value, 'some/resource', 'The `load` on the default export is used.');
+				assert.strictEqual(value, 'some/resource', 'The `load` on the default export should be used.');
 
 				(<any> mockPlugin.load).restore();
 			}), dfd.rejectOnError(() => {
@@ -135,7 +135,7 @@ const suite: any = {
 			sinon.spy(mockPlugin, 'normalize');
 
 			load(require, '../support/load/plugin-default!normalize').then(dfd.callback(([ value ]: [ any ]) => {
-				assert.strictEqual(value, 'path/to/normalized', 'The path is passed to the `normalize` method.');
+				assert.strictEqual(value, 'path/to/normalized', 'The path should be passed to the `normalize` method.');
 				assert.isTrue((<any> mockPlugin.normalize).calledWith('normalize'),
 					'`normalize` called with resource id.');
 				assert.isFunction((<any> mockPlugin.normalize).firstCall.args[1],
@@ -154,7 +154,7 @@ const suite: any = {
 		}, (error: Error) => {
 			assert(error);
 			assert.isTrue(error.message.indexOf('some/bogus/nonexistent/thing') > -1,
-				'The error message contains the module id.');
+				'The error message should contain the module id.');
 		});
 	}
 };

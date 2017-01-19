@@ -78,8 +78,8 @@ registerSuite({
 	},
 
 	api() {
-		assert.isFunction(isPlugin, '`isPlugin` is re-exported.');
-		assert.isFunction(useDefault, '`useDefault` is re-exported.');
+		assert.isFunction(isPlugin, '`isPlugin` should be re-exported.');
+		assert.isFunction(useDefault, '`useDefault` should be re-exported.');
 	},
 
 	'without __modules__'() {
@@ -168,7 +168,7 @@ registerSuite({
 				const module = webpackModules[global.__modules__[mid].id];
 				assert.isTrue(module.normalize.calledWith('normalize'));
 				assert.strictEqual(module.normalize.args[0][1]('normalize'), 'normalize',
-					'`normalize` is passed an identity resolver.');
+					'`normalize` should be passed an identity resolver.');
 				assert.isTrue(module.load.calledWith('normalized/path/to/resource', load));
 			}, (error: Error) => {
 				throw new Error(`Promise should not reject\n${error.message}`);
