@@ -2,7 +2,7 @@
 
 ## Module Exports
 
-### isPlugin - tests a value to determine whether is a plugin (an object with a `load` method).
+### isPlugin - tests a value to determine whether is a plugin (an object with a `load` method)
 
 ```ts
 import { isPlugin } from 'src/load';
@@ -23,7 +23,7 @@ isPlugin({
 
 ```
 
-### load - dynamically loads a module or other resource.
+### load - dynamically loads a module or other resource
 
 ```ts
 import load, { useDefault } from 'src/load';
@@ -55,7 +55,7 @@ load(require, 'plugin!./template.html').then(([ html ]: [ string ]) => {
 
 ```
 
-#### Using Load Plugins
+#### Using Plugins
 
 AMD-style plugins can be used with `load` by passing in module ids with the format `{pluginId}!{resourceId}`. First, the plugin will be loaded, and then the resource id (the string that follows the `!` in the mid passed to `core/load`) will be normalized and passed to the plugin's `load` method. If the plugin module does not actually have a `load` method, then the resource id is ignored, and the module is returned as-is. Plugins can also expose an optional `normalize` method that is passed the resource id and a resolver method (which will be either `require.toUrl`, `require.resolve`, or an identity function, depending on the environment). Note that if no `normalize` method is provided, then the provided resource id will be resolved using `require.toUrl` or `require.resolve`, depending on the environment. Again, if the plugin module has a default export, the `normalize` method MUST exist on that object.
 
