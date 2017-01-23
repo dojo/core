@@ -1,6 +1,7 @@
-import Symbol from '@dojo/shim/Symbol';
+import '@dojo/shim/Symbol';
 import Map from '@dojo/shim/Map';
 import { ArrayLike } from '@dojo/shim/interfaces';
+import { from as arrayFrom } from '@dojo/shim/array';
 import { forOf, Iterable, IterableIterator, ShimIterator } from '@dojo/shim/iterator';
 
 /**
@@ -8,7 +9,7 @@ import { forOf, Iterable, IterableIterator, ShimIterator } from '@dojo/shim/iter
  *
  * @param T Accepts the type of the value
  */
-export default class MultiMap<T> {
+export default class MultiMap<T> implements Map<any[], T> {
 	private _map: Map<any, any>;
 	private _key: symbol;
 
@@ -89,6 +90,13 @@ export default class MultiMap<T> {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Returns the size of the map, based on the number of unique keys
+	 */
+	get size(): number {
+		return arrayFrom(this.keys()).length;
 	}
 
 	/**
@@ -215,4 +223,10 @@ export default class MultiMap<T> {
 	clear(): void {
 		this._map.clear();
 	}
+
+	[Symbol.iterator](): IterableIterator<[any[], T]> {
+		return this.entries();
+	}
+
+	[Symbol.toStringTag]: string = 'MultiMap';
 }

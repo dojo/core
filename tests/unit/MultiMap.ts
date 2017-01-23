@@ -88,9 +88,34 @@ registerSuite({
 		}
 	},
 
+	size() {
+		map = new MultiMap<any>(mapArgs);
+		assert.strictEqual(map.size, 6);
+		map.delete([ 2, 3, 4, 5, 6 ]);
+		assert.strictEqual(map.size, 5);
+		map.clear();
+		assert.strictEqual(map.size, 0);
+	},
+
 	entries() {
 		map = new MultiMap<any>(mapArgs);
 		const entries: IterableIterator<[any[], any]> = map.entries();
+
+		assert.isTrue(isIterable(entries), 'Returns an iterable.');
+
+		let i = 0;
+		forOf(entries, function (value: [ any[], any ]): void {
+			value[0].forEach((key, index) => {
+				assert.strictEqual(key, mapArgs[i][0][index]);
+			});
+			assert.strictEqual(value[1], mapArgs[i][1]);
+			i++;
+		});
+	},
+
+	'Symbol iterator'() {
+		map = new MultiMap<any>(mapArgs);
+		const entries = map[Symbol.iterator]();
 
 		assert.isTrue(isIterable(entries), 'Returns an iterable.');
 
