@@ -1,6 +1,6 @@
 import Evented from './Evented';
 import { EventObject, Handle } from './interfaces';
-import WeakMap from 'dojo-shim/WeakMap';
+import WeakMap from '@dojo/shim/WeakMap';
 
 interface QueuingEventedData {
 	queue: { [eventType: string]: EventObject[] };
