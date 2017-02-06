@@ -4,6 +4,7 @@ import WeakMap from '@dojo/shim/WeakMap';
 import * as http from 'http';
 import * as https from 'https';
 import * as urlUtil from 'url';
+import * as zlib from 'zlib';
 import Task from '../../async/Task';
 import { queueTask } from '../../queue';
 import { createTimer } from '../../util';
@@ -30,6 +31,7 @@ export interface NodeRequestOptions extends RequestOptions {
 	rejectUnauthorized?: boolean;
 	secureProtocol?: string;
 	socketPath?: string;
+	acceptCompression?: boolean;
 	socketOptions?: {
 		keepAlive?: number;
 		noDelay?: boolean;
@@ -277,6 +279,11 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 		requestOptions.auth = encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
 	}
 
+	const { acceptCompression = true } = options;
+	if (acceptCompression) {
+		requestOptions.headers[ 'Accept-Encoding' ] = 'gzip, deflate';
+	}
+
 	const request = parsedUrl.protocol === 'https:' ? https.request(requestOptions) : http.request(requestOptions);
 
 	const task = new Task<Response>((resolve, reject) => {
@@ -395,6 +402,12 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 			options.streamEncoding && message.setEncoding(options.streamEncoding);
 
+			/*
+			 [RFC 2616](https://tools.ietf.org/html/rfc2616#page-118) says that content-encoding can have multiple
+			 values, so we split them here and put them in a list to process later.
+			 */
+			const contentEncodings = response.headers.getAll('content-encoding');
+
 			const task = new Task<http.IncomingMessage>((resolve, reject) => {
 				timeoutReject = reject;
 
@@ -405,6 +418,10 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 						response
 					});
 
+					/*
+					 * Note that this is the raw data, if your input stream is zipped, and you are piecing
+					 * together the downloaded data, you'll have to decompress it yourself
+					 */
 					message.on('data', (chunk: any) => {
 						response.emit({
 							type: 'data',
@@ -430,14 +447,57 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 					message.once('end', () => {
 						timeoutHandle && timeoutHandle.destroy();
 
-						data.data = (options.streamEncoding ? data.buffer.join('') : String(Buffer.concat(data.buffer, data.size)));
+						let dataAsBuffer = (options.streamEncoding ? new Buffer(data.buffer.join(''), 'utf8') : Buffer.concat(data.buffer, data.size));
 
-						response.emit({
-							type: 'end',
-							response
-						});
+						const handleEncoding = function () {
+							/*
+							 Content encoding is ordered by the order in which they were applied to the
+							 content, so do undo the encoding we have to start at the end and work backwards.
+							 */
+							if (contentEncodings.length) {
+								const encoding = contentEncodings.pop()!.trim();
 
-						resolve(message);
+								if (encoding === '' || encoding === 'identity') {
+									// do nothing, response stream is as-is
+									handleEncoding();
+								}
+								else if (encoding === 'gzip') {
+									zlib.gunzip(dataAsBuffer, function (err: Error, result: Buffer) {
+										if (err) {
+											reject(err);
+										}
+
+										dataAsBuffer = result;
+										handleEncoding();
+									});
+								}
+								else if (encoding === 'deflate') {
+									zlib.inflate(dataAsBuffer, function (err: Error, result: Buffer) {
+										if (err) {
+											reject(err);
+										}
+
+										dataAsBuffer = result;
+										handleEncoding();
+									});
+								}
+								else {
+									reject(new Error('Unsupported content encoding, ' + encoding));
+								}
+							}
+							else {
+								data.data = String(dataAsBuffer);
+
+								response.emit({
+									type: 'end',
+									response
+								});
+
+								resolve(message);
+							}
+						};
+
+						handleEncoding();
 					});
 				});
 			}, () => {

@@ -3,6 +3,7 @@ import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import * as DojoPromise from 'intern/dojo/Promise';
 import { parse } from 'url';
+import * as zlib from 'zlib';
 import { Response } from '../../../src/request/interfaces';
 import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
 import TimeoutError from '../../../src/request/TimeoutError';
@@ -14,7 +15,7 @@ let proxy: any;
 let requestData: string;
 
 interface DummyResponse {
-	body?: string;
+	body?: string | ((callback: Function) => void);
 	headers?: { [key: string]: string };
 	statusCode?: number;
 }
@@ -134,6 +135,62 @@ const responseData: { [url: string]: DummyResponse } = {
 		headers: {
 			'Location': getRequestUrl('redirect-success').replace('http:', '')
 		}
+	},
+	'gzip-compressed': {
+		statusCode: 200,
+		body: function (callback: any) {
+			zlib.gzip(new Buffer(JSON.stringify({ 'test': true }), 'utf8'), function (err: any, result: any) {
+				callback(result);
+			});
+		},
+		headers: {
+			'Content-Encoding': 'gzip'
+		}
+	},
+	'deflate-compressed': {
+		statusCode: 200,
+		body: function (callback: any) {
+			zlib.deflate(new Buffer(JSON.stringify({ 'test': true }), 'utf8'), function (err: any, result: any) {
+				callback(result);
+			});
+		},
+		headers: {
+			'Content-Encoding': 'deflate'
+		}
+	},
+	'gzip-deflate-compressed': {
+		statusCode: 200,
+		body: function (callback: any) {
+			zlib.gzip(new Buffer(JSON.stringify({ 'test': true }), 'utf8'), (err: any, result: any) => {
+				zlib.deflate(result, function (err: any, result: any) {
+					callback(result);
+				});
+			});
+		},
+		headers: {
+			'Content-Encoding': 'gzip, deflate'
+		}
+	},
+	'gzip-invalid': {
+		statusCode: 200,
+		body: 'hello',
+		headers: {
+			'Content-Encoding': 'gzip'
+		}
+	},
+	'deflate-invalid': {
+		statusCode: 200,
+		body: 'hello',
+		headers: {
+			'Content-Encoding': 'deflate'
+		}
+	},
+	'gzip-deflate-invalid': {
+		statusCode: 200,
+		body: 'hello',
+		headers: {
+			'Content-Encoding': 'gzip, deflate'
+		}
 	}
 };
 
@@ -240,9 +297,16 @@ registerSuite({
 
 				response.writeHead(statusCode, headers);
 
-				response.write(new Buffer(body, 'utf8'));
-
-				response.end();
+				if (typeof body === 'function') {
+					body(function (result: Buffer) {
+						response.write(result);
+						response.end();
+					});
+				}
+				else {
+					response.write(new Buffer(body, 'utf8'));
+					response.end();
+				}
 			});
 		});
 
@@ -302,6 +366,33 @@ registerSuite({
 				});
 			}
 		},
+
+		'content encoding': (function (compressionTypes) {
+			const suites: { [key: string]: any } = {};
+
+			compressionTypes.map(type => {
+				suites[ type ] = {
+					'gets decoded'() {
+						return nodeRequest(getRequestUrl(`${type}-compressed`)).then(response => {
+							return response.json();
+						}).then(obj => {
+							assert.deepEqual(obj, { test: true });
+						});
+					},
+					'errors are caught'() {
+						return nodeRequest(getRequestUrl(`${type}-invalid`)).then(response => {
+							return response.json();
+						}).then(() => {
+							assert.fail('Should not have succeeded');
+						}, (error) => {
+							assert.isNotNull(error);
+						});
+					}
+				};
+			});
+
+			return suites;
+		})([ 'gzip', 'deflate', 'gzip-deflate' ]),
 
 		proxy(this: any): void {
 			const dfd = this.async();
@@ -471,6 +562,22 @@ registerSuite({
 				const header: any = response.nativeResponse.req._header;
 
 				assert.include(header, 'uSeR-AgEnT: mIxEd CaSe');
+			});
+		},
+
+		'compression headers are present by default'() {
+			return nodeRequest(getRequestUrl('foo.json')).then((response: any) => {
+				const header: any = response.nativeResponse.req._header;
+				assert.include(header, 'Accept-Encoding: gzip, deflate');
+			});
+		},
+
+		'compression headers can be turned off'() {
+			return nodeRequest(getRequestUrl('foo.json'), {
+				acceptCompression: false
+			}).then((response: any) => {
+				const header: any = response.nativeResponse.req._header;
+				assert.notInclude(header, 'Accept-Encoding:');
 			});
 		},
 
