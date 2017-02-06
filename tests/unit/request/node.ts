@@ -1,11 +1,11 @@
-import TimeoutError from '../../../src/request/TimeoutError';
-import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
-import { Response } from '../../../src/request/interfaces';
+import { createServer } from 'http';
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import * as DojoPromise from 'intern/dojo/Promise';
-import { createServer } from 'http';
 import { parse } from 'url';
+import { Response } from '../../../src/request/interfaces';
+import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
+import TimeoutError from '../../../src/request/TimeoutError';
 
 const serverPort = 8124;
 const serverUrl = 'http://localhost:' + serverPort;
@@ -120,6 +120,20 @@ const responseData: { [url: string]: DummyResponse } = {
 		statusCode: 301,
 		body: JSON.stringify('beginning to redirect'),
 		headers: {}
+	},
+	'relative-redirect': {
+		statusCode: 301,
+		body: JSON.stringify('beginning redirect'),
+		headers: {
+			'Location': '/redirect-success'
+		}
+	},
+	'protocolless-redirect': {
+		statusCode: 301,
+		body: JSON.stringify('beginning redirect'),
+		headers: {
+			'Location': getRequestUrl('redirect-success').replace('http:', '')
+		}
 	}
 };
 
@@ -195,7 +209,7 @@ function getResponseData(request: any): DummyResponse {
 }
 
 function getRequestUrl(dataKey: string): string {
-	return serverUrl + '?dataKey=' + dataKey;
+	return serverUrl + '/?dataKey=' + dataKey;
 }
 
 function getAuthRequestUrl(dataKey: string, user: string = 'user', password: string = 'password'): string {
@@ -920,6 +934,19 @@ registerSuite({
 					url: '301-redirect',
 					expectedCount: 0,
 					followRedirects: false
+				}
+			]),
+
+			'Relative redirect urls': buildRedirectTests([
+				{
+					method: 'GET',
+					url: 'relative-redirect',
+					expectedPage: 'redirect-success'
+				},
+				{
+					method: 'GET',
+					url: 'protocolless-redirect',
+					expectedPage: 'redirect-success'
 				}
 			])
 		}

@@ -1,17 +1,16 @@
+import { Handle } from '@dojo/interfaces/core';
+import Set from '@dojo/shim/Set';
+import WeakMap from '@dojo/shim/WeakMap';
+import * as http from 'http';
+import * as https from 'https';
+import * as urlUtil from 'url';
+import Task from '../../async/Task';
+import { queueTask } from '../../queue';
+import { createTimer } from '../../util';
 import Headers from '../Headers';
 import { RequestOptions } from '../interfaces';
 import Response from '../Response';
 import TimeoutError from '../TimeoutError';
-import Task from '../../async/Task';
-import { queueTask } from '../../queue';
-import { createTimer } from '../../util';
-import { Handle } from '@dojo/interfaces/core';
-import Set from '@dojo/shim/Set';
-import WeakMap from '@dojo/shim/WeakMap';
-
-import * as http from 'http';
-import * as https from 'https';
-import * as urlUtil from 'url';
 
 /**
  * Request options specific to a node request
@@ -198,7 +197,7 @@ export class NodeResponse extends Response {
 	}
 }
 
-function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, url: string | null, options: NodeRequestOptions): boolean {
+function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, originalUrl: string, redirectUrl: string | null, options: NodeRequestOptions): boolean {
 	if (!options.redirectOptions) {
 		options.redirectOptions = {};
 	}
@@ -211,7 +210,9 @@ function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, url: 
 		return false;
 	}
 
-	if (!url) {
+	// we only check for undefined here because empty string redirects are now allowed
+	// (they'll resolve to the current url)
+	if (redirectUrl === undefined || redirectUrl === null) {
 		reject(new Error('asked to redirect but no location header was found'));
 		return true;
 	}
@@ -223,7 +224,9 @@ function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, url: 
 
 	options.redirectOptions.count = redirectCount + 1;
 
-	resolve(node(url, options));
+	// we wrap the url in a call to node's URL.resolve which will handle relative and partial
+	// redirects (like "/another-page" on the same domain).
+	resolve(node(urlUtil.resolve(originalUrl, redirectUrl), options));
 
 	return true;
 }
@@ -335,7 +338,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							newOptions.method = 'GET';
 						}
 
-						if (redirect(resolve, reject, response.headers.get('location'), newOptions)) {
+						if (redirect(resolve, reject, url, response.headers.get('location'), newOptions)) {
 							return;
 						}
 						break;
@@ -350,7 +353,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							newOptions.method = 'GET';
 						}
 
-						if (redirect(resolve, reject, response.headers.get('location'), newOptions)) {
+						if (redirect(resolve, reject, url, response.headers.get('location'), newOptions)) {
 							return;
 						}
 						break;
@@ -366,7 +369,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 						}
 						else {
 							newOptions.proxy = response.headers.get('location') || '';
-							if (redirect(resolve, reject, url, newOptions)) {
+							if (redirect(resolve, reject, url, '', newOptions)) {
 								return;
 							}
 						}
@@ -379,7 +382,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 						 *  request unless it can be confirmed by the user, since this might
 						 *  change the conditions under which the request was issued.
 						 */
-						if (redirect(resolve, reject, response.headers.get('location'), newOptions)) {
+						if (redirect(resolve, reject, url, response.headers.get('location'), newOptions)) {
 							return;
 						}
 						break;
