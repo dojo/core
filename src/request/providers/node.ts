@@ -6,6 +6,7 @@ import * as https from 'https';
 import * as urlUtil from 'url';
 import * as zlib from 'zlib';
 import Task from '../../async/Task';
+import { deepAssign } from '../../lang';
 import { queueTask } from '../../queue';
 import { createTimer } from '../../util';
 import Headers from '../Headers';
@@ -204,8 +205,10 @@ function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, origi
 		options.redirectOptions = {};
 	}
 
-	const { limit: redirectLimit = DEFAULT_REDIRECT_LIMIT } = options.redirectOptions;
-	const { count: redirectCount = 0 } = options.redirectOptions;
+	const {
+		limit: redirectLimit = DEFAULT_REDIRECT_LIMIT,
+		count: redirectCount = 0
+	} = options.redirectOptions;
 	const { followRedirects = true } = options;
 
 	if (!followRedirects) {
@@ -233,12 +236,24 @@ function redirect(resolve: (p?: any) => void, reject: (_?: Error) => void, origi
 	return true;
 }
 
+export function getAuth(proxyAuth: string | undefined, options: NodeRequestOptions): string | undefined {
+	if (proxyAuth) {
+		return proxyAuth;
+	}
+
+	if (options.user || options.password) {
+		return encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
+	}
+
+	return undefined;
+}
+
 export default function node(url: string, options: NodeRequestOptions = {}): Task<Response> {
 	const parsedUrl = urlUtil.parse(options.proxy || url);
 
 	const requestOptions: HttpsOptions = {
 		agent: options.agent,
-		auth: parsedUrl.auth || options.auth,
+		auth: getAuth(parsedUrl.auth, options),
 		ca: options.ca,
 		cert: options.cert,
 		ciphers: options.ciphers,
@@ -272,11 +287,10 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 		if (parsedProxyUrl.host) {
 			requestOptions.headers[ 'host' ] = parsedProxyUrl.host;
 		}
-		requestOptions.auth = parsedProxyUrl.auth || options.auth;
-	}
 
-	if (!options.auth && (options.user || options.password)) {
-		requestOptions.auth = encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
+		if (parsedProxyUrl.auth) {
+			requestOptions.auth = parsedProxyUrl.auth;
+		}
 	}
 
 	const { acceptCompression = true } = options;
@@ -315,7 +329,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 				response.status < 400
 			) {
 				const redirectOptions = options.redirectOptions || {};
-				const newOptions = Object.create(options);
+				const newOptions = deepAssign({}, options);
 
 				switch (response.status) {
 					case 300:

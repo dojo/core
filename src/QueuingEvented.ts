@@ -1,6 +1,6 @@
+import WeakMap from '@dojo/shim/WeakMap';
 import Evented from './Evented';
 import { EventObject, Handle } from './interfaces';
-import WeakMap from '@dojo/shim/WeakMap';
 
 interface QueuingEventedData {
 	queue: { [eventType: string]: EventObject[] };
@@ -9,6 +9,13 @@ interface QueuingEventedData {
 
 const queingEventedSubscribers = new WeakMap<QueuingEvented, QueuingEventedData>();
 
+/**
+ * An implementation of the Evented class that queues up events when no listeners are
+ * listening. When a listener is subscribed, the queue will be published to the listener.
+ * When the queue is full, the oldest events will be discarded to make room for the newest ones.
+ *
+ * @property maxEvents  The number of events to queue before old events are discarded. If zero (default), an unlimited number of events is queued.
+ */
 export default class QueuingEvented extends Evented {
 	maxEvents: number = 0;
 

@@ -1,15 +1,15 @@
+import { Handle } from '@dojo/interfaces/core';
+import { forOf } from '@dojo/shim/iterator';
+import WeakMap from '@dojo/shim/WeakMap';
+import Task, { State } from '../../async/Task';
+import global from '../../global';
 import has from '../../has';
+import { createTimer } from '../../util';
 import Headers from '../Headers';
 import { RequestOptions } from '../interfaces';
 import Response, { getArrayBufferFromBlob, getTextFromBlob } from '../Response';
 import TimeoutError from '../TimeoutError';
 import { generateRequestUrl } from '../util';
-import Task, { State } from '../../async/Task';
-import global from '../../global';
-import { createTimer } from '../../util';
-import { Handle } from '@dojo/interfaces/core';
-import { forOf } from '@dojo/shim/iterator';
-import WeakMap from '@dojo/shim/WeakMap';
 
 /**
  * Request options specific to an XHR request
@@ -150,9 +150,9 @@ if (has('formdata')) {
 function noop () {}
 
 function setOnError(request: XMLHttpRequest, reject: Function) {
-	request.onerror = function (event) {
+	request.addEventListener('error', function (event) {
 		reject(new TypeError(event.error || 'Network request failed'));
-	};
+	});
 }
 
 export default function xhr(url: string, options: XhrRequestOptions = {}): Task<Response> {
@@ -163,12 +163,6 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Task<
 
 	if (!options.method) {
 		options.method = 'GET';
-	}
-
-	if ((!options.user || !options.password) && options.auth) {
-		const auth = options.auth.split(':');
-		options.user = decodeURIComponent(auth[ 0 ]);
-		options.password = decodeURIComponent(auth[ 1 ]);
 	}
 
 	let isAborted = false;
@@ -257,11 +251,11 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Task<
 
 	}, abort);
 
-	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
-
 	if (has('filereader') && has('blob')) {
 		request.responseType = 'blob';
 	}
+
+	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
 
 	if (options.timeout > 0 && options.timeout !== Infinity) {
 		timeoutHandle = createTimer(() => {

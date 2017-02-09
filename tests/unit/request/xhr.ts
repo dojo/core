@@ -118,18 +118,6 @@ registerSuite({
 			});
 		},
 
-		'auth, without user or password'(this: any) {
-			if (!echoServerAvailable) {
-				this.skip('No echo server available');
-			}
-			return xhrRequest('/__echo/foo.json', {
-				auth: 'user:password'
-			}).then(function (response: any) {
-				assert.strictEqual(response.requestOptions.user, 'user');
-				assert.strictEqual(response.requestOptions.password, 'password');
-			});
-		},
-
 		'query': {
 			'.get with query URL and query option string'(this: any) {
 				if (!echoServerAvailable) {

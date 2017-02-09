@@ -54,7 +54,6 @@ export type Provider = (url: string, options?: RequestOptions) => Task<Response>
 export type ProviderTest = (url: string, options?: RequestOptions) => boolean | null;
 
 export interface RequestOptions {
-	auth?: string;
 	cacheBust?: boolean;
 	credentials?: 'omit' | 'same-origin' | 'include';
 	body?: Blob | BufferSource | FormData | UrlSearchParams | string;
