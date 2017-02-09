@@ -251,11 +251,11 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Task<
 
 	}, abort);
 
+	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
+
 	if (has('filereader') && has('blob')) {
 		request.responseType = 'blob';
 	}
-
-	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
 
 	if (options.timeout > 0 && options.timeout !== Infinity) {
 		timeoutHandle = createTimer(() => {
