@@ -1,3 +1,8 @@
+import { Handle, EventTargettedObject } from '@dojo/interfaces/core';
+import Promise from '@dojo/shim/Promise';
+import Task from '../async/Task';
+import QueuingEvented from '../QueuingEvented';
+import Headers from './Headers';
 import {
 	Response as ResponseInterface,
 	RequestOptions,
@@ -6,11 +11,8 @@ import {
 	StartEvent,
 	ProgressEvent
 } from './interfaces';
-import Headers from './Headers';
-import Task from '../async/Task';
-import QueuingEvented from '../QueuingEvented';
-import { EventObject, Handle } from '@dojo/interfaces/core';
-import Promise from '@dojo/shim/Promise';
+import { EventedListenersMap, EventedListenerOrArray } from '@dojo/interfaces/bases';
+import { Evented } from '../Evented';
 
 export interface ResponseData {
 	task: Task<any>;
@@ -26,10 +28,6 @@ abstract class Response extends QueuingEvented implements ResponseInterface {
 	abstract readonly bodyUsed: boolean;
 	readonly requestOptions: RequestOptions;
 
-	emit(event: ProgressEvent | DataEvent | EndEvent | StartEvent) {
-		super.emit(event);
-	}
-
 	json<T>(): Task<T> {
 		return <any> this.text().then(JSON.parse);
 	}
@@ -38,8 +36,10 @@ abstract class Response extends QueuingEvented implements ResponseInterface {
 	on(type: 'data', fn: (event: DataEvent) => void): Handle;
 	on(type: 'end', fn: (event: EndEvent) => void): Handle;
 	on(type: 'start', fn: (event: StartEvent) => void): Handle;
-	on(type: string, fn: (event: EventObject) => void): Handle {
-		return super.on(type, fn);
+	on(listeners: EventedListenersMap<Evented>): Handle;
+	on(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
+	on(...args: any[]): Handle {
+		return (<any> super.on)(...args);
 	}
 
 	abstract arrayBuffer(): Task<ArrayBuffer>;

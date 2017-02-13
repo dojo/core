@@ -1,13 +1,7 @@
-import WeakMap from '@dojo/shim/WeakMap';
-import Evented from './Evented';
-import { EventObject, Handle } from './interfaces';
-
-interface QueuingEventedData {
-	queue: { [eventType: string]: EventObject[] };
-	subscribed: { [eventType: string]: boolean };
-}
-
-const queingEventedSubscribers = new WeakMap<QueuingEvented, QueuingEventedData>();
+import { EventedListenersMap, EventedListenerOrArray } from '@dojo/interfaces/bases';
+import { EventObject, Handle, EventTargettedObject, EventErrorObject } from '@dojo/interfaces/core';
+import Map from '@dojo/shim/Map';
+import Evented, { isGlobMatch } from './Evented';
 
 /**
  * An implementation of the Evented class that queues up events when no listeners are
@@ -17,58 +11,60 @@ const queingEventedSubscribers = new WeakMap<QueuingEvented, QueuingEventedData>
  * @property maxEvents  The number of events to queue before old events are discarded. If zero (default), an unlimited number of events is queued.
  */
 export default class QueuingEvented extends Evented {
+	private _queue: Map<string, EventObject[]>;
+
 	maxEvents: number = 0;
 
 	constructor() {
 		super();
 
-		queingEventedSubscribers.set(this, {
-			queue: {},
-			subscribed: {}
+		this._queue = new Map<string, EventObject[]>();
+	}
+
+	emit<E extends EventObject>(event: E): void {
+		super.emit(event);
+
+		let hasMatch = false;
+
+		this.listenersMap.forEach((method, type) => {
+			if (isGlobMatch(type, event.type)) {
+				hasMatch = true;
+			}
 		});
-	}
 
-	emit<T extends EventObject>(data: T): void {
-		const queueData = queingEventedSubscribers.get(this);
+		if (!hasMatch) {
+			let queue = this._queue.get(event.type);
 
-		if (!queueData.subscribed[ data.type ]) {
-			let eventQueue = queueData.queue[ data.type ];
-
-			if (eventQueue === undefined) {
-				eventQueue = [];
-				queueData.queue[ data.type ] = eventQueue;
+			if (!queue) {
+				queue = [];
+				this._queue.set(event.type, queue);
 			}
 
-			eventQueue.push(data);
+			queue.push(event);
 
-			if (this.maxEvents > 0 && eventQueue.length > this.maxEvents) {
-				eventQueue.shift();
+			if (this.maxEvents > 0) {
+				while (queue.length > this.maxEvents) {
+					queue.shift();
+				}
 			}
-
-			return;
 		}
-
-		super.emit(data);
 	}
 
-	on(type: string, listener: (event: EventObject) => void): Handle {
-		const result = super.on(type, listener);
+	on(listeners: EventedListenersMap<Evented>): Handle;
+	on(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
+	on(type: 'error', listener: EventedListenerOrArray<Evented, EventErrorObject<Evented>>): Handle;
+	on(...args: any[]): Handle {
+		let handle = (<any> super.on)(...args);
 
-		const queueData = queingEventedSubscribers.get(this);
-
-		queueData.subscribed[ type ] = true;
-
-		const eventQueue = queueData.queue[ type ];
-
-		if (eventQueue !== undefined) {
-			// dispatch queued events
-			eventQueue.forEach((eventObject) => {
-				this.emit(eventObject);
+		this.listenersMap.forEach((method, listenerType) => {
+			this._queue.forEach((events, queuedType) => {
+				if (isGlobMatch(listenerType, queuedType)) {
+					events.forEach((event) => this.emit(event));
+					this._queue.delete(queuedType);
+				}
 			});
+		});
 
-			queueData.queue[ type ] = [];
-		}
-
-		return result;
+		return handle;
 	}
 }

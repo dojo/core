@@ -29,6 +29,7 @@ export interface Headers {
 
 interface ResponseEvent {
 	response: Response;
+	target: any;
 }
 
 export interface DataEvent extends ResponseEvent {
