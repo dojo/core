@@ -46,6 +46,31 @@ export interface EventedOptions {
 	listeners?: EventedListenersMap<any>;
 }
 
+export interface BaseEventedEvents {
+	/**
+	 * Regsister a callback for a specific event type
+	 *
+	 * @param listeners map of listeners
+	 */
+	(listeners: EventedListenersMap<Evented>): Handle;
+
+	/**
+	 * @param type the type of the event
+	 * @param listener the listener to attach
+	 */
+	(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
+
+	/**
+	 * @param type the type for `error`
+	 * @param listener the listener to attach
+	 */
+	(type: 'error', listener: EventedListenerOrArray<Evented, EventErrorObject<Evented>>): Handle;
+}
+
+interface EventedOnInterface {
+	on: BaseEventedEvents;
+}
+
 /**
  * Map of computed regular expressions, keyed by string
  */
@@ -76,7 +101,7 @@ export function isGlobMatch(globString: string, targetString: string): boolean {
 /**
  * Event Class
  */
-export class Evented extends Destroyable {
+export class Evented extends Destroyable implements EventedOnInterface {
 
 	/**
 	 * map of listeners keyed by event type
@@ -108,25 +133,7 @@ export class Evented extends Destroyable {
 		});
 	}
 
-	/**
-	 * Regsister a callback for a specific event type
-	 *
-	 * @param listeners map of listeners
-	 */
-	on(listeners: EventedListenersMap<Evented>): Handle;
-
-	/**
-	 * @param type the type of the event
-	 * @param listener the listener to attach
-	 */
-	on(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
-
-	/**
-	 * @param type the type for `error`
-	 * @param listener the listener to attach
-	 */
-	on(type: 'error', listener: EventedListenerOrArray<Evented, EventErrorObject<Evented>>): Handle;
-	on(...args: any[]): Handle {
+	on: BaseEventedEvents = function (this: Evented, ...args: any[]) {
 		if (args.length === 2) {
 			const [ type, listeners ] = <[ string, EventedListenerOrArray<any, EventTargettedObject<any>>]> args;
 			if (Array.isArray(listeners)) {
@@ -145,7 +152,7 @@ export class Evented extends Destroyable {
 		else {
 			throw new TypeError('Invalid arguments');
 		}
-	}
+	};
 }
 
 export default Evented;

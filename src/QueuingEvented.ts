@@ -1,5 +1,4 @@
-import { EventedListenersMap, EventedListenerOrArray } from '@dojo/interfaces/bases';
-import { EventObject, Handle, EventTargettedObject, EventErrorObject } from '@dojo/interfaces/core';
+import { EventObject, Handle } from '@dojo/interfaces/core';
 import Map from '@dojo/shim/Map';
 import Evented, { isGlobMatch } from './Evented';
 
@@ -12,6 +11,7 @@ import Evented, { isGlobMatch } from './Evented';
  */
 export default class QueuingEvented extends Evented {
 	private _queue: Map<string, EventObject[]>;
+	private _originalOn: (...args: any[]) => Handle;
 
 	maxEvents: number = 0;
 
@@ -19,6 +19,21 @@ export default class QueuingEvented extends Evented {
 		super();
 
 		this._queue = new Map<string, EventObject[]>();
+		this._originalOn = this.on;
+		this.on = function (this: QueuingEvented, ...args: any[]): Handle {
+			let handle = this._originalOn(...args);
+
+			this.listenersMap.forEach((method, listenerType) => {
+				this._queue.forEach((events, queuedType) => {
+					if (isGlobMatch(listenerType, queuedType)) {
+						events.forEach((event) => this.emit(event));
+						this._queue.delete(queuedType);
+					}
+				});
+			});
+
+			return handle;
+		};
 	}
 
 	emit<E extends EventObject>(event: E): void {
@@ -48,23 +63,5 @@ export default class QueuingEvented extends Evented {
 				}
 			}
 		}
-	}
-
-	on(listeners: EventedListenersMap<Evented>): Handle;
-	on(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
-	on(type: 'error', listener: EventedListenerOrArray<Evented, EventErrorObject<Evented>>): Handle;
-	on(...args: any[]): Handle {
-		let handle = (<any> super.on)(...args);
-
-		this.listenersMap.forEach((method, listenerType) => {
-			this._queue.forEach((events, queuedType) => {
-				if (isGlobMatch(listenerType, queuedType)) {
-					events.forEach((event) => this.emit(event));
-					this._queue.delete(queuedType);
-				}
-			});
-		});
-
-		return handle;
 	}
 }
