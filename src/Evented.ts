@@ -1,8 +1,8 @@
-import { EventObject, EventTargettedObject, EventErrorObject, Handle } from '@dojo/interfaces/core';
-import { EventedListener, EventedListenerOrArray, EventedListenersMap, EventedCallback } from '@dojo/interfaces/bases';
 import { Actionable } from '@dojo/interfaces/abilities';
-import { on } from './aspect';
+import { EventedListener, EventedListenerOrArray, EventedListenersMap, EventedCallback } from '@dojo/interfaces/bases';
+import { EventObject, EventTargettedObject, EventErrorObject, Handle } from '@dojo/interfaces/core';
 import Map from '@dojo/shim/Map';
+import { on as aspectOn } from './aspect';
 import { Destroyable } from './Destroyable';
 
 /**
@@ -67,7 +67,7 @@ export interface BaseEventedEvents {
 	(type: 'error', listener: EventedListenerOrArray<Evented, EventErrorObject<Evented>>): Handle;
 }
 
-interface EventedOnInterface {
+export interface Evented {
 	on: BaseEventedEvents;
 }
 
@@ -101,7 +101,7 @@ export function isGlobMatch(globString: string, targetString: string): boolean {
 /**
  * Event Class
  */
-export class Evented extends Destroyable implements EventedOnInterface {
+export class Evented extends Destroyable implements Evented {
 
 	/**
 	 * map of listeners keyed by event type
@@ -133,15 +133,33 @@ export class Evented extends Destroyable implements EventedOnInterface {
 		});
 	}
 
+	/**
+	 * Catch all handler for various call signatures. The signatures are defined in
+	 * `BaseEventedEvents`.  You can add your own event type -> handler types by extending
+	 * `BaseEventedEvents`.  See example for details.
+	 *
+	 * @param args
+	 *
+	 * @example
+	 *
+	 * interface WidgetBaseEvents extends BaseEventedEvents {
+	 *     (type: 'properties:changed', handler: PropertiesChangedHandler): Handle;
+	 * }
+	 * class WidgetBase extends Evented {
+	 *    on: WidgetBaseEvents;
+	 * }
+	 *
+	 * @return {any}
+	 */
 	on: BaseEventedEvents = function (this: Evented, ...args: any[]) {
 		if (args.length === 2) {
 			const [ type, listeners ] = <[ string, EventedListenerOrArray<any, EventTargettedObject<any>>]> args;
 			if (Array.isArray(listeners)) {
-				const handles = listeners.map((listener) => on(this.listenersMap, type, resolveListener(listener)));
+				const handles = listeners.map((listener) => aspectOn(this.listenersMap, type, resolveListener(listener)));
 				return handlesArraytoHandle(handles);
 			}
 			else {
-				return on(this.listenersMap, type, resolveListener(listeners));
+				return aspectOn(this.listenersMap, type, resolveListener(listeners));
 			}
 		}
 		else if (args.length === 1) {
