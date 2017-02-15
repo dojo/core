@@ -43,7 +43,7 @@ Object.defineProperty(request, 'setDefaultProvider', {
 
 providerRegistry.setDefaultProvider(xhr);
 
-if (!has('host-browser')) {
+if (!has('host-node')) {
 	let nodeProvider = require('./request/providers/node').default;
 	providerRegistry.setDefaultProvider(nodeProvider);
 }
