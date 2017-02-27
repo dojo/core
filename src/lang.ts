@@ -48,6 +48,7 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 	const inherited = kwArgs.inherited;
 	const target: any = kwArgs.target;
 	const copied = kwArgs.copied || [];
+	const copiedClone = [ ...copied ];
 
 	for (let source of kwArgs.sources) {
 		if (source === null || source === undefined) {
@@ -57,7 +58,7 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 			if (inherited || hasOwnProperty.call(source, key)) {
 				let value: any = source[key];
 
-				if (copied.indexOf(value) !== -1) {
+				if (copiedClone.indexOf(value) !== -1) {
 					continue;
 				}
 

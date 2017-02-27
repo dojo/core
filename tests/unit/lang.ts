@@ -189,6 +189,22 @@ registerSuite({
 		assert.deepEqual(assignedObject.nested, { foo: 'bar', bar: 'baz', baz: 'qux', qux: 'baz' });
 	},
 
+	'.deepAssign with a source with two properties holding the same reference'() {
+		const target: any = {};
+
+		const foo = {
+			foo: 'bar'
+		};
+
+		const source: any = {
+			bar: foo,
+			baz: foo
+		};
+
+		const assignedObject = lang.deepAssign(target, source);
+		assert.deepEqual(assignedObject, { bar: { foo: 'bar' }, baz: { foo: 'bar' } });
+	},
+
 	'.mixin()'() {
 		const source: {
 			a: number,
