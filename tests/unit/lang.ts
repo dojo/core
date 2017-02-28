@@ -200,12 +200,15 @@ registerSuite({
 			bar: foo,
 			baz: foo,
 			qux: {
-				foo
+				foo,
+				bar: {
+					foo
+				}
 			}
 		};
 
 		const assignedObject = lang.deepAssign(target, source);
-		assert.deepEqual(assignedObject, { bar: { foo: 'bar' }, baz: { foo: 'bar' }, qux: { foo: { foo: 'bar' } } });
+		assert.deepEqual(assignedObject, { bar: { foo: 'bar' }, baz: { foo: 'bar' }, qux: { foo: { foo: 'bar' }, bar: { foo: { foo: 'bar' } } } });
 	},
 
 	'.mixin()'() {
