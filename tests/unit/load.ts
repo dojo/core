@@ -6,7 +6,7 @@ import * as sinon from 'sinon';
 import has from '../../src/has';
 import load, { isPlugin, useDefault } from '../../src/load';
 import mockPlugin from '../support/load/plugin-default';
-import global from '../../src/global';
+import global from '@dojo/shim/global';
 
 declare const require: RootRequire;
 

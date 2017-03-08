@@ -2,7 +2,6 @@ import * as aspect from './aspect';
 import DateObject from './DateObject';
 import * as encoding from './encoding';
 import Evented from './Evented';
-import global from './global';
 import IdentityRegistry from './IdentityRegistry';
 import * as lang from './lang';
 import load from './load';
@@ -33,7 +32,6 @@ export {
 	emit,
 	encoding,
 	Evented,
-	global,
 	IdentityRegistry,
 	lang,
 	load,
