@@ -6,6 +6,7 @@ import './async/timing';
 import './Destroyable';
 import './Evented';
 import './encoding';
+import './global';
 import './IdentityRegistry';
 import './instrument';
 import './lang';
