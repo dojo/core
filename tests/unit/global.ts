@@ -1,11 +1,11 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
-import global from '../../src/global';
+import globalObj from '../../src/global';
+import shimGlobal from '@dojo/shim/global';
 
 registerSuite({
 	name: 'global',
-
-	'global references the global object for the target environment'() {
-		assert.strictEqual(global, Function('return this')());
+	'globalObj strictly equals @dojo/shim/global'() {
+		assert.strictEqual(globalObj, shimGlobal, 'global objects should be strictly equal');
 	}
 });
