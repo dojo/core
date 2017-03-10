@@ -67,7 +67,7 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 						value = copyArray(value, inherited);
 					}
 					else if (shouldDeepCopyObject(value)) {
-						const targetValue: any = target ? target[key] || {} : {};
+						const targetValue: any = target[key] || {};
 						copied.push(source);
 						value = _mixin({
 							deep: true,
