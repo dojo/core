@@ -4,8 +4,8 @@ import * as assert from 'intern/chai!assert';
 import * as registerSuite from 'intern!object';
 import * as sinon from 'sinon';
 import has from '../../src/has';
-import load from '../../src/load';
-import { useDefault } from '../../src/load/util';
+import load, { isPlugin, useDefault } from '../../src/load';
+import { isPlugin as utilIsPlugin, useDefault as utilUseDefault } from '../../src/load/util';
 import mockPlugin from '../support/load/plugin-default';
 import global from '../../src/global';
 
@@ -16,6 +16,11 @@ const suite: any = {
 
 	before() {
 		return load('tests/support/load/a', 'tests/support/load/b', 'tests/support/load/c');
+	},
+
+	api() {
+		assert.strictEqual(isPlugin, utilIsPlugin, 'isPlugin should be re-exported');
+		assert.strictEqual(useDefault, utilUseDefault, 'useDefault should be re-exported');
 	},
 
 	'global load'(this: any) {

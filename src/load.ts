@@ -1,6 +1,6 @@
 import Promise from '@dojo/shim/Promise';
 import { Require } from '@dojo/interfaces/loader';
-import { isPlugin } from './load/util';
+import { isPlugin, useDefault } from './load/util';
 
 declare const require: Require;
 
@@ -105,3 +105,8 @@ const load: Load = (function (): Load {
 	}
 })();
 export default load;
+
+export {
+	isPlugin,
+	useDefault
+}
