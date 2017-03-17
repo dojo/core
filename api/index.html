@@ -1,0 +1,361 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@dojo/core</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@dojo/core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> @dojo/core</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="dojo-2-core">Dojo 2 core</h1>
+				<p><a href="https://travis-ci.org/dojo/core"><img src="https://travis-ci.org/dojo/core.svg?branch=master" alt="Build Status"></a>
+					<a href="https://codecov.io/github/dojo/core?branch=master"><img src="https://codecov.io/github/dojo/core/coverage.svg?branch=master" alt="codecov.io"></a>
+				<a href="https://badge.fury.io/js/%40dojo%2Fcore"><img src="https://badge.fury.io/js/%40dojo%2Fcore.svg" alt="npm version"></a></p>
+				<p>This package provides a set of language helpers, utility functions, and classes for writing TypeScript applications.
+					It includes APIs for feature detection, asynchronous operations, basic event handling,
+				and making HTTP requests.</p>
+				<p><strong>WARNING</strong> This is <em>beta</em> software.  While we do not anticipate significant changes to the API at this stage, we may feel the need to do so.  This is not yet production ready, so you should use at your own risk.</p>
+				<h2 id="usage">Usage</h2>
+				<p>To use <code>@dojo/core</code>, install the package along with its required peer dependencies:</p>
+				<pre><code class="lang-bash">npm install @dojo/core
+
+<span class="hljs-comment"># peer dependencies</span>
+npm install @dojo/has
+npm install @dojo/shim
+</code></pre>
+				<h2 id="features">Features</h2>
+				<ul>
+					<li><a href="#feature-detection">Feature Detection</a></li>
+					<li><a href="#language-utilities">Language Utilities</a><ul>
+							<li><a href="#array">array</a></li>
+							<li><a href="#lang">lang</a></li>
+							<li><a href="#load">load</a></li>
+							<li><a href="#math">math</a></li>
+							<li><a href="#string">string</a></li>
+						</ul>
+					</li>
+					<li><a href="#urlsearchparams">UrlSearchParams</a></li>
+					<li><a href="#event-handling">Event Handling</a></li>
+					<li><a href="#http-requests">HTTP Requests</a></li>
+					<li><a href="#promises-and-asynchronous-operations">Promises and Asynchronous Operations</a><ul>
+							<li><a href="#promise">Promise</a></li>
+							<li><a href="#task">Task</a></li>
+						</ul>
+					</li>
+				</ul>
+				<h3 id="feature-detection">Feature Detection</h3>
+				<p>Using the latest Web technologies isn&#39;t always as straightforward as developers would like due to differing support
+					across platforms. <a href="docs/has.md"><code>@dojo/core/has</code></a> provides a simple feature detection API that makes it easy to
+				detect which platforms support which features.</p>
+				<h3 id="language-utilities">Language Utilities</h3>
+				<p>The core package provides modules offering language utilities.  Some of these are heavily based
+				on methods in the ES2015 proposal; others are additional APIs for commonly-performed tasks.</p>
+				<h4 id="array">array</h4>
+				<p>The <a href="docs/array.md"><code>@dojo/core/array</code> module</a> contains analogues to some of the ES2015 Array APIs.</p>
+				<h4 id="lang">lang</h4>
+				<p>The <a href="docs/lang.md"><code>@dojo/core/lang</code> module</a> contains various utility functions for tasks such as copying objects
+				and creating late-bound or partially applied functions.</p>
+				<h3 id="load">load</h3>
+				<p>The <a href="docs/load.md"><code>@dojo/core/load</code> module</a> can be used to dynamically load modules, or other arbitrary resources via plugins.</p>
+				<h4 id="math">math</h4>
+				<p>The <a href="docs/math.md"><code>@dojo/core/math</code> module</a> contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
+				functions.</p>
+				<h4 id="string">string</h4>
+				<p>The <a href="docs/stringExtras.md"><code>@dojo/core/stringExtras</code> module</a> contains various string functions that are not available as part of the ES2015 String APIs.</p>
+				<h4 id="urlsearchparams">UrlSearchParams</h4>
+				<p>The <a href="docs/UrlSearchParams.md"><code>@dojo/core/UrlSearchParams</code> class</a> can be used to parse and generate URL query strings.</p>
+				<h4 id="event-handling">Event handling</h4>
+				<p>The <a href="docs/on.md"><code>@dojo/core/on</code> module</a> contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
+				once and pauseable events.</p>
+				<h4 id="http-requests">HTTP requests</h4>
+				<p>The <a href="docs/request.md"><code>@dojo/core/request</code> module</a> contains methods to simplify making http requests. It can handle
+				making requests in both node and the browser through the same methods.</p>
+				<h3 id="promises-and-asynchronous-operations">Promises and Asynchronous Operations</h3>
+				<h4 id="promise">Promise</h4>
+				<p>The <code>@dojo/core/Promise</code> class is an implementation of the ES2015 Promise API that also includes static state
+				inspection and a <code>finally</code> method for cleanup actions.</p>
+				<p><code>@dojo/core/async</code> contains a number of classes and utility modules to simplify working with asynchronous operations.</p>
+				<h4 id="task">Task</h4>
+				<p>The <code>@dojo/core/async/Task</code> class is an extension of <code>@dojo/core/Promise</code> that provides cancelation support.</p>
+				<h2 id="how-do-i-contribute-">How Do I Contribute?</h2>
+				<p>We appreciate your interest! Please see the <a href="https://github.com/dojo/meta#readme">Dojo 2 Meta Repository</a>
+				for the Contributing Guidelines and Style Guide.</p>
+				<h3 id="installation">Installation</h3>
+				<p>To start working with this package, clone the repository and run <code>npm install</code>.</p>
+				<p>In order to build the project run <code>grunt dev</code> or <code>grunt dist</code>.</p>
+				<h3 id="testing">Testing</h3>
+				<p>Test cases MUST be written using <a href="https://theintern.github.io">Intern</a> using the Object test interface and Assert assertion interface.</p>
+				<p>90% branch coverage MUST be provided for all code submitted to this repository, as reported by istanbul’s combined coverage results for all supported platforms.</p>
+				<p>To test locally in node run:</p>
+				<p><code>grunt test</code></p>
+				<p>To test against browsers with a local selenium server run:</p>
+				<p><code>grunt test:local</code></p>
+				<p>To test against BrowserStack or Sauce Labs run:</p>
+				<p><code>grunt test:browserstack</code></p>
+				<p>or</p>
+				<p><code>grunt test:saucelabs</code></p>
+				<h2 id="licensing-information">Licensing information</h2>
+				<p>© 2004–2017 <a href="https://js.foundation/">JS Foundation</a> &amp; contributors. <a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> license.</p>
+				<p>Some string functions (<code>codePointAt</code>, <code>fromCodePoint</code>, and <code>repeat</code>) adopted from polyfills by Mathias Bynens,
+				under the <a href="http://opensource.org/licenses/MIT">MIT</a> license.</p>
+				<p>See <a href="LICENSE">LICENSE</a> for details.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_dateobject_.html">"<wbr>Date<wbr>Object"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_destroyable_.html">"<wbr>Destroyable"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_evented_.html">"<wbr>Evented"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_identityregistry_.html">"<wbr>Identity<wbr>Registry"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_list_.html">"<wbr>List"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_matchregistry_.html">"<wbr>Match<wbr>Registry"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_multimap_.html">"<wbr>Multi<wbr>Map"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_observable_.html">"<wbr>Observable"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_queuingevented_.html">"<wbr>Queuing<wbr>Evented"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_scheduler_.html">"<wbr>Scheduler"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_urlsearchparams_.html">"<wbr>Url<wbr>Search<wbr>Params"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_aspect_.html">"aspect"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_async_extensiblepromise_.html">"async/<wbr>Extensible<wbr>Promise"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_async_task_.html">"async/<wbr>Task"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_async_iteration_.html">"async/iteration"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_async_timing_.html">"async/timing"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_encoding_.html">"encoding"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_global_.html">"global"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_has_.html">"has"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_instrument_.html">"instrument"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_.html">"interfaces"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_lang_.html">"lang"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_load_.html">"load"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_load_util_.html">"load/util"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_load_webpack_.html">"load/webpack"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_main_.html">"main"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_on_.html">"on"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_queue_.html">"queue"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_.html">"request"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_headers_.html">"request/<wbr>Headers"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_providerregistry_.html">"request/<wbr>Provider<wbr>Registry"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_response_.html">"request/<wbr>Response"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_timeouterror_.html">"request/<wbr>Timeout<wbr>Error"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_interfaces_d_.html">"request/interfaces.d"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_providers_node_.html">"request/providers/node"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_providers_xhr_.html">"request/providers/xhr"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_util_.html">"request/util"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_stringextras_.html">"string<wbr>Extras"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_text_.html">"text"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_util_.html">"util"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_uuid_.html">"uuid"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

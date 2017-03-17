@@ -1,0 +1,1636 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>&quot;lang&quot; | @dojo/core</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">@dojo/core</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_lang_.html">&quot;lang&quot;</a>
+				</li>
+			</ul>
+			<h1>External module &quot;lang&quot;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_lang_.html#assign" class="tsd-kind-icon">assign</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_lang_.html#create" class="tsd-kind-icon">create</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lang_.html#createcompositehandle" class="tsd-kind-icon">create<wbr>Composite<wbr>Handle</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lang_.html#createhandle" class="tsd-kind-icon">create<wbr>Handle</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_lang_.html#deepassign" class="tsd-kind-icon">deep<wbr>Assign</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_lang_.html#deepmixin" class="tsd-kind-icon">deep<wbr>Mixin</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_lang_.html#duplicate" class="tsd-kind-icon">duplicate</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lang_.html#isidentical" class="tsd-kind-icon">is<wbr>Identical</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lang_.html#latebind" class="tsd-kind-icon">late<wbr>Bind</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_lang_.html#mixin" class="tsd-kind-icon">mixin</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lang_.html#partial" class="tsd-kind-icon">partial</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="assign" class="tsd-anchor"></a>
+					<h3>assign</h3>
+					<div class="tsd-signature tsd-kind-icon">assign<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">assign</span><span class="tsd-signature-symbol"> =&nbsp;has(&#x27;object-assign&#x27;) ?(&lt;ObjectAssignConstructor&gt; Object).assign :function&lt;T extends {}, U extends {}&gt; (target: T, ...sources: (U | null | undefined)[]): T&amp;U {return _mixin({deep: false,inherited: false,sources: sources,target: target});}</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L100">lang.ts:100</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Copies the values of all enumerable own properties of one or more source objects to the target object.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>The target object to receive values from source objects</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>Any number of objects whose enumerable own properties will be copied to the target object</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>The modified target object</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+					<a name="create" class="tsd-anchor"></a>
+					<h3>create</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U, V, W, X, Y, Z&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, mixin2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, mixin3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, mixin4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, mixin5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span>, mixin6<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Z</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U, V, W, X, Y&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, mixin2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, mixin3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, mixin4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, mixin5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U, V, W, X&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, mixin2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, mixin3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, mixin4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U, V, W&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, mixin2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, mixin3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U, V&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, mixin2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T, U&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, mixin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U</span></li>
+						<li class="tsd-signature tsd-kind-icon">create&lt;T&gt;<span class="tsd-signature-symbol">(</span>prototype<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L119">lang.ts:119</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new object from the given prototype, and copies all enumerable own properties of one or more
+									source objects to the newly created target object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Z<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The prototype to create a new object from</p>
+									</div>
+								</li>
+								<li>
+									<h5>mixin1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>mixin2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>mixin3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>mixin4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>mixin5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+								<li>
+									<h5>mixin6: <span class="tsd-signature-type">Z</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></h4>
+							<p>The new object</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L120">lang.ts:120</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>mixin1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>mixin2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>mixin3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>mixin4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>mixin5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L121">lang.ts:121</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>mixin1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>mixin2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>mixin3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>mixin4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L122">lang.ts:122</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>mixin1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>mixin2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>mixin3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L123">lang.ts:123</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>mixin1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>mixin2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L124">lang.ts:124</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>mixin: <span class="tsd-signature-type">U</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L125">lang.ts:125</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>prototype: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="createcompositehandle" class="tsd-anchor"></a>
+					<h3>create<wbr>Composite<wbr>Handle</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Composite<wbr>Handle<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>handles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Handle</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Handle</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L294">lang.ts:294</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a single handle that can be used to destroy multiple handles simultaneously.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>handles: <span class="tsd-signature-type">Handle</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An array of handles with <code>destroy</code> methods</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Handle</span></h4>
+							<p>The handle object</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="createhandle" class="tsd-anchor"></a>
+					<h3>create<wbr>Handle</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Handle<span class="tsd-signature-symbol">(</span>destructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Handle</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L279">lang.ts:279</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns an object with a destroy method that, when called, calls the passed-in destructor.
+										This is intended to provide a unified interface for creating &quot;remove&quot; / &quot;destroy&quot; handlers for
+									event listeners, timers, etc.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>destructor: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A function that will be called when the handle&#39;s <code>destroy</code> method is invoked</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Handle</span></h4>
+							<p>The handle object</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+					<a name="deepassign" class="tsd-anchor"></a>
+					<h3>deep<wbr>Assign</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U, V, W, X, Y, Z&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span>, source6<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Z</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U, V, W, X, Y&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U, V, W, X&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U, V, W&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U, V&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Assign&lt;T, U&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L145">lang.ts:145</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies the values of all enumerable own properties of one or more source objects to the target object,
+									recursively copying all nested objects and arrays as well.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Z<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The target object to receive values from source objects</p>
+									</div>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+								<li>
+									<h5>source6: <span class="tsd-signature-type">Z</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></h4>
+							<p>The modified target object</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L146">lang.ts:146</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L147">lang.ts:147</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L148">lang.ts:148</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L149">lang.ts:149</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L150">lang.ts:150</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source: <span class="tsd-signature-type">U</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+					<a name="deepmixin" class="tsd-anchor"></a>
+					<h3>deep<wbr>Mixin</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U, V, W, X, Y, Z&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span>, source6<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Z</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U, V, W, X, Y&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U, V, W, X&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U, V, W&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U, V&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V</span></li>
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Mixin&lt;T, U&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L168">lang.ts:168</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies the values of all enumerable (own or inherited) properties of one or more source objects to the
+									target object, recursively copying all nested objects and arrays as well.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Z<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The target object to receive values from source objects</p>
+									</div>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+								<li>
+									<h5>source6: <span class="tsd-signature-type">Z</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></h4>
+							<p>The modified target object</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L169">lang.ts:169</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L170">lang.ts:170</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L171">lang.ts:171</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L172">lang.ts:172</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L173">lang.ts:173</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source: <span class="tsd-signature-type">U</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+					<a name="duplicate" class="tsd-anchor"></a>
+					<h3>duplicate</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">duplicate&lt;T&gt;<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L190">lang.ts:190</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a new object using the provided source&#39;s prototype as the prototype for the new object, and then
+									deep copies the provided source&#39;s values into the new target.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>source: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The object to duplicate</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
+							<p>The new object</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="isidentical" class="tsd-anchor"></a>
+					<h3>is<wbr>Identical</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Identical<span class="tsd-signature-symbol">(</span>a<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, b<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L203">lang.ts:203</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Determines whether two values are the same value.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>a: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>First value to compare</p>
+									</div>
+								</li>
+								<li>
+									<h5>b: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Second value to compare</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>true if the values are the same; false otherwise</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="latebind" class="tsd-anchor"></a>
+					<h3>late<wbr>Bind</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">late<wbr>Bind<span class="tsd-signature-symbol">(</span>instance<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span>, method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>suppliedArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L220">lang.ts:220</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a function that binds a method to the specified object at runtime. This is similar to
+										<code>Function.prototype.bind</code>, but instead of a function it takes the name of a method on an object.
+										As a result, the function returned by <code>lateBind</code> will always call the function currently assigned to
+									the specified property on the object as of the moment the function it returns is called.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>instance: <span class="tsd-signature-type">__type</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The context object</p>
+									</div>
+								</li>
+								<li>
+									<h5>method: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The name of the method on the context object to bind to itself</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>suppliedArgs: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional array of values to prepend to the <code>instance[method]</code> arguments list</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
+							<p>The bound function</p>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-siganture">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+					<a name="mixin" class="tsd-anchor"></a>
+					<h3>mixin</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U, V, W, X, Y, Z&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span>, source6<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Z</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></li>
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U, V, W, X, Y&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span>, source5<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Y</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></li>
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U, V, W, X&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span>, source4<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">X</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></li>
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U, V, W&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span>, source3<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">W</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></li>
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U, V&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span>, source2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U &amp; V</span></li>
+						<li class="tsd-signature tsd-kind-icon">mixin&lt;T, U&gt;<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">U</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T &amp; U</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L240">lang.ts:240</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Copies the values of all enumerable (own or inherited) properties of one or more source objects to the
+									target object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Z<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+								<li>
+									<h5>source6: <span class="tsd-signature-type">Z</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y &amp; Z</span></h4>
+							<p>The modified target object</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L241">lang.ts:241</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>Y<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+								<li>
+									<h5>source5: <span class="tsd-signature-type">Y</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X &amp; Y</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L242">lang.ts:242</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>X<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+								<li>
+									<h5>source4: <span class="tsd-signature-type">X</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W &amp; X</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L243">lang.ts:243</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>W<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+								<li>
+									<h5>source3: <span class="tsd-signature-type">W</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V &amp; W</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L244">lang.ts:244</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>V<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source1: <span class="tsd-signature-type">U</span></h5>
+								</li>
+								<li>
+									<h5>source2: <span class="tsd-signature-type">V</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U &amp; V</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L245">lang.ts:245</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+								<li>
+									<h4>U<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span></h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>target: <span class="tsd-signature-type">T</span></h5>
+								</li>
+								<li>
+									<h5>source: <span class="tsd-signature-type">U</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T &amp; U</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="partial" class="tsd-anchor"></a>
+					<h3>partial</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">partial<span class="tsd-signature-symbol">(</span>targetFunction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, <span class="tsd-signature-symbol">...</span>suppliedArgs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/dojo/core/blob/a08ef39/src/lang.ts#L263">lang.ts:263</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns a function which invokes the given function with the given arguments prepended to its argument list.
+									Like <code>Function.prototype.bind</code>, but does not alter execution context.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>targetFunction: <span class="tsd-signature-type">function</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The function that needs to be bound</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>suppliedArgs: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional array of arguments to prepend to the <code>targetFunction</code> arguments list</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">function</span></h4>
+							<p>The bound function</p>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-siganture">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="_lang_.html">"lang"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="_lang_.html#assign" class="tsd-kind-icon">assign</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="_lang_.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_lang_.html#createcompositehandle" class="tsd-kind-icon">create<wbr>Composite<wbr>Handle</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_lang_.html#createhandle" class="tsd-kind-icon">create<wbr>Handle</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="_lang_.html#deepassign" class="tsd-kind-icon">deep<wbr>Assign</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="_lang_.html#deepmixin" class="tsd-kind-icon">deep<wbr>Mixin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="_lang_.html#duplicate" class="tsd-kind-icon">duplicate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_lang_.html#isidentical" class="tsd-kind-icon">is<wbr>Identical</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_lang_.html#latebind" class="tsd-kind-icon">late<wbr>Bind</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="_lang_.html#mixin" class="tsd-kind-icon">mixin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_lang_.html#partial" class="tsd-kind-icon">partial</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
