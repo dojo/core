@@ -1,6 +1,7 @@
-import { Thenable } from 'dojo-shim/interfaces';
-import { Executor } from 'dojo-shim/Promise';
-import ExtensiblePromise from './ExtensiblePromise';
+import { Thenable } from '@dojo/shim/interfaces';
+import { Executor } from '@dojo/shim/Promise';
+import ExtensiblePromise, { ListOfPromises, DictionaryOfPromises } from './ExtensiblePromise';
+import { Iterable } from '@dojo/shim/iterator';
 
 /**
  * Describe the internal state of a task.
@@ -34,6 +35,26 @@ export function isThenable<T>(value: any): value is Thenable<T> {
  */
 export default class Task<T> extends ExtensiblePromise<T> {
 	/**
+	 * Return a Task that resolves when one of the passed in objects have resolved
+	 *
+	 * @param iterable    An iterable of values to resolve. These can be Promises, ExtensiblePromises, or other objects
+	 * @returns {Task}
+	 */
+	static race<F extends ExtensiblePromise<T>, T>(iterable: Iterable<(T | Thenable<T>)> | (T | Thenable<T>)[]): Task<T> {
+		return <Task<T>> super.race(iterable);
+	}
+
+	/**
+	 * Return a rejected promise wrapped in a Task
+	 *
+	 * @param {Error?} reason    The reason for the rejection
+	 * @returns {Task}
+	 */
+	static reject<T>(reason?: Error): Task<T> {
+		return new this<T>((resolve, reject) => reject(reason));
+	}
+
+	/**
 	 * Return a resolved task.
 	 *
 	 * @param value The value to resolve with
@@ -46,6 +67,14 @@ export default class Task<T> extends ExtensiblePromise<T> {
 		return new this<T>((resolve, reject) => resolve(value));
 	}
 
+	static all<T>(iterable: DictionaryOfPromises<T>): Task<{ [key: string]: T }>;
+	static all<T>(iterable: (T | Thenable<T>)[]): Task<T[]>;
+	static all<T>(iterable: T | Thenable<T>): Task<T[]>;
+	static all<T>(iterable: ListOfPromises<T>): Task<T[]>;
+	static all<T>(iterable: DictionaryOfPromises<T> | ListOfPromises<T>): Task<any> {
+		return <Task<T>> super.all(iterable);
+	}
+
 	/**
 	 * A cancelation handler that will be called if this task is canceled.
 	 */
@@ -54,12 +83,12 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	/**
 	 * Children of this Task (i.e., Tasks that were created from this Task with `then` or `catch`).
 	 */
-	private children: Task<any>[];
+	private readonly children: Task<any>[];
 
 	/**
 	 * The finally callback for this Task (if it was created by a call to `finally`).
 	 */
-	private _finally: () => void | Thenable<any>;
+	private _finally: () => void;
 
 	/**
 	 * The state of the task
@@ -80,24 +109,13 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	 *
 	 */
 	constructor(executor: Executor<T>, canceler?: () => void) {
+		// we have to initialize these to avoid a compiler error of using them before they are initialized
+		let superResolve: (value?: T | Thenable<T> | undefined) => void = () => {};
+		let superReject: (reason?: any) => void = () => {};
+
 		super((resolve, reject) => {
-			// Don't let the Task resolve if it's been canceled
-			executor(
-				(value) => {
-					if (this._state === State.Canceled) {
-						return;
-					}
-					this._state = State.Fulfilled;
-					resolve(value);
-				},
-				(reason) => {
-					if (this._state === State.Canceled) {
-						return;
-					}
-					this._state = State.Rejected;
-					reject(reason);
-				}
-			);
+			superResolve = resolve;
+			superReject = reject;
 		});
 
 		this._state = State.Pending;
@@ -109,6 +127,30 @@ export default class Task<T> extends ExtensiblePromise<T> {
 			}
 			this._cancel();
 		};
+
+		// Don't let the Task resolve if it's been canceled
+		try {
+			executor(
+				(value) => {
+					if (this._state === State.Canceled) {
+						return;
+					}
+					this._state = State.Fulfilled;
+					superResolve(value);
+				},
+				(reason) => {
+					if (this._state === State.Canceled) {
+						return;
+					}
+					this._state = State.Rejected;
+					superReject(reason);
+				}
+			);
+		}
+		catch (reason) {
+			this._state = State.Rejected;
+			superReject(reason);
+		}
 	}
 
 	/**
@@ -153,10 +195,21 @@ export default class Task<T> extends ExtensiblePromise<T> {
 		}
 	}
 
+	catch(onRejected: (reason: Error) => T | Thenable<T> | void): Task<T>;
+	catch<U>(onRejected: (reason: Error) => U | Thenable<U>): Task<U> {
+		return this.then(undefined, onRejected);
+	}
+
 	/**
 	 * Allows for cleanup actions to be performed after resolution of a Promise.
 	 */
-	finally(callback: () => void | Thenable<any>): Task<T> {
+	finally(callback: () => void): Task<T> {
+		// if this task is already canceled, call the task
+		if (this._state === State.Canceled) {
+			callback();
+			return this;
+		}
+
 		const task = this.then<any>(
 			value => Task.resolve(callback()).then(() => value),
 			reason => Task.resolve(callback()).then(() => {
@@ -177,10 +230,13 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
-	then<U>(onFulfilled?: (value?: T) => U | Thenable<U>, onRejected?: (error: Error) => U | Thenable<U>): this {
+	then<U, V>(onFulfilled: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected: (reason: Error) => (V | Thenable<V>)): Task<U | V>;
+	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => void): Task<U>;
+	then<U>(onFulfilled?: ((value: T) => (U | Thenable<U> | undefined)) | undefined, onRejected?: (reason: Error) => (U | Thenable<U>)): Task<U>;
+	then<U>(onFulfilled?: (value?: T) => U | Thenable<U>, onRejected?: (error: Error) => U | Thenable<U>): Task<U> {
 		// FIXME
 		// tslint:disable-next-line:no-var-keyword
-		var task = super.then<U>(
+		var task = <Task<U>> super.then<U>(
 			// Don't call the onFulfilled or onRejected handlers if this Task is canceled
 			function (value) {
 				if (task._state === State.Canceled) {

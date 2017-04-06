@@ -1,5 +1,5 @@
 import Promise from './ExtensiblePromise';
-import { Thenable } from 'dojo-shim/interfaces';
+import { Thenable } from '@dojo/shim/interfaces';
 
 /**
  * Used for delaying a Promise chain for a specific number of milliseconds.
@@ -34,7 +34,7 @@ export function timeout<T>(milliseconds: number, reason: Error): Identity<T> {
 		if (Date.now() - milliseconds > start) {
 			return Promise.reject<T>(reason);
 		}
-		return Promise.resolve<T>(value);
+		return Promise.resolve(value);
 	};
 }
 

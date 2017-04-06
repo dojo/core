@@ -1,18 +1,17 @@
 import global from './global';
-import has, { add } from 'dojo-shim/support/has';
+import has, { add } from '@dojo/shim/support/has';
 
-export * from 'dojo-shim/support/has';
+export * from '@dojo/shim/support/has';
 export default has;
 
 add('object-assign', typeof global.Object.assign === 'function');
 
-add('raf', typeof requestAnimationFrame === 'function');
-
 add('arraybuffer', typeof global.ArrayBuffer !== 'undefined');
 add('formdata', typeof global.FormData !== 'undefined');
+add('filereader', typeof global.FileReader !== 'undefined', true);
 add('xhr', typeof global.XMLHttpRequest !== 'undefined');
 add('xhr2', has('xhr') && 'responseType' in global.XMLHttpRequest.prototype);
-add('xhr2-blob', function () {
+add('blob', function () {
 	if (!has('xhr2')) {
 		return false;
 	}
@@ -23,3 +22,7 @@ add('xhr2-blob', function () {
 	request.abort();
 	return request.responseType === 'blob';
 });
+
+add('node-buffer', 'Buffer' in global && typeof global.Buffer === 'function');
+
+add('fetch', 'fetch' in global && typeof global.fetch === 'function');

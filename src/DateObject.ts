@@ -1,4 +1,4 @@
-import { Hash } from 'dojo-interfaces/core';
+import { Hash } from '@dojo/interfaces/core';
 
 export interface KwArgs {
 	dayOfMonth?: number;
@@ -25,10 +25,10 @@ export interface OperationKwArgs {
  */
 export interface DateProperties {
 	dayOfMonth: number;
-	dayOfWeek: number;
-	daysInMonth: number;
+	readonly dayOfWeek: number;
+	readonly daysInMonth: number;
 	hours: number;
-	isLeapYear: boolean;
+	readonly isLeapYear: boolean;
 	milliseconds: number;
 	minutes: number;
 	month: number;
@@ -67,8 +67,8 @@ export default class DateObject implements DateProperties {
 		return new DateObject(Date.now());
 	}
 
-	private _date: Date;
-	utc: DateProperties;
+	private readonly _date: Date;
+	readonly utc: DateProperties;
 
 	constructor(value: number);
 	constructor(value: string);

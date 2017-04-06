@@ -1,17 +1,20 @@
-import Map from 'dojo-shim/Map';
-import WeakMap from 'dojo-shim/WeakMap';
-import { Handle } from 'dojo-interfaces/core';
+import Map from '@dojo/shim/Map';
+import WeakMap from '@dojo/shim/WeakMap';
+import { Iterable, IterableIterator } from '@dojo/shim/iterator';
+import { Handle } from '@dojo/interfaces/core';
+import '@dojo/shim/Symbol';
+import List from './List';
 
-const noop = () => {};
+const noop = () => { };
 
 interface Entry<V> {
-	handle: Handle;
-	value: V;
+	readonly handle: Handle;
+	readonly value: V;
 }
 
 interface State<V> {
-	entryMap: Map<Identity, Entry<V>>;
-	idMap: WeakMap<V, Identity>;
+	readonly entryMap: Map<Identity, Entry<V>>;
+	readonly idMap: WeakMap<V, Identity>;
 }
 
 const privateStateMap = new WeakMap<IdentityRegistry<any>, State<any>>();
@@ -28,7 +31,7 @@ export type Identity = string | symbol;
 /**
  * A registry of values, mapped by identities.
  */
-export default class IdentityRegistry<V extends Object> {
+export default class IdentityRegistry<V extends Object> implements Iterable<[Identity, V]> {
 	constructor() {
 		privateStateMap.set(this, {
 			entryMap: new Map<Identity, Entry<V>>(),
@@ -143,5 +146,33 @@ export default class IdentityRegistry<V extends Object> {
 		getState<V>(this).idMap.set(value, id);
 
 		return handle;
+	}
+
+	entries(): IterableIterator<[Identity, V]> {
+		const values = new List<[Identity, V]>();
+
+		getState<V>(this).entryMap.forEach((value: Entry<V>, key: Identity) => {
+			values.add([key, value.value]);
+		});
+
+		return values.values();
+	}
+
+	values(): IterableIterator<V> {
+		const values = new List<V>();
+
+		getState<V>(this).entryMap.forEach((value: Entry<V>, key: Identity) => {
+			values.add(value.value);
+		});
+
+		return values.values();
+	}
+
+	ids(): IterableIterator<Identity> {
+		return getState<V>(this).entryMap.keys();
+	}
+
+	[Symbol.iterator](): IterableIterator<[Identity, V]> {
+		return this.entries();
 	}
 };

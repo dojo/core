@@ -1,4 +1,4 @@
-import { HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX, LOW_SURROGATE_MIN, LOW_SURROGATE_MAX } from 'dojo-shim/string';
+import { HIGH_SURROGATE_MIN, HIGH_SURROGATE_MAX, LOW_SURROGATE_MIN, LOW_SURROGATE_MAX } from '@dojo/shim/string';
 
 const BASE64_KEYSTR = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
@@ -30,7 +30,7 @@ function validateUtf8EncodedCodePoint(codePoint: number): void {
 	}
 }
 
-export type ByteBuffer = Uint8Array | Buffer | number[];
+export type ByteBuffer = Uint16Array | Uint8Array | Buffer | number[];
 
 export interface Codec {
 	encode(data: string): number[];

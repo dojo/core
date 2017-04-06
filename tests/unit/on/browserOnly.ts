@@ -2,7 +2,7 @@ import common from './common';
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import on, { emit } from '../../../src/on';
-import { EventObject } from 'dojo-interfaces/core';
+import { EventObject } from '@dojo/interfaces/core';
 
 function createTarget(): HTMLElement {
 	let element = document.createElement('div');
@@ -11,7 +11,9 @@ function createTarget(): HTMLElement {
 }
 
 function destroyTarget(target: HTMLElement): void {
-	target.parentNode.removeChild(target);
+	if (target.parentNode !== null) {
+		target.parentNode.removeChild(target);
+	}
 }
 
 interface DOMEvent extends EventObject {

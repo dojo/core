@@ -2,53 +2,46 @@
 
 [![Build Status](https://travis-ci.org/dojo/core.svg?branch=master)](https://travis-ci.org/dojo/core)
 [![codecov.io](https://codecov.io/github/dojo/core/coverage.svg?branch=master)](https://codecov.io/github/dojo/core?branch=master)
-[![npm version](https://badge.fury.io/js/dojo-core.svg)](https://badge.fury.io/js/dojo-core)
+[![npm version](https://badge.fury.io/js/%40dojo%2Fcore.svg)](https://badge.fury.io/js/%40dojo%2Fcore)
 
 This package provides a set of language helpers, utility functions, and classes for writing TypeScript applications.
-It includes APIs for feature detection, asynchronous and streaming operations, basic event handling,
+It includes APIs for feature detection, asynchronous operations, basic event handling,
 and making HTTP requests.
 
 **WARNING** This is *beta* software.  While we do not anticipate significant changes to the API at this stage, we may feel the need to do so.  This is not yet production ready, so you should use at your own risk.
 
-## Installation
-
-This package is currently in Beta with a initial stable release scheduled for later this year. You can download
-the Beta by cloning or downloading this repository.
-
 ## Usage
 
-### TypeScript
+To use `@dojo/core`, install the package along with its required peer dependencies:
 
-To access modules use after cloning or downloading the repository, you can reference it by:
+```bash
+npm install @dojo/core
 
-```ts
-import * as lang from 'src/lang'; // this imports all exports of the module as the object lang
-
-import { lateBind, mixin } from 'src/lang'; // this imports lateBind and mixin from the module
+# peer dependencies
+npm install @dojo/has
+npm install @dojo/shim
 ```
-
-### Compile To JavaScript
-
-Once downloaded, you can compile the TypesScript files by first installing the project dependencies with:
-
-```
-npm install
-```
-
-The by running this command:
-
-```
-grunt dev
-```
-
-This will run the grunt 'dev' task.
 
 ## Features
+
+- [Feature Detection](#feature-detection)
+- [Language Utilities](#language-utilities)
+  - [array](#array)
+  - [lang](#lang)
+  - [load](#load)
+  - [math](#math)
+  - [string](#string)
+- [UrlSearchParams](#urlsearchparams)
+- [Event Handling](#event-handling)
+- [HTTP Requests](#http-requests)
+- [Promises and Asynchronous Operations](#promises-and-asynchronous-operations)
+  - [Promise](#promise)
+  - [Task](#task)
 
 ### Feature Detection
 
 Using the latest Web technologies isn't always as straightforward as developers would like due to differing support
-across platforms. [`dojo-core/has`](docs/has.md) provides a simple feature detection API that makes it easy to
+across platforms. [`@dojo/core/has`](docs/has.md) provides a simple feature detection API that makes it easy to
 detect which platforms support which features.
 
 ### Language Utilities
@@ -58,61 +51,88 @@ on methods in the ES2015 proposal; others are additional APIs for commonly-perfo
 
 #### array
 
-The [`dojo-core/array` module](docs/array.md) contains analogues to some of the ES2015 Array APIs.
+The [`@dojo/core/array` module](docs/array.md) contains analogues to some of the ES2015 Array APIs.
 
 #### lang
 
-The [`dojo-core/lang` module](docs/lang.md) contains various utility functions for tasks such as copying objects
+The [`@dojo/core/lang` module](docs/lang.md) contains various utility functions for tasks such as copying objects
 and creating late-bound or partially applied functions.
+
+### load
+The [`@dojo/core/load` module](docs/load.md) can be used to dynamically load modules, or other arbitrary resources via plugins.
 
 #### math
 
-The [`dojo-core/math` module](docs/math.md) contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
+The [`@dojo/core/math` module](docs/math.md) contains analogues to a number of ES2015 APIs, including many trigonometric and logarithmic
 functions.
 
 #### string
 
-The [`dojo-core/string` module](docs/string.md) contains analogues to the some of the ES2015 String APIs.
+The [`@dojo/core/stringExtras` module](docs/stringExtras.md) contains various string functions that are not available as part of the ES2015 String APIs.
 
 #### UrlSearchParams
 
-The [`dojo-core/UrlSearchParams` class](docs/UrlSearchParams.md) can be used to parse and generate URL query strings.
+The [`@dojo/core/UrlSearchParams` class](docs/UrlSearchParams.md) can be used to parse and generate URL query strings.
 
 #### Event handling
 
-The [`dojo-core/on` module](docs/on.md) contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
+The [`@dojo/core/on` module](docs/on.md) contains methods to handle events across types of listeners.  It also includes methods to handle different event use cases including only firing
 once and pauseable events.
 
 #### HTTP requests
 
-The [`dojo-core/request` module](docs/request.md) contains methods to simplify making http requests. It can handle
+The [`@dojo/core/request` module](docs/request.md) contains methods to simplify making http requests. It can handle
 making requests in both node and the browser through the same methods.
 
 ### Promises and Asynchronous Operations
 
 #### Promise
 
-The `dojo-core/Promise` class is an implementation of the ES2015 Promise API that also includes static state
+The `@dojo/core/Promise` class is an implementation of the ES2015 Promise API that also includes static state
 inspection and a `finally` method for cleanup actions.
 
-`dojo-core/async` contains a number of classes and utility modules to simplify working with asynchronous operations.
+`@dojo/core/async` contains a number of classes and utility modules to simplify working with asynchronous operations.
 
 #### Task
 
-The `dojo-core/async/Task` class is an extension of `dojo-core/Promise` that provides cancelation support.
+The `@dojo/core/async/Task` class is an extension of `@dojo/core/Promise` that provides cancelation support.
 
-## How do I contribute?
+## How Do I Contribute?
 
 We appreciate your interest! Please see the [Dojo 2 Meta Repository](https://github.com/dojo/meta#readme)
 for the Contributing Guidelines and Style Guide.
 
-Dojo core's continuous integration tests use the [BrowserStack](http://www.browserstack.com) cloud.
+### Installation
 
-[![BrowserStack](resources/BrowserStackLogo.png)](http://www.browserstack.com)
+To start working with this package, clone the repository and run `npm install`.
+
+In order to build the project run `grunt dev` or `grunt dist`.
+
+### Testing
+
+Test cases MUST be written using [Intern](https://theintern.github.io) using the Object test interface and Assert assertion interface.
+
+90% branch coverage MUST be provided for all code submitted to this repository, as reported by istanbul’s combined coverage results for all supported platforms.
+
+To test locally in node run:
+
+`grunt test`
+
+To test against browsers with a local selenium server run:
+
+`grunt test:local`
+
+To test against BrowserStack or Sauce Labs run:
+
+`grunt test:browserstack`
+
+or
+
+`grunt test:saucelabs`
 
 ## Licensing information
 
-© 2004–2016 Dojo Foundation & contributors. [New BSD](http://opensource.org/licenses/BSD-3-Clause) license.
+© 2004–2017 [JS Foundation](https://js.foundation/) & contributors. [New BSD](http://opensource.org/licenses/BSD-3-Clause) license.
 
 Some string functions (`codePointAt`, `fromCodePoint`, and `repeat`) adopted from polyfills by Mathias Bynens,
 under the [MIT](http://opensource.org/licenses/MIT) license.

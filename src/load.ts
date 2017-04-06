@@ -1,6 +1,6 @@
-import P from 'dojo-shim/Promise';
-import global from './global';
-import { Require } from 'dojo-interfaces/loader';
+import Promise from '@dojo/shim/Promise';
+import { Require } from '@dojo/interfaces/loader';
+import { isPlugin, useDefault } from './load/util';
 
 declare const require: Require;
 
@@ -9,13 +9,6 @@ declare const define: {
 	amd: any;
 };
 
-/* tslint:disable-next-line:variable-name */
-const Promise: typeof P = 'Promise' in global
-	? global.Promise
-	: typeof process === 'object' && process.versions && process.versions.node
-		? (<any> require('dojo-shim/dist/umd/Promise')).default
-		: (<any> require('dojo-shim/Promise')).default;
-
 export interface NodeRequire {
 	(moduleId: string): any;
 }
@@ -23,39 +16,84 @@ export interface NodeRequire {
 export type Require = Require | NodeRequire;
 
 export interface Load {
-	(require: Require, ...moduleIds: string[]): P<any[]>;
-	(...moduleIds: string[]): P<any[]>;
+	(require: Require, ...moduleIds: string[]): Promise<any[]>;
+	(...moduleIds: string[]): Promise<any[]>;
 }
 
 const load: Load = (function (): Load {
+	const resolver = typeof require.toUrl === 'function' ? require.toUrl :
+		typeof (<any> require).resolve === 'function' ? (<any> require).resolve :
+		(resourceId: string) => resourceId;
+
+	function pluginLoad(moduleIds: string[], load: Load, loader: (modulesIds: string[]) => Promise<any>) {
+		const pluginResourceIds: string[] = [];
+		moduleIds = moduleIds.map((id: string, i: number) => {
+			const parts = id.split('!');
+			pluginResourceIds[i] = parts[1];
+			return parts[0];
+		});
+
+		return loader(moduleIds).then((modules: any[]) => {
+			pluginResourceIds.forEach((resourceId: string, i: number) => {
+				if (typeof resourceId === 'string') {
+					const module = modules[i];
+					const defaultExport = module['default'] || module;
+
+					if (isPlugin(defaultExport)) {
+						resourceId = typeof defaultExport.normalize === 'function' ?
+							defaultExport.normalize(resourceId, resolver) :
+							resolver(resourceId);
+
+						modules[i] = defaultExport.load(resourceId, load);
+					}
+				}
+			});
+
+			return Promise.all(modules);
+		});
+	}
+
 	if (typeof module === 'object' && typeof module.exports === 'object') {
-		return function (contextualRequire: any, ...moduleIds: string[]): P<any[]> {
+		return function load(contextualRequire: any, ...moduleIds: string[]): Promise<any[]> {
 			if (typeof contextualRequire === 'string') {
 				moduleIds.unshift(contextualRequire);
 				contextualRequire = require;
 			}
-			return new Promise(function (resolve, reject) {
+
+			return pluginLoad(moduleIds, load, (moduleIds: string[]) => {
 				try {
-					resolve(moduleIds.map(function (moduleId): any {
-						return contextualRequire(moduleId);
+					return Promise.resolve(moduleIds.map(function (moduleId): any {
+						return contextualRequire(moduleId.split('!')[0]);
 					}));
 				}
 				catch (error) {
-					reject(error);
+					return Promise.reject(error);
 				}
 			});
 		};
 	}
 	else if (typeof define === 'function' && define.amd) {
-		return function (contextualRequire: any, ...moduleIds: string[]): P<any[]> {
+		return function load(contextualRequire: any, ...moduleIds: string[]): Promise<any[]> {
 			if (typeof contextualRequire === 'string') {
 				moduleIds.unshift(contextualRequire);
 				contextualRequire = require;
 			}
-			return new Promise(function (resolve) {
-				// TODO: Error path once https://github.com/dojo/loader/issues/14 is figured out
-				contextualRequire(moduleIds, function (...modules: any[]) {
-					resolve(modules);
+
+			return pluginLoad(moduleIds, load, (moduleIds: string[]) => {
+				return new Promise(function (resolve, reject) {
+					let errorHandle: { remove: () => void };
+
+					if (typeof contextualRequire.on === 'function') {
+						errorHandle = contextualRequire.on('error', (error: Error) => {
+							errorHandle.remove();
+							reject(error);
+						});
+					}
+
+					contextualRequire(moduleIds, function (...modules: any[]) {
+						errorHandle && errorHandle.remove();
+						resolve(modules);
+					});
 				});
 			});
 		};
@@ -67,3 +105,8 @@ const load: Load = (function (): Load {
 	}
 })();
 export default load;
+
+export {
+	isPlugin,
+	useDefault
+}

@@ -1,4 +1,4 @@
-import { Handle } from 'dojo-interfaces/core';
+import { Handle } from '@dojo/interfaces/core';
 import { QueueItem, queueTask } from './queue';
 
 function getQueueHandle(item: QueueItem): Handle {
@@ -17,10 +17,10 @@ export interface KwArgs {
 }
 
 export default class Scheduler {
-	protected _boundDispatch: () => void;
+	protected readonly _boundDispatch: () => void;
 	protected _deferred: QueueItem[] | null;
 	protected _isProcessing: boolean;
-	protected _queue: QueueItem[];
+	protected readonly _queue: QueueItem[];
 	protected _task: Handle | null;
 
 	/**

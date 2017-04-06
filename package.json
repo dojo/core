@@ -1,10 +1,9 @@
 {
-  "name": "dojo-core",
+  "name": "@dojo/core",
   "version": "2.0.0-pre",
   "description": "Basic utilites for common TypeScript development",
   "engines": {
-    "node": "^6.0.0",
-    "npm": "^3.0.0"
+    "npm": ">=3.0.0"
   },
   "homepage": "http://dojotoolkit.org",
   "bugs": {
@@ -22,10 +21,12 @@
     "test": "grunt test"
   },
   "peerDependencies": {
-    "dojo-has": ">=2.0.0-alpha.6",
-    "dojo-shim": ">=2.0.0-alpha.4"
+    "@dojo/has": "beta1",
+    "@dojo/shim": "beta1"
   },
   "devDependencies": {
+    "@dojo/interfaces": "beta1",
+    "@dojo/loader": "beta1",
     "@types/benchmark": "~1.0.0",
     "@types/chai": "~3.4.0",
     "@types/formidable": "~1.0.0",
@@ -33,16 +34,13 @@
     "@types/grunt": "~0.4.0",
     "@types/sinon": "~1.16.0",
     "benchmark": "^1.0.0",
-    "dojo-interfaces": ">=2.0.0-alpha.2",
-    "dojo-loader": ">=2.0.0-beta.7",
     "formidable": "1.0.17",
     "grunt": "^1.0.1",
-    "grunt-dojo2": ">=2.0.0-beta.19",
+    "grunt-dojo2": "beta1",
     "http-proxy": "0.10.3",
-    "intern": "^3.3.1",
+    "intern": "^3.4.1",
     "istanbul": "0.4.3",
     "sinon": "~1.17.6",
-    "tslint": "^3.15.1",
-    "typescript": "~2.0.3"
+    "typescript": "~2.2.1"
   }
 }

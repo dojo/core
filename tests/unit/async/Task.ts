@@ -1,8 +1,8 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
-import Promise from 'dojo-shim/Promise';
-import { Thenable } from 'dojo-shim/interfaces';
-import { ShimIterator } from 'dojo-shim/iterator';
+import Promise from '@dojo/shim/Promise';
+import { Thenable } from '@dojo/shim/interfaces';
+import { ShimIterator } from '@dojo/shim/iterator';
 import Task, { State, isTask } from '../../../src/async/Task';
 
 let suite = {
@@ -188,7 +188,7 @@ let suite = {
 				task.cancel();
 				return new Promise(function (resolve, reject) {
 					setTimeout(reject);
-				});
+				}).catch(() => {});
 			})
 			.then(dfd.rejectOnError(function () {
 				assert(false, 'should not have run');
@@ -200,6 +200,59 @@ let suite = {
 			.finally(dfd.callback(function () {}));
 
 			resolver();
+		},
+
+		'invoked if already canceled'(this: any) {
+			const dfd = this.async();
+			const task = new Task(() => {
+			});
+			task.cancel();
+
+			task.finally(dfd.callback(() => {
+			}));
+		},
+
+		'finally is only called once when called after cancel'(this: any) {
+			let callCount = 0;
+			const dfd = this.async();
+			const task = new Task((resolve) => {
+				setTimeout(resolve, 10);
+			});
+			task.cancel();
+			task.finally(dfd.callback(() => {
+				callCount++;
+			}));
+
+			setTimeout(dfd.callback(() => {
+				assert.equal(callCount, 1);
+			}), 100);
+		},
+
+		'finally is only called once when called before cancel'(this: any) {
+			let callCount = 0;
+			const dfd = this.async();
+			const task = new Task((resolve) => {
+				setTimeout(resolve, 10);
+			});
+			task.finally(dfd.callback(() => {
+				callCount++;
+			}));
+			task.cancel();
+
+			setTimeout(dfd.callback(() => {
+				assert.equal(callCount, 1);
+			}), 100);
+		},
+
+		'finally does not change the resolve value'(this: any) {
+			const dfd = this.async();
+			let task = new Task((resolve) => {
+				setTimeout(resolve.bind(null, 'test'), 10);
+			});
+			task = task.finally(() => 'changed');
+			task.then(dfd.callback((value: string) => {
+				assert.strictEqual(value, 'test');
+			}));
 		}
 	},
 
