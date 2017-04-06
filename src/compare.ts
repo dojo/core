@@ -1,11 +1,7 @@
 import { assign } from './lang';
+import { keys } from '@dojo/shim/object';
 
-/* TODO: Replace with import from dojo-shim/object when dojo/shim#47 published */
-const objectKeys = 'getOwnPropertySymbols' in Object ? Object.keys : function keys(o: any)  {
-	return Object.keys(o).filter((key) => !Boolean(key.match(/^@@.+/)));
-};
-
-/* Assigning to local variables to improve minification */
+/* Assigning to local variables to improve minification and readability */
 
 const objectCreate = Object.create;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -13,6 +9,30 @@ const defineProperty = Object.defineProperty;
 const isArray = Array.isArray;
 const isFrozen = Object.isFrozen;
 const isSealed = Object.isSealed;
+
+export type IgnorePropertyFunction = (name: string, a: any, b: any) => boolean;
+
+export interface DiffOptions {
+	/**
+	 * Allow functions to be values.  Values will be considered equal if the `typeof` both values are `function`.
+	 * When adding or updating the property, the value of the property of `a` will be used in the record, which
+	 * will be a reference to the function.
+	 */
+	allowFunctionValues?: boolean;
+
+	/**
+	 * An array of strings or regular expressions which flag certain properties to be ignored.  Alternatively
+	 * a function, which returns `true` to have the property ignored or `false` to diff the property.
+	 */
+	ignoreProperties?: (string | RegExp)[] | IgnorePropertyFunction;
+
+	/**
+	 * An array of strings or regular expressions which flag certain values to be ignored.  For flagged properties,
+	 * if the property is present in both `a` and `b` the value will be ignored.  If adding the property,
+	 * whatever the value of the property of `a` will be used, which could be a reference.
+	 */
+	ignorePropertyValues?: (string | RegExp)[] | IgnorePropertyFunction;
+}
 
 /**
  * A record that describes the mutations necessary to a property of an object to make that property look
@@ -112,7 +132,7 @@ function createPatchRecord(type: PatchTypes, name: string, descriptor?: Property
  * @param add Elements to be added to the target
  */
 function createSpliceRecord(start: number, deleteCount: number, add?: any[]): SpliceRecord {
-	const spliceRecord = assign(objectCreate(null), {
+	const spliceRecord: SpliceRecord = assign(objectCreate(null), {
 		type: 'splice',
 		start,
 		deleteCount
@@ -122,7 +142,7 @@ function createSpliceRecord(start: number, deleteCount: number, add?: any[]): Sp
 		spliceRecord.add = add;
 	}
 
-	return spliceRecord as SpliceRecord;
+	return spliceRecord;
 }
 
 /**
@@ -149,15 +169,24 @@ function createValuePropertyDescriptor(value: any, writable: boolean = true, enu
  *
  * @param a The first array to compare to
  * @param b The second value to compare to
+ * @param options An options bag that allows configuration of the behaviour of `diffArray()`
  */
-function diffArray(a: any[], b: any): SpliceRecord[] {
+function diffArray(a: any[], b: any, options: DiffOptions): SpliceRecord[] {
+	/* This function takes an overly simplistic approach to calculating splice records.  There are many situations where
+	 * in complicated array mutations, the splice records can be more optimised.
+	 *
+	 * TODO: Raise an issue for this when it is finally merged and put into core
+	 */
+
+	const { allowFunctionValues = false } = options;
+
 	const arrayA = a;
 	const lengthA = arrayA.length;
 	const arrayB = isArray(b) ? b : [];
 	const lengthB = arrayB.length;
 	const patchRecords: SpliceRecord[] = [];
 
-	if (!lengthA) { /* empty array */
+	if (!lengthA && lengthB) { /* empty array */
 		patchRecords.push(createSpliceRecord(0, lengthB));
 		return patchRecords;
 	}
@@ -193,8 +222,8 @@ function diffArray(a: any[], b: any): SpliceRecord[] {
 	arrayA.forEach((valueA, index) => {
 		const valueB = arrayB[index];
 
-		if (index in arrayB && valueA === valueB) {
-			return;
+		if (index in arrayB && (valueA === valueB || (allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function'))) {
+			return; /* not different */
 		}
 
 		const isValueAArray = isArray(valueA);
@@ -202,12 +231,15 @@ function diffArray(a: any[], b: any): SpliceRecord[] {
 
 		if (isValueAArray || isValueAPlainObject) {
 			const value = isValueAArray ? isArray(valueB) ? valueB : [] : isPlainObject(valueB) ? valueB : Object.create(null);
-			const valueRecords = diff(valueA, value);
+			const valueRecords = diff(valueA, value, options);
 			if (valueRecords.length) { /* only add if there are changes */
-				addDifference(index, true, diff(valueA, value));
+				addDifference(index, true, diff(valueA, value, options));
 			}
 		}
-		else if (isPrimative(valueA)) {
+		else if (isPrimitive(valueA)) {
+			addDifference(index, true, valueA);
+		}
+		else if (allowFunctionValues && typeof valueA === 'function') {
 			addDifference(index, true, valueA);
 		}
 		else {
@@ -233,50 +265,69 @@ function diffArray(a: any[], b: any): SpliceRecord[] {
  *
  * @param a The first plain object to compare to
  * @param b The second plain bject to compare to
+ * @param options An options bag that allows configuration of the behaviour of `diffPlainObject()`
  */
-function diffPlainObject(a: any, b: any): PatchRecord[] {
+function diffPlainObject(a: any, b: any, options: DiffOptions): PatchRecord[] {
+	const { allowFunctionValues = false, ignoreProperties = [], ignorePropertyValues = [] } = options;
 	const patchRecords: PatchRecord[] = [];
 
+	function isIgnoredProperty(name: string) {
+		return Array.isArray(ignoreProperties) ? ignoreProperties.some((value) => {
+			return typeof value === 'string' ? name === value : value.test(name);
+		}) : ignoreProperties(name, a, b);
+	}
+
+	function isIgnoredPropertyValue(name: string) {
+		return Array.isArray(ignorePropertyValues) ? ignorePropertyValues.some((value) => {
+			return typeof value === 'string' ? name === value : value.test(name);
+		}) : ignorePropertyValues(name, a, b);
+	}
+
 	/* look for keys in a that are different from b */
-	objectKeys(a).reduce((patchRecords, name) => {
-		const valueA = a[name];
-		const valueB = b[name];
-		const bHasOwnProperty = hasOwnProperty.call(b, name);
+	keys(a).reduce((patchRecords, name) => {
+		if (!isIgnoredProperty(name)) {
+			const valueA = a[name];
+			const valueB = b[name];
+			const bHasOwnProperty = hasOwnProperty.call(b, name);
 
-		if (valueA === valueB && bHasOwnProperty) { /* not different */
-			return patchRecords;
-		}
-
-		/* TODO: The literal assertion is not required in 2.1 */
-		const type: 'update' | 'add' = bHasOwnProperty ? 'update' : 'add';
-
-		const isValueAArray = isArray(valueA);
-		const isValueAPlainObject = isPlainObject(valueA);
-
-		if (isValueAArray || isValueAPlainObject) { /* non-primitive values we can diff */
-			/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
-			 * we can diff those two values, if not, then we need to use an empty array or an empty object and diff
-			 * the valueA with that */
-			const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
-				valueB : isValueAArray ?
-					[] : objectCreate(null);
-			const valueRecords = diff(valueA, value);
-			if (valueRecords.length) { /* only add if there are changes */
-				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value)));
+			if (bHasOwnProperty && (valueA === valueB ||
+				(allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function') ||
+				isIgnoredPropertyValue(name))) { /* not different */
+					/* when `allowFunctionValues` is true, functions are simply considered to be equal by `typeof` */
+					return patchRecords;
 			}
-		}
-		else if (isPrimative(valueA)) { /* primitive values can just be copied */
-			patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(valueA)));
-		}
-		else {
-			throw new TypeError(`Value of property named "${name}" from first argument is not a primative, plain Object, or Array.`);
+
+			const type = bHasOwnProperty ? 'update' : 'add';
+
+			const isValueAArray = isArray(valueA);
+			const isValueAPlainObject = isPlainObject(valueA);
+
+			if ((isValueAArray || isValueAPlainObject) && !(isIgnoredPropertyValue(name))) { /* non-primitive values we can diff */
+				/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
+				* we can diff those two values, if not, then we need to use an empty array or an empty object and diff
+				* the valueA with that */
+				const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
+					valueB : isValueAArray ?
+						[] : objectCreate(null);
+				const valueRecords = diff(valueA, value, options);
+				if (valueRecords.length) { /* only add if there are changes */
+					patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value, options)));
+				}
+			}
+			else if (isPrimitive(valueA) || (allowFunctionValues && typeof valueA === 'function') || isIgnoredPropertyValue(name)) {
+				/* primitive values, functions values if allowed, or ignored property values can just be copied */
+				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(valueA)));
+			}
+			else {
+				throw new TypeError(`Value of property named "${name}" from first argument is not a primative, plain Object, or Array.`);
+			}
 		}
 		return patchRecords;
 	}, patchRecords);
 
 	/* look for keys in b that are not in a */
-	objectKeys(b).reduce((patchRecords, name) => {
-		if (!hasOwnProperty.call(a, name)) {
+	keys(b).reduce((patchRecords, name) => {
+		if (!hasOwnProperty.call(a, name) && !isIgnoredProperty(name)) {
 			patchRecords.push(createPatchRecord('delete', name));
 		}
 		return patchRecords;
@@ -313,18 +364,17 @@ function isPlainObject(value: any): value is Object {
 	return Boolean(
 		value &&
 		typeof value === 'object' &&
-		value !== null &&
 		(value.constructor === Object || value.constructor === undefined)
 	);
 }
 
 /**
- * A guard that determines if the value is a primative (including `null`), as these values are
+ * A guard that determines if the value is a primitive (including `null`), as these values are
  * fine to just copy.
  *
  * @param value The value to check
  */
-function isPrimative(value: any): value is (string | number | boolean | undefined | null) {
+function isPrimitive(value: any): value is (string | number | boolean | undefined | null) {
 	const typeofValue = typeof value;
 	return value === null ||
 		typeofValue === 'undefined' ||
@@ -407,14 +457,15 @@ function resolveTargetValue(patchValue: any, targetValue: any): any {
  *
  * @param a The plain object or array to compare with
  * @param b The plain object or array to compare to
+ * @param options An options bag that allows configuration of the behaviour of `diff()`
  */
-export function diff(a: any, b: any): (PatchRecord | SpliceRecord)[] {
+export function diff(a: any, b: any, options: DiffOptions = {}): (PatchRecord | SpliceRecord)[] {
 	if (typeof a !== 'object' || typeof b !== 'object') {
 		throw new TypeError('Arguments are not of type object.');
 	}
 
 	if (isArray(a)) {
-		return diffArray(a, b);
+		return diffArray(a, b, options);
 	}
 
 	if (isArray(b)) {
@@ -425,7 +476,7 @@ export function diff(a: any, b: any): (PatchRecord | SpliceRecord)[] {
 		throw new TypeError('Arguments are not plain Objects or Arrays.');
 	}
 
-	return diffPlainObject(a, b);
+	return diffPlainObject(a, b, options);
 }
 
 /**

@@ -1,7 +1,6 @@
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import { diff, patch } from '../../src/compare';
-import 'dojo-shim/Symbol';
 
 registerSuite({
 	name: 'compare',
@@ -47,6 +46,36 @@ registerSuite({
 					{
 						name: 'foo',
 						type: 'delete'
+					}
+				]);
+			},
+
+			'allowFunctionValues - equal'() {
+				const patchRecords = diff({
+					foo() { }
+				}, {
+					foo() { }
+				}, { allowFunctionValues: true });
+
+				assert.strictEqual(patchRecords.length, 0, 'should not see a difference');
+			},
+
+			'allowFunctionValues - add property'() {
+				function foo() {}
+				const patchRecords = diff({
+					foo
+				}, { }, { allowFunctionValues: true });
+
+				assert.deepEqual(patchRecords, [
+					{
+						type: 'add',
+						name: 'foo',
+						descriptor: {
+							value: foo,
+							writable: true,
+							enumerable: true,
+							configurable: true
+						}
 					}
 				]);
 			},
@@ -260,6 +289,366 @@ registerSuite({
 						type: 'add'
 					}
 				]);
+			},
+
+			'ignored properties': {
+				'string property added'() {
+					const a = {
+						foo: 'bar',
+						bar: 1
+					};
+
+					const patchRecords = diff(a, {}, { ignoreProperties: [ 'bar' ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: 'bar', writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'string property deleted'() {
+					const b = {
+						foo: 'bar',
+						bar: 1
+					};
+
+					const patchRecords = diff({}, b, { ignoreProperties: [ 'bar' ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'regex property added'() {
+					const a = {
+						foo: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff(a, {}, { ignoreProperties: [ /^_/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: 'bar', writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'regex property deleted'() {
+					const b = {
+						foo: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff({}, b, { ignoreProperties: [ /^_/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'combined string - regex added'() {
+					const a = {
+						foo: 'bar',
+						bar: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff(a, {}, { ignoreProperties: [ 'bar', /^_/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: 'bar', writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'combined string - regex deleted'() {
+					const b = {
+						foo: 'bar',
+						bar: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff({}, b, { ignoreProperties: [ 'bar', /^_/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'function added'() {
+					const a = {
+						foo: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff(a, {}, { ignoreProperties: (name) => /^_/.test(name) });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: 'bar', writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'function deleted'() {
+					const b = {
+						foo: 'bar',
+						_bar: 1
+					};
+
+					const patchRecords = diff({}, b, { ignoreProperties: (name) => /^_/.test(name) });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'function'() {
+					const propertyStack: string[] = [];
+
+					const a = {
+						foo: 'bar',
+						bar: 1,
+						baz: false
+					};
+
+					const b = {
+						foo: 'bar',
+						bar: 1,
+						baz: false
+					};
+
+					const patchRecords = diff(a, b, { ignoreProperties(name, first, second) {
+						propertyStack.push(name);
+						assert.strictEqual(first, a);
+						assert.strictEqual(second, b);
+						return false;
+					} });
+
+					assert.deepEqual(patchRecords, [], 'should be no differences');
+					assert.deepEqual(propertyStack, [ 'foo', 'bar', 'baz' ]);
+				}
+			},
+
+			'ignored values': {
+				'string property equal'() {
+					const a = {
+						foo: new Error('foo')
+					};
+
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff(a, b, { ignorePropertyValues: [ 'foo' ] });
+
+					assert.deepEqual(patchRecords, []);
+				},
+
+				'string property added'() {
+					const foo = new Error('foo');
+					const a = {
+						foo
+					};
+
+					const patchRecords = diff(a, { }, { ignorePropertyValues: [ 'foo' ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: foo, writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'string property deleted'() {
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff({ }, b, { ignorePropertyValues: [ 'foo' ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'regex property equal'() {
+					const a = {
+						foo: new Error('foo')
+					};
+
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff(a, b, { ignorePropertyValues: [ /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, []);
+				},
+
+				'regex property added'() {
+					const foo = new Error('foo');
+					const a = {
+						foo
+					};
+
+					const patchRecords = diff(a, { }, { ignorePropertyValues: [ /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: foo, writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'regex property deleted'() {
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff({ }, b, { ignorePropertyValues: [ /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'combined property equal'() {
+					const a = {
+						foo: new Error('foo'),
+						bar: new Error('bar')
+					};
+
+					const b = {
+						foo: new Error('foo'),
+						bar: new Error('bar')
+					};
+
+					const patchRecords = diff(a, b, { ignorePropertyValues: [ 'bar', /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, []);
+				},
+
+				'combined property added'() {
+					const foo = new Error('foo');
+					const bar = new Error('bar');
+					const a = {
+						foo,
+						bar
+					};
+
+					const patchRecords = diff(a, { }, { ignorePropertyValues: [ 'bar', /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: foo, writable: true },
+							name: 'foo',
+							type: 'add'
+						}, {
+							descriptor: { configurable: true, enumerable: true, value: bar, writable: true },
+							name: 'bar',
+							type: 'add'
+						}
+					]);
+				},
+
+				'combined property deleted'() {
+					const b = {
+						foo: new Error('foo'),
+						bar: new Error('bar')
+					};
+
+					const patchRecords = diff({ }, b, { ignorePropertyValues: [ 'bar', /^foo$/ ] });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}, {
+							name: 'bar',
+							type: 'delete'
+						}
+					]);
+				},
+
+				'function property equal'() {
+					const a = {
+						foo: new Error('foo')
+					};
+
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff(a, b, { ignorePropertyValues: (name) => /^foo$/.test(name) });
+
+					assert.deepEqual(patchRecords, []);
+				},
+
+				'function property added'() {
+					const foo = new Error('foo');
+					const a = {
+						foo
+					};
+
+					const patchRecords = diff(a, { }, { ignorePropertyValues: (name) => /^foo$/.test(name) });
+
+					assert.deepEqual(patchRecords, [
+						{
+							descriptor: { configurable: true, enumerable: true, value: foo, writable: true },
+							name: 'foo',
+							type: 'add'
+						}
+					]);
+				},
+
+				'function property deleted'() {
+					const b = {
+						foo: new Error('foo')
+					};
+
+					const patchRecords = diff({ }, b, { ignorePropertyValues: (name) => /^foo$/.test(name) });
+
+					assert.deepEqual(patchRecords, [
+						{
+							name: 'foo',
+							type: 'delete'
+						}
+					]);
+				}
 			}
 		},
 
@@ -384,6 +773,26 @@ registerSuite({
 				assert.deepEqual(patchRecords, [
 					{
 						add: [ '', 0, false, undefined, null ],
+						deleteCount: 0,
+						start: 0,
+						type: 'splice'
+					}
+				]);
+			},
+
+			'allowFunctionValues - equal'() {
+				const patchRecords = diff([ function foo () { } ], [ () => undefined ], { allowFunctionValues: true });
+
+				assert.lengthOf(patchRecords, 0, 'should have no differences');
+			},
+
+			'allowFunctionValues - add'() {
+				function foo() {}
+				const patchRecords = diff([ foo ], [], { allowFunctionValues: true });
+
+				assert.deepEqual(patchRecords, [
+					{
+						add: [ foo ],
 						deleteCount: 0,
 						start: 0,
 						type: 'splice'
