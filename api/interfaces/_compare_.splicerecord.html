@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>DateProperties | @dojo/core</title>
+	<title>SpliceRecord | @dojo/core</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -52,13 +52,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_dateobject_.html">&quot;DateObject&quot;</a>
+					<a href="../modules/_compare_.html">&quot;compare&quot;</a>
 				</li>
 				<li>
-					<a href="_dateobject_.dateproperties.html">DateProperties</a>
+					<a href="_compare_.splicerecord.html">SpliceRecord</a>
 				</li>
 			</ul>
-			<h1>Interface DateProperties</h1>
+			<h1>Interface SpliceRecord</h1>
 		</div>
 	</div>
 </header>
@@ -68,7 +68,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The properties of a complete date</p>
+						<p>A record that describes a splice operation to perform on an array to make the array look like another array</p>
 					</div>
 				</div>
 			</section>
@@ -76,14 +76,8 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">DateProperties</span>
+						<span class="target">SpliceRecord</span>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implemented by</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../classes/_dateobject_.dateobject.html" class="tsd-signature-type">DateObject</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -93,16 +87,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#dayofmonth" class="tsd-kind-icon">day<wbr>OfMonth</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#dayofweek" class="tsd-kind-icon">day<wbr>OfWeek</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#daysinmonth" class="tsd-kind-icon">days<wbr>InMonth</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#hours" class="tsd-kind-icon">hours</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#isleapyear" class="tsd-kind-icon">is<wbr>Leap<wbr>Year</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#milliseconds" class="tsd-kind-icon">milliseconds</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#minutes" class="tsd-kind-icon">minutes</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#month" class="tsd-kind-icon">month</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#seconds" class="tsd-kind-icon">seconds</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_dateobject_.dateproperties.html#year" class="tsd-kind-icon">year</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_compare_.splicerecord.html#add" class="tsd-kind-icon">add</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_compare_.splicerecord.html#deletecount" class="tsd-kind-icon">delete<wbr>Count</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_compare_.splicerecord.html#start" class="tsd-kind-icon">start</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_compare_.splicerecord.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
@@ -111,104 +99,64 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dayofmonth" class="tsd-anchor"></a>
-					<h3>day<wbr>OfMonth</h3>
-					<div class="tsd-signature tsd-kind-icon">day<wbr>OfMonth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="add" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> add</h3>
+					<div class="tsd-signature tsd-kind-icon">add<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L27">DateObject.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/compare.ts#L85">compare.ts:85</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Any items that are being added to the array</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="dayofweek" class="tsd-anchor"></a>
-					<h3>day<wbr>OfWeek</h3>
-					<div class="tsd-signature tsd-kind-icon">day<wbr>OfWeek<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="deletecount" class="tsd-anchor"></a>
+					<h3>delete<wbr>Count</h3>
+					<div class="tsd-signature tsd-kind-icon">delete<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L28">DateObject.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/compare.ts#L90">compare.ts:90</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The number of items in the array to delete</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="daysinmonth" class="tsd-anchor"></a>
-					<h3>days<wbr>InMonth</h3>
-					<div class="tsd-signature tsd-kind-icon">days<wbr>InMonth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="start" class="tsd-anchor"></a>
+					<h3>start</h3>
+					<div class="tsd-signature tsd-kind-icon">start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L29">DateObject.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/compare.ts#L100">compare.ts:100</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The index of where to start the splice</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="hours" class="tsd-anchor"></a>
-					<h3>hours</h3>
-					<div class="tsd-signature tsd-kind-icon">hours<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"splice"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L30">DateObject.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/compare.ts#L95">compare.ts:95</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="isleapyear" class="tsd-anchor"></a>
-					<h3>is<wbr>Leap<wbr>Year</h3>
-					<div class="tsd-signature tsd-kind-icon">is<wbr>Leap<wbr>Year<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L31">DateObject.ts:31</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="milliseconds" class="tsd-anchor"></a>
-					<h3>milliseconds</h3>
-					<div class="tsd-signature tsd-kind-icon">milliseconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L32">DateObject.ts:32</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="minutes" class="tsd-anchor"></a>
-					<h3>minutes</h3>
-					<div class="tsd-signature tsd-kind-icon">minutes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L33">DateObject.ts:33</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="month" class="tsd-anchor"></a>
-					<h3>month</h3>
-					<div class="tsd-signature tsd-kind-icon">month<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L34">DateObject.ts:34</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="seconds" class="tsd-anchor"></a>
-					<h3>seconds</h3>
-					<div class="tsd-signature tsd-kind-icon">seconds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L35">DateObject.ts:35</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="year" class="tsd-anchor"></a>
-					<h3>year</h3>
-					<div class="tsd-signature tsd-kind-icon">year<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/dojo/core/blob/aa055e4/src/DateObject.ts#L36">DateObject.ts:36</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The type, set to <code>splice</code></p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -219,59 +167,50 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/_dateobject_.html">"<wbr>Date<wbr>Object"</a>
+						<a href="../modules/_compare_.html">"compare"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-external-module">
-						<a href="../classes/_dateobject_.dateobject.html" class="tsd-kind-icon">Date<wbr>Object</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_compare_.diffoptions.html" class="tsd-kind-icon">Diff<wbr>Options</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_dateobject_.dateproperties.html" class="tsd-kind-icon">Date<wbr>Properties</a>
+						<a href="_compare_.splicerecord.html" class="tsd-kind-icon">Splice<wbr>Record</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#dayofmonth" class="tsd-kind-icon">day<wbr>OfMonth</a>
+								<a href="_compare_.splicerecord.html#add" class="tsd-kind-icon">add</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#dayofweek" class="tsd-kind-icon">day<wbr>OfWeek</a>
+								<a href="_compare_.splicerecord.html#deletecount" class="tsd-kind-icon">delete<wbr>Count</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#daysinmonth" class="tsd-kind-icon">days<wbr>InMonth</a>
+								<a href="_compare_.splicerecord.html#start" class="tsd-kind-icon">start</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#hours" class="tsd-kind-icon">hours</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#isleapyear" class="tsd-kind-icon">is<wbr>Leap<wbr>Year</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#milliseconds" class="tsd-kind-icon">milliseconds</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#minutes" class="tsd-kind-icon">minutes</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#month" class="tsd-kind-icon">month</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#seconds" class="tsd-kind-icon">seconds</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_dateobject_.dateproperties.html#year" class="tsd-kind-icon">year</a>
+								<a href="_compare_.splicerecord.html#type" class="tsd-kind-icon">type</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_dateobject_.kwargs.html" class="tsd-kind-icon">Kw<wbr>Args</a>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_compare_.html#ignorepropertyfunction" class="tsd-kind-icon">Ignore<wbr>Property<wbr>Function</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_dateobject_.operationkwargs.html" class="tsd-kind-icon">Operation<wbr>KwArgs</a>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_compare_.html#patchrecord" class="tsd-kind-icon">Patch<wbr>Record</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_compare_.html#patchtypes" class="tsd-kind-icon">Patch<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_compare_.html#diff" class="tsd-kind-icon">diff</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_compare_.html#patch" class="tsd-kind-icon">patch</a>
 					</li>
 				</ul>
 			</nav>
