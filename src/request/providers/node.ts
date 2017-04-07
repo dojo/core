@@ -468,7 +468,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							if (contentEncodings.length) {
 								const encoding = contentEncodings.pop()!.trim();
 
-								if (encoding === '' || encoding === 'identity') {
+								if (encoding === '' || encoding.toLowerCase() === 'none' || encoding === 'identity') {
 									// do nothing, response stream is as-is
 									handleEncoding();
 								}
