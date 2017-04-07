@@ -13,12 +13,14 @@ import Headers from '../Headers';
 import { RequestOptions } from '../interfaces';
 import Response from '../Response';
 import TimeoutError from '../TimeoutError';
+import { Readable } from 'stream';
 
 /**
  * Request options specific to a node request
  */
 export interface NodeRequestOptions extends RequestOptions {
 	agent?: any;
+	bodyStream?: Readable;
 	ca?: any;
 	cert?: string;
 	ciphers?: string;
@@ -533,13 +535,36 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 		request.once('error', reject);
 
-		if (options.body) {
-			if (options.body instanceof Buffer) {
-				request.end(options.body.toString());
+		if (options.bodyStream) {
+			options.bodyStream.pipe(request);
+			if (options.uploadObserver) {
+				let uploadedSize = 0;
+
+				options.bodyStream.on('data', (chunk: any) => {
+					uploadedSize += chunk.length;
+					(options.uploadObserver!).emit({
+						type: 'upload',
+						totalBytesUploaded: uploadedSize
+					});
+				});
 			}
-			else {
-				request.end(options.body.toString());
+			options.bodyStream.on('end', () => {
+				request.end();
+			});
+		}
+		else if (options.body) {
+			const body = options.body.toString();
+
+			if (options.uploadObserver) {
+				request.on('response', () => {
+					(options.uploadObserver!).emit({
+						type: 'upload',
+						totalBytesUploaded: body.length
+					});
+				});
 			}
+
+			request.end(body);
 		}
 		else {
 			request.end();

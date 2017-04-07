@@ -4,6 +4,7 @@ import { IterableIterator } from '@dojo/shim/iterator';
 import Task from '../async/Task';
 import { BaseEventedEvents, Evented } from '../Evented';
 import UrlSearchParams, { ParamList } from '../UrlSearchParams';
+import UploadObserver from './UploadObserver';
 
 export interface Body {
 	readonly bodyUsed: boolean;
@@ -51,6 +52,11 @@ export interface StartEvent extends ResponseEvent {
 	type: 'start';
 }
 
+export interface UploadEvent extends ResponseEvent {
+	type: 'upload';
+	totalBytesUploaded: number;
+}
+
 export type Provider = (url: string, options?: RequestOptions) => Task<Response>;
 
 export type ProviderTest = (url: string, options?: RequestOptions) => boolean | null;
@@ -65,6 +71,7 @@ export interface RequestOptions {
 	timeout?: number;
 	user?: string;
 	query?: string | ParamList;
+	uploadObserver?: UploadObserver;
 }
 
 export interface ResponseEvents extends BaseEventedEvents {

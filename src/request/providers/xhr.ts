@@ -298,6 +298,17 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Task<
 		}
 	});
 
+	if (options.uploadObserver) {
+		const observer = options.uploadObserver;
+
+		request.upload.addEventListener('progress', event => {
+			observer.emit({
+				type: 'upload',
+				totalBytesUploaded: event.loaded
+			});
+		});
+	}
+
 	request.send(options.body || null);
 
 	return task;

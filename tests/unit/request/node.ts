@@ -7,6 +7,7 @@ import * as zlib from 'zlib';
 import { Response } from '../../../src/request/interfaces';
 import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
 import TimeoutError from '../../../src/request/TimeoutError';
+import UploadObserver from '../../../src/request/UploadObserver';
 
 const serverPort = 8124;
 const serverUrl = 'http://localhost:' + serverPort;
@@ -270,6 +271,15 @@ function buildRedirectTests(methods: RedirectTestData[]) {
 
 function getResponseData(request: any): DummyResponse {
 	const urlInfo = parse(request.url, true);
+
+	if (urlInfo.query.dataKey === 'echo') {
+		return {
+			body: JSON.stringify({
+				headers: request.headers
+			})
+		};
+	}
+
 	return responseData[ urlInfo.query.dataKey ] || {};
 }
 
@@ -370,6 +380,17 @@ registerSuite({
 					body: Buffer.from('{ "foo": "bar" }', 'utf8'),
 					method: 'POST'
 				}).then(() => {
+					assert.deepEqual(requestData, { foo: 'bar' });
+				});
+			}
+		},
+
+		bodyStream: {
+			'stream is read'(this: any) {
+				return nodeRequest(getRequestUrl('echo'), {
+					method: 'POST',
+					bodyStream: fs.createReadStream('tests/support/data/foo.json')
+				}).then(res => res.json()).then(json => {
 					assert.deepEqual(requestData, { foo: 'bar' });
 				});
 			}
@@ -523,6 +544,42 @@ registerSuite({
 						assert.strictEqual(error.name, 'TimeoutError');
 					})
 				);
+		},
+		'upload monitoriting': {
+			'with a stream'(this: any) {
+				let events: number[] = [];
+
+				const uploadMonitor = new UploadObserver();
+				uploadMonitor.on('upload', (event) => {
+					events.push(event.totalBytesUploaded);
+				});
+
+				return nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					bodyStream: fs.createReadStream('tests/support/data/foo.json'),
+					uploadObserver: uploadMonitor
+				}).then(res => {
+					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
+					assert.equal(events[events.length - 1], 17);
+				});
+			},
+			'without a stream'(this: any) {
+				let events: number[] = [];
+
+				const uploadMonitor = new UploadObserver();
+				uploadMonitor.on('upload', (event) => {
+					events.push(event.totalBytesUploaded);
+				});
+
+				return nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					body: '{ "foo": "bar" }\n',
+					uploadObserver: uploadMonitor
+				}).then(res => {
+					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
+					assert.equal(events[events.length - 1], 17);
+				});
+			}
 		}
 	},
 

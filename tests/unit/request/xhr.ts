@@ -9,6 +9,7 @@ import UrlSearchParams from '../../../src/UrlSearchParams';
 import has from '@dojo/has/has';
 import { XhrResponse } from '../../../src/request/providers/xhr';
 import Promise from '@dojo/shim/Promise';
+import UploadObserver from '../../../src/request/UploadObserver';
 
 let echoServerAvailable = false;
 registerSuite({
@@ -115,6 +116,28 @@ registerSuite({
 			}).then(function (response: any) {
 				assert.strictEqual(response.requestOptions.user, 'user');
 				assert.strictEqual(response.requestOptions.password, 'password');
+			});
+		},
+
+		'upload monitoring'(this: any) {
+			if (!echoServerAvailable) {
+				this.skip('No echo server available');
+			}
+
+			let events: number[] = [];
+
+			const uploadMonitor = new UploadObserver();
+			uploadMonitor.on('upload', (event) => {
+				events.push(event.totalBytesUploaded);
+			});
+
+			return xhrRequest('/__echo/post', {
+				method: 'POST',
+				body: '12345',
+				uploadObserver: uploadMonitor
+			}).then(res => {
+				assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
+				assert.equal(events[events.length - 1], 5);
 			});
 		},
 
