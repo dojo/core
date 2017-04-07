@@ -88,7 +88,7 @@ interface HttpsOptions extends Options {
 interface RequestData {
 	task: Task<http.IncomingMessage>;
 	buffer: any[];
-	data: string;
+	data: Buffer | string;
 	size: number;
 	used: boolean;
 	nativeResponse: http.IncomingMessage;
@@ -172,12 +172,7 @@ export class NodeResponse extends Response {
 	arrayBuffer(): Task<ArrayBuffer> {
 		return <any> getDataTask(this).then(data => {
 			if (data) {
-				if (<any> data.data instanceof Buffer) {
-					return data.data;
-				}
-				else {
-					return Buffer.from(data.data, 'utf8');
-				}
+				return data.data;
 			}
 
 			return new Buffer([]);
@@ -502,7 +497,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 								}
 							}
 							else {
-								data.data = String(dataAsBuffer);
+								data.data = dataAsBuffer;
 
 								response.emit({
 									type: 'end',
