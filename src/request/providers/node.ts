@@ -88,7 +88,7 @@ interface HttpsOptions extends Options {
 interface RequestData {
 	task: Task<http.IncomingMessage>;
 	buffer: any[];
-	data: Buffer | string;
+	data: Buffer;
 	size: number;
 	used: boolean;
 	nativeResponse: http.IncomingMessage;
@@ -466,9 +466,9 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							 content, so do undo the encoding we have to start at the end and work backwards.
 							 */
 							if (contentEncodings.length) {
-								const encoding = contentEncodings.pop()!.trim();
+								const encoding = contentEncodings.pop()!.trim().toLowerCase();
 
-								if (encoding === '' || encoding.toLowerCase() === 'none' || encoding === 'identity') {
+								if (encoding === '' || encoding === 'none' || encoding === 'identity') {
 									// do nothing, response stream is as-is
 									handleEncoding();
 								}
@@ -518,7 +518,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 			const data: RequestData = {
 				task,
 				buffer: [],
-				data: '',
+				data: Buffer.alloc(0),
 				size: 0,
 				used: false,
 				url: url,
