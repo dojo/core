@@ -242,7 +242,7 @@ export function getAuth(proxyAuth: string | undefined, options: NodeRequestOptio
 	}
 
 	if (options.user || options.password) {
-		return encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
+		return `${ options.user || '' }:${ options.password || '' }`;
 	}
 
 	return undefined;
