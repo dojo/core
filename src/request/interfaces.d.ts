@@ -1,10 +1,7 @@
-import { EventedListenerOrArray } from '@dojo/interfaces/bases';
-import { Handle } from '@dojo/interfaces/core';
 import { IterableIterator } from '@dojo/shim/iterator';
 import Task from '../async/Task';
-import { BaseEventedEvents, Evented } from '../Evented';
 import UrlSearchParams, { ParamList } from '../UrlSearchParams';
-import UploadObserver from './UploadObserver';
+import Observable from '../Observable';
 
 export interface Body {
 	readonly bodyUsed: boolean;
@@ -29,35 +26,11 @@ export interface Headers {
 	[Symbol.iterator](): IterableIterator<[string, string]>;
 }
 
-interface ResponseEvent {
-	response: Response;
-	target: any;
+export interface UploadObservableTask<T> extends Task<T> {
+	upload: Observable<number>;
 }
 
-export interface DataEvent extends ResponseEvent {
-	type: 'data';
-	chunk: any;
-}
-
-export interface EndEvent extends ResponseEvent {
-	type: 'end';
-}
-
-export interface ProgressEvent extends ResponseEvent {
-	type: 'progress';
-	totalBytesDownloaded: number;
-}
-
-export interface StartEvent extends ResponseEvent {
-	type: 'start';
-}
-
-export interface UploadEvent extends ResponseEvent {
-	type: 'upload';
-	totalBytesUploaded: number;
-}
-
-export type Provider = (url: string, options?: RequestOptions) => Task<Response>;
+export type Provider = (url: string, options?: RequestOptions) => UploadObservableTask<Response>;
 
 export type ProviderTest = (url: string, options?: RequestOptions) => boolean | null;
 
@@ -71,14 +44,6 @@ export interface RequestOptions {
 	timeout?: number;
 	user?: string;
 	query?: string | ParamList;
-	uploadObserver?: UploadObserver;
-}
-
-export interface ResponseEvents extends BaseEventedEvents {
-	(type: 'data', handler: EventedListenerOrArray<Evented, DataEvent>): Handle;
-	(type: 'end', handler: EventedListenerOrArray<Evented, EndEvent>): Handle;
-	(type: 'progress', handler: EventedListenerOrArray<Evented, ProgressEvent>): Handle;
-	(type: 'start', handler: EventedListenerOrArray<Evented, StartEvent>): Handle;
 }
 
 export interface Response extends Body {
@@ -88,5 +53,6 @@ export interface Response extends Body {
 	readonly statusText: string;
 	readonly url: string;
 
-	on: ResponseEvents;
+	readonly download: Observable<number>;
+	readonly data: Observable<any>;
 }

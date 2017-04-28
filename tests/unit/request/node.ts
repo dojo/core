@@ -7,7 +7,6 @@ import * as zlib from 'zlib';
 import { Response } from '../../../src/request/interfaces';
 import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
 import TimeoutError from '../../../src/request/TimeoutError';
-import UploadObserver from '../../../src/request/UploadObserver';
 
 const serverPort = 8124;
 const serverUrl = 'http://localhost:' + serverPort;
@@ -549,16 +548,16 @@ registerSuite({
 			'with a stream'(this: any) {
 				let events: number[] = [];
 
-				const uploadMonitor = new UploadObserver();
-				uploadMonitor.on('upload', (event) => {
-					events.push(event.totalBytesUploaded);
+				const req = nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					bodyStream: fs.createReadStream('tests/support/data/foo.json')
 				});
 
-				return nodeRequest(getRequestUrl('foo.json'), {
-					method: 'POST',
-					bodyStream: fs.createReadStream('tests/support/data/foo.json'),
-					uploadObserver: uploadMonitor
-				}).then(res => {
+				req.upload.subscribe(totalBytesUploaded => {
+					events.push(totalBytesUploaded);
+				});
+
+				return req.then(res => {
 					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
 					assert.equal(events[events.length - 1], 17);
 				});
@@ -566,16 +565,16 @@ registerSuite({
 			'without a stream'(this: any) {
 				let events: number[] = [];
 
-				const uploadMonitor = new UploadObserver();
-				uploadMonitor.on('upload', (event) => {
-					events.push(event.totalBytesUploaded);
+				const req = nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					body: '{ "foo": "bar" }\n'
 				});
 
-				return nodeRequest(getRequestUrl('foo.json'), {
-					method: 'POST',
-					body: '{ "foo": "bar" }\n',
-					uploadObserver: uploadMonitor
-				}).then(res => {
+				req.upload.subscribe(totalBytesUploaded => {
+					events.push(totalBytesUploaded);
+				});
+
+				return req.then(res => {
 					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
 					assert.equal(events[events.length - 1], 17);
 				});

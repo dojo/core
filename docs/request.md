@@ -6,42 +6,56 @@ response.
 
 * request
   * get
-	* post
-	* delete
-	* put
+  * post
+  * delete
+  * put
 
-## Monitoring Download Progress
+## Observables
 
-You can monitor download progress by listening for events on the response object.
+Several observables are available to provide deeper insight into the state of a request.
+
+### Monitoring Upload Progress
+
+Upload progress can be monitored with the `upload` observable on the `Request` object.
+
+```typescript
+const req = request.post('http://www.example.com/', {
+	body: someLargeString
+});
+
+req.upload.subscribe(totalUploadedBytes => {
+	// do something with uploaded bytes
+})
+```
+
+Note that while the Node.js provider will emit a single upload event when it is done uploading, it cannot emit more granular upload events with `string` or `Buffer` body types. To receive more frequent upload events, you can use the `bodyStream` option to provide a `Readable` with the body content. Upload events will be emitted as the data is read from the stream.
+
+```typescript
+request.post('http://www.example.com/', {
+	bodyStream: fs.createReadStream('some-large-file')
+});
+```
+
+### Monitoring Download Progress
+
+You can monitor download progress by subscribing to the `download` observable on the `Response` object.
 
 ```typescript
 request("http://www.example/some-large-file").then(response => {
-	response.on('progress', progressEvent => {
-		console.log(`Total downloaded: ${progressEvent.totalBytesDownloaded}`);
+	response.download.subscribe(totalBytesDownloaded => {
+		// do something with totalBytesDownloaded
 	});
 });
 ```
 
-## Monitoring Upload Progress
+### Receiving Raw Data
 
-You can monitor upload progress by providing an `uploadObserver` in the request options.
-
-```typescript
-const uploader = new UploadObserver();
-uploader.on('upload', uploadEvent => {
-	console.log(`Total uploaded: ${uploadEvent.totalBytesUploaded}`);
-});
-request.post('http://www.example.com/', {
-	body: someLargeString,
-	uploadObserver: uploader
-});
-```
-
-Note that while the node provider will emit a single `upload` event when it is done uploading, it cannot emit more granular upload events with `string` or `Buffer` body types. To receive more frequent upload events, you can use the `bodyStream` option to provide a `Readable` with the body content. Upload events will be emitted as the data is read from the stream.
+You can receive the raw data from a response with the `data` observable. Depending on the provider, the value might be a `string`, or a `Buffer`.
 
 ```typescript
-request.post('http://www.example.com/', {
-	bodyStream: fs.createReadStream('some-large-file'),
-	uploadObserver: uploader
+request("http://www.example/some-large-file").then(response => {
+	response.data.subscribe(chunk => {
+		// do something with chunk
+	});
 });
 ```
