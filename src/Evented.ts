@@ -36,6 +36,9 @@ function handlesArraytoHandle(handles: Handle[]): Handle {
 	};
 }
 
+/**
+ * The base event object, which provides a `type` property
+ */
 export interface EventObject {
 	/**
 	 * The type of the event
@@ -76,6 +79,10 @@ export interface BaseEventedEvents {
 	 */
 	(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
 
+	/**
+	 * @param type the type of the event
+	 * @param listener the listener to attach
+	 */
 	(type: symbol, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
 
 	/**
