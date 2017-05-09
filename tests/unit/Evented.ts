@@ -92,11 +92,12 @@ registerSuite({
 
 			evented.emit({ type: foo });
 			evented.emit({ type: bar });
+			evented.emit({ type: 'bar' });
 
 			handle.destroy();
 
 			evented.emit({ type: foo });
-			evented.emit({ type: bar });
+			evented.emit({ type: 'bar' });
 
 			assert.deepEqual(eventStack, [ foo ]);
 		},

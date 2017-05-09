@@ -77,13 +77,7 @@ export interface BaseEventedEvents {
 	 * @param type the type of the event
 	 * @param listener the listener to attach
 	 */
-	(type: string, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
-
-	/**
-	 * @param type the type of the event
-	 * @param listener the listener to attach
-	 */
-	(type: symbol, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
+	(type: string | symbol, listener: EventedListenerOrArray<Evented, EventTargettedObject<Evented>>): Handle;
 
 	/**
 	 * @param type the type for `error`
@@ -106,8 +100,8 @@ const regexMap = new Map<string, RegExp>();
  *
  * @returns boolean that indicates if the glob is matched
  */
-export function isGlobMatch(globString: string, targetString: string | symbol): boolean {
-	if (typeof targetString === 'string' && globString.indexOf('*') !== -1) {
+export function isGlobMatch(globString: string | symbol, targetString: string | symbol): boolean {
+	if (typeof targetString === 'string' && typeof globString === 'string' && globString.indexOf('*') !== -1) {
 		let regex: RegExp;
 		if (regexMap.has(globString)) {
 			regex = regexMap.get(globString)!;
