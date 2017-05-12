@@ -579,6 +579,33 @@ registerSuite({
 					assert.equal(events[events.length - 1], 17);
 				});
 			}
+		},
+		'download events'() {
+			let downloadEvents: number[] = [];
+
+			return nodeRequest(getRequestUrl('foo.json')).then(response => {
+				response.download.subscribe(totalBytesDownloaded => {
+					downloadEvents.push(totalBytesDownloaded);
+				});
+
+				return response.text().then(() => {
+					assert.isTrue(downloadEvents.length > 0);
+				});
+			});
+		},
+
+		'data events'() {
+			let data: number[] = [];
+
+			return nodeRequest(getRequestUrl('foo.json')).then(response => {
+				response.data.subscribe(chunk => {
+					data.push(chunk);
+				});
+
+				return response.text().then(() => {
+					assert.isTrue(data.length > 0);
+				});
+			});
 		}
 	},
 

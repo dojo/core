@@ -535,20 +535,20 @@ registerSuite({
 				});
 			},
 
-			'progress event'(this: any) {
+			'download event'(this: any) {
 				if (!echoServerAvailable) {
 					this.skip('No echo server available');
 				}
 
-				let progressEvents: number[] = [];
+				let downloadEvents: number[] = [];
 
 				return xhrRequest('/__echo/foo.json').then(response => {
 					response.download.subscribe(totalBytesDownloaded => {
-						progressEvents.push(totalBytesDownloaded);
+						downloadEvents.push(totalBytesDownloaded);
 					});
 
 					return response.text().then(() => {
-						assert.isTrue(progressEvents.length > 0);
+						assert.isTrue(downloadEvents.length > 0);
 					});
 				});
 			}
