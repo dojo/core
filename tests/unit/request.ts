@@ -81,8 +81,11 @@ registerSuite({
 			});
 		},
 		'post'() {
-			return request.post('test.html').then(response => {
+			return request.post('test.html', {
+				body: 'some body'
+			}).then(response => {
 				assert.equal((<any> response).requestOptions.method, 'POST');
+				assert.equal((<any> response).requestOptions.body, 'some body');
 			});
 		},
 		'put'() {
