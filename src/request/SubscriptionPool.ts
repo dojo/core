@@ -3,7 +3,11 @@ import { SubscriptionObserver } from '@dojo/shim/Observable';
 export default class SubscriptionPool<T> {
 	private _observers: SubscriptionObserver<T>[] = [];
 	private _queue: T[] = [];
-	private _queueMaxLength = 100;
+	private _queueMaxLength: number;
+
+	constructor(maxLength = 10) {
+		this._queueMaxLength = maxLength;
+	}
 
 	add(subscription: SubscriptionObserver<T>) {
 		this._observers.push(subscription);
