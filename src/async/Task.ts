@@ -160,9 +160,7 @@ export default class Task<T> extends ExtensiblePromise<T> {
 				});
 			}
 			else {
-				const promiseKeys = Object.keys(iterable);
-
-				promiseKeys.forEach((key: any) => {
+				Object.keys(iterable).forEach((key: any) => {
 					const promiseLike = iterable[ key ];
 
 					if (isTask(promiseLike)) {

@@ -384,45 +384,41 @@ function addPromiseTests(suite: any, Promise: any) {
 			}));
 		},
 
-		'cancelable': {
-			'isIterable': function (this: any) {
-				let pending: any[] = [];
+		'cancelable': (function () {
+			return {
+				'isIterable': function (this: any) {
+					let pending: any[] = [function () {}];
 
-				for (let i = 0; i < 3; i++) {
-					pending[i] = new Promise(function () {});
+					cancelTasks(pending).then(() => {
+						pending.forEach((task) => {
+							assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+						});
+					});
+				},
+				'isObject': function (this: any) {
+					let pending = <any> {0: function () {}};
+
+					cancelTasks(pending).then(() => {
+						Object.keys(pending).forEach((key) => {
+							let task = pending[key];
+							assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+						});
+					});
+				}
+			};
+
+			function cancelTasks(pending: any) {
+				for (let i = 1; i < 3; i++) {
+					pending[i] = new Task(function () {});
 				}
 
-				let tasks = Promise.all(pending);
+				let tasks = Task.all(pending);
 
 				tasks.cancel();
 
-				tasks.then(() => {
-					pending.forEach((task) => {
-						assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
-					});
-				});
-			},
-			'isObject': function (this: any) {
-				let pending = <any> {};
-
-				for (let i = 0; i < 3; i++) {
-					pending[i] = new Promise(function () {});
-				}
-
-				let tasks = Promise.all(pending);
-
-				tasks.cancel();
-
-				tasks.then(() => {
-					let keys = Object.keys(pending);
-
-					keys.forEach((key) => {
-						let task = pending[key];
-						assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
-					});
-				});
+				return tasks;
 			}
-		}
+		})()
 	};
 
 	suite['.race'] = {
