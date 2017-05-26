@@ -4,6 +4,7 @@ import Evented from './Evented';
 import global from './global';
 import IdentityRegistry from './IdentityRegistry';
 import * as lang from './lang';
+import * as base64 from './base64';
 import load from './load';
 import MatchRegistry from './MatchRegistry';
 import on, { emit } from './on';
@@ -28,6 +29,7 @@ const async = {
 export {
 	aspect,
 	async,
+	base64,
 	DateObject,
 	emit,
 	Evented,
