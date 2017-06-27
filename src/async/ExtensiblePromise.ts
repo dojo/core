@@ -203,7 +203,10 @@ export default class ExtensiblePromise<T> {
 	 *
 	 * @returns {ExtensiblePromise}
 	 */
-	then<TResult1 = T, TResult2 = never>(onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2> | void) | undefined | null): ExtensiblePromise<TResult1 | TResult2> {
+	then<TResult1 = T, TResult2 = never>(
+		onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+		onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2> | void) | undefined | null
+	): ExtensiblePromise<TResult1 | TResult2> {
 		const executor: Executor<TResult1> = (resolve, reject) => {
 			function handler(rejected: boolean, valueOrError: T | TResult1 | Error) {
 				const callback: ((value: any) => any) | null | undefined = rejected ? onRejected : onFulfilled;
