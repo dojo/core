@@ -191,6 +191,7 @@ function adviseJoinPoint<F extends GenericFunction<T>, T>(this: any, joinPoint: 
 	}
 	else {
 		dispatcher = getJoinPointDispatcher(joinPoint);
+		// cannot have undefined in map due to code logic, using !
 		const adviceMap = dispatchAdviceMap.get(dispatcher)!;
 		if (type === 'before') {
 			(adviceMap.before || (adviceMap.before = [])).unshift(<JoinPointBeforeAdvice> advice);
@@ -281,6 +282,7 @@ function getDispatcherObject(target: Targetable, methodName: string): Dispatcher
 function getJoinPointDispatcher<F extends GenericFunction<T>, T>(joinPoint: F): F {
 
 	function dispatcher(this: Function, ...args: any[]): T {
+		// cannot have undefined in map due to code logic, using !
 		const { before, after, joinPoint } = dispatchAdviceMap.get(dispatcher)!;
 		if (before) {
 			args = before.reduce((previousArgs, advice) => {
@@ -300,6 +302,7 @@ function getJoinPointDispatcher<F extends GenericFunction<T>, T>(joinPoint: F): 
 	/* We want to "clone" the advice that has been applied already, if this
 	 * joinPoint is already advised */
 	if (dispatchAdviceMap.has(joinPoint)) {
+		// cannot have undefined in map due to code logic, using !
 		const adviceMap = dispatchAdviceMap.get(joinPoint)!;
 		let { before, after } = adviceMap;
 		if (before) {
