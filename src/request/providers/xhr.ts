@@ -18,6 +18,7 @@ import SubscriptionPool from '../SubscriptionPool';
  */
 export interface XhrRequestOptions extends RequestOptions {
 	blockMainThread?: boolean;
+	includeRequestedWithHeader?: boolean;
 }
 
 interface RequestData {
@@ -270,6 +271,7 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 
 	let hasContentTypeHeader = false;
 	let hasRequestedWithHeader = false;
+	const { includeRequestedWithHeader = true } = options;
 
 	if (options.headers) {
 		const requestHeaders = new Headers(options.headers);
@@ -282,7 +284,7 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 		});
 	}
 
-	if (!hasRequestedWithHeader) {
+	if (!hasRequestedWithHeader && includeRequestedWithHeader) {
 		request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	}
 
