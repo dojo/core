@@ -17,7 +17,14 @@ import SubscriptionPool from '../SubscriptionPool';
  * Request options specific to an XHR request
  */
 export interface XhrRequestOptions extends RequestOptions {
+	/**
+	 * Controls whether or not the request is synchronous (blocks the main thread) or asynchronous (default).
+	 */
 	blockMainThread?: boolean;
+	/**
+	 * Controls whether or not the X-Requested-With header is added to the request (default true). Set to false to not
+	 * include the header.
+	 */
 	includeRequestedWithHeader?: boolean;
 }
 
