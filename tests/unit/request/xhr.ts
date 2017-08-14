@@ -579,9 +579,9 @@ function testXhr(baseUrl, testUrl) {
 		xhr.default(testUrl).then(function (response) {
 			return response.json();
 		}).then(function (json) {
-			self.postMessage('success');
+			self.postMessage({ status: 'success' });
 		}).catch(function (e) {
-			self.postMessage(e.message);
+			self.postMessage({ status: 'error', message: e.message });
 		});
 	});
 }
@@ -591,11 +591,13 @@ function testXhr(baseUrl, testUrl) {
 				dfd.reject(error.message);
 			});
 			worker.addEventListener('message', ({ data: result }) => {
-				if (result === 'success') {
+				const { status } = result;
+
+				if (status === 'success') {
 					dfd.resolve();
 				}
-				else {
-					dfd.reject(result);
+				else if (status === 'error') {
+					dfd.reject(result.message);
 				}
 			});
 
