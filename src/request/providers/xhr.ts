@@ -302,7 +302,7 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 	const uploadObserverPool = new SubscriptionPool<number>();
 	task.upload = new Observable<number>(observer => uploadObserverPool.add(observer));
 
-	if (global.window || has('web-worker-xhr-upload')) {
+	if (has('host-browser') || has('web-worker-xhr-upload')) {
 		request.upload.addEventListener('progress', event => {
 			uploadObserverPool.next(event.loaded);
 		});
