@@ -625,7 +625,7 @@ function patchConstruct(target: any, record: ConstructRecord): any {
 }
 
 /**
- * An internal function that take a value from array being patched and the target value from the same
+ * An internal function that takes a value from array being patched and the target value from the same
  * index and determines the value that should actually be patched into the target array
  */
 function resolveTargetValue(patchValue: any, targetValue: any): any {
@@ -642,7 +642,7 @@ function resolveTargetValue(patchValue: any, targetValue: any): any {
 }
 
 /**
- * Compares to plain objects or arrays and return a set of records which describe the differences between the two
+ * Compares two plain objects or arrays and return a set of records which describe the differences between the two
  *
  * The records describe what would need to be applied to the second argument to make it look like the first argument
  *
