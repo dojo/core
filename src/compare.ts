@@ -1,5 +1,6 @@
-import { assign } from './lang';
+import { assign } from '@dojo/shim/object';
 import { keys } from '@dojo/shim/object';
+import Set from '@dojo/shim/Set';
 
 /* Assigning to local variables to improve minification and readability */
 
@@ -35,6 +36,70 @@ export interface DiffOptions {
 }
 
 /**
+ * Interface for a generic constructor function
+ */
+export interface Constructor {
+	new (...args: any[]): object;
+	prototype: object;
+}
+
+/**
+ * A partial property descriptor that provides the property descriptor flags supported by the
+ * complex property construction of `patch()`
+ *
+ * All properties are value properties, with the value being supplied by the `ConstructRecord`
+ */
+export interface ConstructDescriptor {
+	/**
+	 * Is the property configurable?
+	 */
+	configurable?: boolean;
+
+	/**
+	 * Is the property enumerable?
+	 */
+	enumerable?: boolean;
+
+	/**
+	 * Is the property configurable?
+	 */
+	writable?: boolean;
+}
+
+/**
+ * A record that describes a constructor function and arguments necessary to create an instance of
+ * an object
+ */
+export interface AnonymousConstructRecord {
+	/**
+	 * Any arguments to pass to the constructor function
+	 */
+	args?: any[];
+
+	/**
+	 * The constructor function to use to create the instance
+	 */
+	Ctor: Constructor;
+
+	/**
+	 * The partial descriptor that is used to set the value of the instance
+	 */
+	descriptor?: ConstructDescriptor;
+
+	/**
+	 * Any patches to properties that need to occur on the instance
+	 */
+	propertyRecords?: (ConstructRecord | PatchRecord)[];
+}
+
+export interface ConstructRecord extends AnonymousConstructRecord {
+	/**
+	 * The name of the property on the Object
+	 */
+	name: string;
+}
+
+/**
  * A record that describes the mutations necessary to a property of an object to make that property look
  * like another
  */
@@ -67,7 +132,7 @@ export type PatchRecord = {
 		/**
 		 * Additional patch records which describe the value of the property
 		 */
-		valueRecords?: (PatchRecord | SpliceRecord)[];
+		valueRecords?: (ConstructRecord | PatchRecord | SpliceRecord)[];
 	};
 
 /**
@@ -101,6 +166,24 @@ export interface SpliceRecord {
 }
 
 /**
+ * A record that describes how to instantiate a new object via a constructor function
+ * @param Ctor The constructor function
+ * @param args Any arguments to be passed to the constructor function
+ */
+/* tslint:disable:variable-name */
+export function createConstructRecord(Ctor: Constructor, args?: any[], descriptor?: ConstructDescriptor): AnonymousConstructRecord {
+	const record: AnonymousConstructRecord = assign(objectCreate(null), { Ctor });
+	if (args) {
+		record.args = args;
+	}
+	if (descriptor) {
+		record.descriptor = descriptor;
+	}
+	return record;
+}
+/* tslint:enable:variable-name */
+
+/**
  * An internal function that returns a new patch record
  *
  * @param type The type of patch record
@@ -108,7 +191,7 @@ export interface SpliceRecord {
  * @param descriptor The property descriptor to be installed on the object
  * @param valueRecords Any subsequenet patch recrds to be applied to the value of the descriptor
  */
-function createPatchRecord(type: PatchTypes, name: string, descriptor?: PropertyDescriptor, valueRecords?: (PatchRecord | SpliceRecord)[]): PatchRecord {
+function createPatchRecord(type: PatchTypes, name: string, descriptor?: PropertyDescriptor, valueRecords?: (ConstructRecord | PatchRecord | SpliceRecord)[]): PatchRecord {
 	const patchRecord = assign(objectCreate(null), {
 		type,
 		name
@@ -161,6 +244,35 @@ function createValuePropertyDescriptor(value: any, writable: boolean = true, enu
 		enumerable,
 		configurable
 	});
+}
+
+/**
+ * A function that returns a constructor record or `undefined` when diffing a value
+ */
+export type CustomDiffFunction<T> = (value: T, nameOrIndex: string | number, parent: object) => AnonymousConstructRecord | void;
+
+/**
+ * A class which is used when making a custom comparison of a non-plain object or array
+ */
+export class CustomDiff<T> {
+	private _differ: CustomDiffFunction<T>;
+
+	constructor(diff: CustomDiffFunction<T>) {
+		this._differ = diff;
+	}
+
+	/**
+	 * Get the difference of the `value`
+	 * @param value The value to diff
+	 * @param nameOrIndex A `string` if comparing a property or a `number` if comparing an array element
+	 * @param parent The outer parent that this value is part of
+	 */
+	diff(value: T, nameOrIndex: string | number, parent: object): ConstructRecord | void {
+		const record = this._differ(value, nameOrIndex, parent);
+		if (record && typeof nameOrIndex === 'string') {
+			return assign(record, { name: nameOrIndex });
+		}
+	}
 }
 
 /**
@@ -267,73 +379,128 @@ function diffArray(a: any[], b: any, options: DiffOptions): SpliceRecord[] {
  * @param b The second plain bject to compare to
  * @param options An options bag that allows configuration of the behaviour of `diffPlainObject()`
  */
-function diffPlainObject(a: any, b: any, options: DiffOptions): PatchRecord[] {
-	const { allowFunctionValues = false, ignoreProperties = [], ignorePropertyValues = [] } = options;
-	const patchRecords: PatchRecord[] = [];
-
-	function isIgnoredProperty(name: string) {
-		return Array.isArray(ignoreProperties) ? ignoreProperties.some((value) => {
-			return typeof value === 'string' ? name === value : value.test(name);
-		}) : ignoreProperties(name, a, b);
-	}
-
-	function isIgnoredPropertyValue(name: string) {
-		return Array.isArray(ignorePropertyValues) ? ignorePropertyValues.some((value) => {
-			return typeof value === 'string' ? name === value : value.test(name);
-		}) : ignorePropertyValues(name, a, b);
-	}
+function diffPlainObject(a: any, b: any, options: DiffOptions): (ConstructRecord | PatchRecord)[] {
+	const { allowFunctionValues = false, ignorePropertyValues = [] } = options;
+	const patchRecords: (ConstructRecord | PatchRecord)[] = [];
+	const { comparableA, comparableB } = getComparableObjects(a, b, options);
 
 	/* look for keys in a that are different from b */
-	keys(a).reduce((patchRecords, name) => {
-		if (!isIgnoredProperty(name)) {
-			const valueA = a[name];
-			const valueB = b[name];
-			const bHasOwnProperty = hasOwnProperty.call(b, name);
+	keys(comparableA).reduce((patchRecords, name) => {
+		const valueA = a[name];
+		const valueB = b[name];
+		const bHasOwnProperty = hasOwnProperty.call(comparableB, name);
 
-			if (bHasOwnProperty && (valueA === valueB ||
-				(allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function') ||
-				isIgnoredPropertyValue(name))) { /* not different */
-					/* when `allowFunctionValues` is true, functions are simply considered to be equal by `typeof` */
-					return patchRecords;
+		if (bHasOwnProperty && (valueA === valueB ||
+			(allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function'))) { /* not different */
+				/* when `allowFunctionValues` is true, functions are simply considered to be equal by `typeof` */
+				return patchRecords;
+		}
+
+		const type = bHasOwnProperty ? 'update' : 'add';
+
+		const isValueAArray = isArray(valueA);
+		const isValueAPlainObject = isPlainObject(valueA);
+
+		if ((isValueAArray || isValueAPlainObject)) { /* non-primitive values we can diff */
+			/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
+			* we can diff those two values, if not, then we need to use an empty array or an empty object and diff
+			* the valueA with that */
+			const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
+				valueB : isValueAArray ?
+					[] : objectCreate(null);
+			const valueRecords = diff(valueA, value, options);
+			if (valueRecords.length) { /* only add if there are changes */
+				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value, options)));
 			}
-
-			const type = bHasOwnProperty ? 'update' : 'add';
-
-			const isValueAArray = isArray(valueA);
-			const isValueAPlainObject = isPlainObject(valueA);
-
-			if ((isValueAArray || isValueAPlainObject) && !(isIgnoredPropertyValue(name))) { /* non-primitive values we can diff */
-				/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
-				* we can diff those two values, if not, then we need to use an empty array or an empty object and diff
-				* the valueA with that */
-				const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
-					valueB : isValueAArray ?
-						[] : objectCreate(null);
-				const valueRecords = diff(valueA, value, options);
-				if (valueRecords.length) { /* only add if there are changes */
-					patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value, options)));
-				}
+		}
+		else if (isCustomDiff(valueA) && !isCustomDiff(valueB)) { /* complex diff left hand */
+			const result = valueA.diff(valueB, name, b);
+			if (result) {
+				patchRecords.push(result);
 			}
-			else if (isPrimitive(valueA) || (allowFunctionValues && typeof valueA === 'function') || isIgnoredPropertyValue(name)) {
+		}
+		else if (isCustomDiff(valueB)) { /* complex diff right hand */
+			const result = valueB.diff(valueA, name, a);
+			if (result) {
+				patchRecords.push(result);
+			}
+		}
+		else if (isPrimitive(valueA) || (allowFunctionValues && typeof valueA === 'function') ||
+			isIgnoredPropertyValue(name, a, b, ignorePropertyValues)) {
 				/* primitive values, functions values if allowed, or ignored property values can just be copied */
 				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(valueA)));
-			}
-			else {
-				throw new TypeError(`Value of property named "${name}" from first argument is not a primative, plain Object, or Array.`);
-			}
+		}
+		else {
+			throw new TypeError(`Value of property named "${name}" from first argument is not a primative, plain Object, or Array.`);
 		}
 		return patchRecords;
 	}, patchRecords);
 
 	/* look for keys in b that are not in a */
-	keys(b).reduce((patchRecords, name) => {
-		if (!hasOwnProperty.call(a, name) && !isIgnoredProperty(name)) {
+	keys(comparableB).reduce((patchRecords, name) => {
+		if (!hasOwnProperty.call(comparableA, name)) {
 			patchRecords.push(createPatchRecord('delete', name));
 		}
 		return patchRecords;
 	}, patchRecords);
 
 	return patchRecords;
+}
+
+/**
+ * Takes two plain objects to be compared, as well as options customizing the behavior of the comparison, and returns
+ * two new objects that contain only those properties that should be compared. If a property is ignored
+ * it will not be included in either returned object. If a property's value should be ignored it will be excluded
+ * if it is present in both objects.
+ * @param a The first object to compare
+ * @param b The second object to compare
+ * @param options An options bag indicating which properties should be ignored or have their values ignored, if any.
+ */
+export function getComparableObjects(a: any, b: any, options: DiffOptions) {
+	const { ignoreProperties = [], ignorePropertyValues = [] } = options;
+	const ignore = new Set<string>();
+	const keep = new Set<string>();
+
+	const isIgnoredProperty = Array.isArray(ignoreProperties) ? (name: string) => {
+		return ignoreProperties.some((value) => typeof value === 'string' ? name === value : value.test(name));
+	} : (name: string) => ignoreProperties(name, a, b);
+
+	const comparableA = keys(a).reduce((obj, name) => {
+		if (isIgnoredProperty(name) ||
+			hasOwnProperty.call(b, name) && isIgnoredPropertyValue(name, a, b, ignorePropertyValues)) {
+				ignore.add(name);
+				return obj;
+		}
+
+		keep.add(name);
+		obj[name] = a[name];
+		return obj;
+	}, {} as { [key: string]: any });
+
+	const comparableB = keys(b).reduce((obj, name) => {
+		if (ignore.has(name) || !keep.has(name) && isIgnoredProperty(name)) {
+			return obj;
+		}
+
+		obj[name] = b[name];
+		return obj;
+	}, {} as { [key: string]: any });
+
+	return { comparableA, comparableB, ignore };
+}
+
+/**
+ * A guard that determines if the value is a `ConstructRecord`
+ * @param value The value to check
+ */
+function isConstructRecord(value: any): value is ConstructRecord {
+	return Boolean(value && typeof value === 'object' && value !== null && value.Ctor && value.name);
+}
+
+function isIgnoredPropertyValue(name: string, a: any, b: any, ignoredPropertyValues: (string | RegExp)[] | IgnorePropertyFunction) {
+	return Array.isArray(ignoredPropertyValues) ? ignoredPropertyValues.some((value) => {
+		return typeof value === 'string' ? name === value : value.test(name);
+	}) : ignoredPropertyValues(name, a, b);
 }
 
 /**
@@ -381,6 +548,14 @@ function isPrimitive(value: any): value is (string | number | boolean | undefine
 		typeofValue === 'string' ||
 		typeofValue === 'number' ||
 		typeofValue === 'boolean';
+}
+
+/**
+ * A guard that determines if the value is a `CustomDiff`
+ * @param value The value to check
+ */
+function isCustomDiff<T>(value: any): value is CustomDiff<T> {
+	return typeof value === 'object' && value instanceof CustomDiff;
 }
 
 /**
@@ -433,6 +608,22 @@ function patchPatch(target: any, record: PatchRecord): any {
 	return target;
 }
 
+const defaultConstructDescriptor = {
+	configurable: true,
+	enumerable: true,
+	writable: true
+};
+
+function patchConstruct(target: any, record: ConstructRecord): any {
+	const { args, descriptor = defaultConstructDescriptor, Ctor, name, propertyRecords } = record;
+	const value = new Ctor(...(args || []));
+	if (propertyRecords) {
+		propertyRecords.forEach((record) => isConstructRecord(record) ? patchConstruct(value, record) : patchPatch(value, record));
+	}
+	defineProperty(target, name, assign({ value }, descriptor));
+	return target;
+}
+
 /**
  * An internal function that take a value from array being patched and the target value from the same
  * index and determines the value that should actually be patched into the target array
@@ -459,7 +650,7 @@ function resolveTargetValue(patchValue: any, targetValue: any): any {
  * @param b The plain object or array to compare to
  * @param options An options bag that allows configuration of the behaviour of `diff()`
  */
-export function diff(a: any, b: any, options: DiffOptions = {}): (PatchRecord | SpliceRecord)[] {
+export function diff(a: any, b: any, options: DiffOptions = {}): (ConstructRecord | PatchRecord | SpliceRecord)[] {
 	if (typeof a !== 'object' || typeof b !== 'object') {
 		throw new TypeError('Arguments are not of type object.');
 	}
@@ -485,7 +676,7 @@ export function diff(a: any, b: any, options: DiffOptions = {}): (PatchRecord | 
  * @param target The plain object or array that the patch records should be applied to
  * @param records A set of patch records to be applied to the target
  */
-export function patch(target: any, records: (PatchRecord | SpliceRecord)[]): any {
+export function patch(target: any, records: (ConstructRecord | PatchRecord | SpliceRecord)[]): any {
 	if (!isArray(target) && !isPlainObject(target)) {
 		throw new TypeError('A target for a patch must be either an array or a plain object.');
 	}
@@ -494,10 +685,10 @@ export function patch(target: any, records: (PatchRecord | SpliceRecord)[]): any
 	}
 
 	records.forEach((record) => {
-		target = isSpliceRecord(record) ?
-			patchSplice(isArray(target) ?
-				target : [], record) : patchPatch(isPlainObject(target) ?
-					target : objectCreate(null), record);
+		target = isSpliceRecord(record)
+			? patchSplice(isArray(target) ? target : [], record) /* patch arrays */
+			: isConstructRecord(record) ? patchConstruct(target, record) /* patch complex object */
+				: patchPatch(isPlainObject(target) ? target : {}, record); /* patch plain object */
 	});
 	return target;
 }
