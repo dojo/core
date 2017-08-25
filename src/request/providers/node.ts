@@ -10,38 +10,113 @@ import { deepAssign } from '../../lang';
 import { queueTask } from '../../queue';
 import { createTimer } from '../../util';
 import Headers from '../Headers';
-import { RequestOptions } from '../interfaces';
+import { RequestOptions, UploadObservableTask } from '../interfaces';
 import Response from '../Response';
 import TimeoutError from '../TimeoutError';
+import { Readable } from 'stream';
+import Observable from '../../Observable';
+import SubscriptionPool from '../SubscriptionPool';
 
 /**
- * Request options specific to a node request
+ * Request options specific to a node request. For HTTPS options, see
+ * https://nodejs.org/api/tls.html#tls_tls_connect_options_callback for more details.
  */
 export interface NodeRequestOptions extends RequestOptions {
+	/**
+	 * User-agent header
+	 */
 	agent?: any;
+	/**
+	 * If specified, the request body is read from the stream specified here, rather than from the `body` field.
+	 */
+	bodyStream?: Readable;
+	/**
+	 * HTTPS optionally override the trusted CA certificates
+	 */
 	ca?: any;
+	/**
+	 * HTTPS optional cert chains in PEM format. One cert chain should be provided per private key.
+	 */
 	cert?: string;
+	/**
+	 * HTTPS optional cipher suite specification
+	 */
 	ciphers?: string;
 	dataEncoding?: string;
+	/**
+	 * Whether or not to automatically follow redirects (default true)
+	 */
 	followRedirects?: boolean;
+	/**
+	 * HTTPS optional private key in PEM format.
+	 */
 	key?: string;
+	/**
+	 * Local interface to bind for network connections.
+	 */
 	localAddress?: string;
+	/**
+	 * HTTPS optional shared passphrase used for a single private key and/or a PFX.
+	 */
 	passphrase?: string;
+	/**
+	 * HTTPS optional PFX or PKCS12 encoded private key and certificate chain.
+	 */
 	pfx?: any;
+	/**
+	 * Optional proxy address. If specified, requests will be sent through this url.
+	 */
 	proxy?: string;
+	/**
+	 * HTTPS If not false the server will reject any connection which is not authorized with the list of supplied CAs
+	 */
 	rejectUnauthorized?: boolean;
+	/**
+	 * HTTPS optional SSL method to use, default is "SSLv23_method"
+	 */
 	secureProtocol?: string;
+	/**
+	 * Unix Domain Socket (use one of host:port or socketPath)
+	 */
 	socketPath?: string;
+	/**
+	 * Whether or not to add the gzip and deflate accept headers (default true)
+	 */
 	acceptCompression?: boolean;
+	/**
+	 * A set of options to set on the HTTP request
+	 */
 	socketOptions?: {
+		/**
+		 * Enable/disable keep-alive functionality, and optionally set the initial delay before the first keepalive probe is sent on an idle socket.
+		 */
 		keepAlive?: number;
+		/**
+		 * Disables the Nagle algorithm. By default TCP connections use the Nagle algorithm, they buffer data before sending it off.
+		 */
 		noDelay?: boolean;
+		/**
+		 * Number of milliseconds before the HTTP request times out
+		 */
 		timeout?: number;
 	};
+	/**
+	 * Stream encoding on incoming HTTP response
+	 */
 	streamEncoding?: string;
+	/**
+	 * Options to control redirect follow logic
+	 */
 	redirectOptions?: {
+		/**
+		 * The limit to the number of redirects that will be followed (default 15). This is used to prevent infinite
+		 * redirect loops.
+		 */
 		limit?: number;
 		count?: number;
+		/**
+		 * Whether or not to keep the original HTTP method during 301 redirects (default false).
+		 */
 		keepOriginalMethod?: boolean;
 	};
 }
@@ -88,12 +163,14 @@ interface HttpsOptions extends Options {
 interface RequestData {
 	task: Task<http.IncomingMessage>;
 	buffer: any[];
-	data: string;
+	data: Buffer;
 	size: number;
 	used: boolean;
 	nativeResponse: http.IncomingMessage;
 	requestOptions: NodeRequestOptions;
 	url: string;
+	downloadObservable: Observable<number>;
+	dataObservable: Observable<any>;
 }
 
 const dataMap = new WeakMap<NodeResponse, RequestData>();
@@ -105,7 +182,7 @@ const discardedDuplicates = new Set<string>([
 ]);
 
 function getDataTask(response: NodeResponse): Task<RequestData> {
-	const data = dataMap.get(response);
+	const data = dataMap.get(response)!;
 
 	if (data.used) {
 		return Task.reject<any>(new TypeError('Body already read'));
@@ -128,19 +205,27 @@ export class NodeResponse extends Response {
 	downloadBody = true;
 
 	get bodyUsed(): boolean {
-		return dataMap.get(this).used;
+		return dataMap.get(this)!.used;
 	}
 
 	get nativeResponse(): http.IncomingMessage {
-		return dataMap.get(this).nativeResponse;
+		return dataMap.get(this)!.nativeResponse;
 	}
 
 	get requestOptions(): NodeRequestOptions {
-		return dataMap.get(this).requestOptions;
+		return dataMap.get(this)!.requestOptions;
 	}
 
 	get url(): string {
-		return dataMap.get(this).url;
+		return dataMap.get(this)!.url;
+	}
+
+	get download(): Observable<number> {
+		return dataMap.get(this)!.downloadObservable;
+	}
+
+	get data(): Observable<any> {
+		return dataMap.get(this)!.dataObservable;
 	}
 
 	constructor(response: http.IncomingMessage) {
@@ -148,18 +233,13 @@ export class NodeResponse extends Response {
 
 		const headers = this.headers = new Headers();
 		for (let key in response.headers) {
-			if (discardedDuplicates.has(key)) {
-				headers.append(key, response.headers[key]);
-			}
-			else if (key === 'set-cookie') {
-				(<string[]> response.headers[key]).forEach(value => {
+			const value = response.headers[key];
+			if (value) {
+				if (discardedDuplicates.has(key) && !Array.isArray(value)) {
 					headers.append(key, value);
-				});
-			}
-			else {
-				const values: string[] = response.headers[key].split(', ');
-				values.forEach(value => {
-					headers.append(key, value);
+				}
+				(Array.isArray(value) ? value : value.split(/\s*,\s*/)).forEach((v) => {
+					headers.append(key, v);
 				});
 			}
 		}
@@ -172,12 +252,7 @@ export class NodeResponse extends Response {
 	arrayBuffer(): Task<ArrayBuffer> {
 		return <any> getDataTask(this).then(data => {
 			if (data) {
-				if (<any> data.data instanceof Buffer) {
-					return data.data;
-				}
-				else {
-					return Buffer.from(data.data, 'utf8');
-				}
+				return data.data;
 			}
 
 			return new Buffer([]);
@@ -242,13 +317,13 @@ export function getAuth(proxyAuth: string | undefined, options: NodeRequestOptio
 	}
 
 	if (options.user || options.password) {
-		return encodeURIComponent(options.user || '') + ':' + encodeURIComponent(options.password || '');
+		return `${ options.user || '' }:${ options.password || '' }`;
 	}
 
 	return undefined;
 }
 
-export default function node(url: string, options: NodeRequestOptions = {}): Task<Response> {
+export default function node(url: string, options: NodeRequestOptions = {}): UploadObservableTask<Response> {
 	const parsedUrl = urlUtil.parse(options.proxy || url);
 
 	const requestOptions: HttpsOptions = {
@@ -300,7 +375,9 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 	const request = parsedUrl.protocol === 'https:' ? https.request(requestOptions) : http.request(requestOptions);
 
-	const task = new Task<Response>((resolve, reject) => {
+	const uploadObserverPool = new SubscriptionPool<number>();
+
+	const requestTask = <UploadObservableTask<Response>> new Task<Response>((resolve, reject) => {
 		let timeoutHandle: Handle;
 		let timeoutReject: Function = reject;
 
@@ -418,6 +495,9 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 			options.streamEncoding && message.setEncoding(options.streamEncoding);
 
+			const downloadSubscriptionPool = new SubscriptionPool<number>();
+			const dataSubscriptionPool = new SubscriptionPool<any>();
+
 			/*
 			 [RFC 2616](https://tools.ietf.org/html/rfc2616#page-118) says that content-encoding can have multiple
 			 values, so we split them here and put them in a list to process later.
@@ -429,21 +509,12 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 				// we queue this up for later to allow listeners to register themselves before we start receiving data
 				queueTask(() => {
-					response.emit({
-						type: 'start',
-						response
-					});
-
 					/*
 					 * Note that this is the raw data, if your input stream is zipped, and you are piecing
 					 * together the downloaded data, you'll have to decompress it yourself
 					 */
 					message.on('data', (chunk: any) => {
-						response.emit({
-							type: 'data',
-							response,
-							chunk: chunk
-						});
+						dataSubscriptionPool.next(chunk);
 
 						if (response.downloadBody) {
 							data.buffer.push(chunk);
@@ -453,11 +524,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							Buffer.byteLength(chunk, options.streamEncoding) :
 							chunk.length;
 
-						response.emit({
-							type: 'progress',
-							response,
-							totalBytesDownloaded: data.size
-						});
+						downloadSubscriptionPool.next(data.size);
 					});
 
 					message.once('end', () => {
@@ -471,9 +538,9 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 							 content, so do undo the encoding we have to start at the end and work backwards.
 							 */
 							if (contentEncodings.length) {
-								const encoding = contentEncodings.pop()!.trim();
+								const encoding = contentEncodings.pop()!.trim().toLowerCase();
 
-								if (encoding === '' || encoding === 'identity') {
+								if (encoding === '' || encoding === 'none' || encoding === 'identity') {
 									// do nothing, response stream is as-is
 									handleEncoding();
 								}
@@ -502,12 +569,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 								}
 							}
 							else {
-								data.data = String(dataAsBuffer);
-
-								response.emit({
-									type: 'end',
-									response
-								});
+								data.data = dataAsBuffer;
 
 								resolve(message);
 							}
@@ -523,12 +585,14 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 			const data: RequestData = {
 				task,
 				buffer: [],
-				data: '',
+				data: Buffer.alloc(0),
 				size: 0,
 				used: false,
 				url: url,
 				requestOptions: options,
-				nativeResponse: message
+				nativeResponse: message,
+				downloadObservable: new Observable<number>(observer => downloadSubscriptionPool.add(observer)),
+				dataObservable: new Observable<any>(observer => dataSubscriptionPool.add(observer))
 			};
 
 			dataMap.set(response, data);
@@ -538,13 +602,28 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 
 		request.once('error', reject);
 
-		if (options.body) {
-			if (options.body instanceof Buffer) {
-				request.end(options.body.toString());
-			}
-			else {
-				request.end(options.body.toString());
-			}
+		if (options.bodyStream) {
+			options.bodyStream.pipe(request);
+			let uploadedSize = 0;
+
+			options.bodyStream.on('data', (chunk: any) => {
+				uploadedSize += chunk.length;
+				uploadObserverPool.next(uploadedSize);
+			});
+
+			options.bodyStream.on('end', () => {
+				uploadObserverPool.complete();
+				request.end();
+			});
+		}
+		else if (options.body) {
+			const body = options.body.toString();
+
+			request.on('response', () => {
+				uploadObserverPool.next(body.length);
+			});
+
+			request.end(body);
 		}
 		else {
 			request.end();
@@ -570,5 +649,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Tas
 		throw error;
 	});
 
-	return task;
+	requestTask.upload = new Observable<number>(observer => uploadObserverPool.add(observer));
+
+	return requestTask;
 }

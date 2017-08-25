@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { createServer } from 'http';
 import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
@@ -12,6 +13,8 @@ const serverUrl = 'http://localhost:' + serverPort;
 let server: any;
 let proxy: any;
 let requestData: string;
+
+const blobFileSize = fs.statSync('tests/support/data/blob.gif').size;
 
 interface DummyResponse {
 	body?: string | ((callback: Function) => void);
@@ -190,6 +193,12 @@ const responseData: { [url: string]: DummyResponse } = {
 		headers: {
 			'Content-Encoding': 'gzip, deflate'
 		}
+	},
+	'blob.gif': {
+		statusCode: 200,
+		body: function (callback: any) {
+			callback(fs.readFileSync('tests/support/data/blob.gif'));
+		}
 	}
 };
 
@@ -261,6 +270,15 @@ function buildRedirectTests(methods: RedirectTestData[]) {
 
 function getResponseData(request: any): DummyResponse {
 	const urlInfo = parse(request.url, true);
+
+	if (urlInfo.query.dataKey === 'echo') {
+		return {
+			body: JSON.stringify({
+				headers: request.headers
+			})
+		};
+	}
+
 	return responseData[ urlInfo.query.dataKey ] || {};
 }
 
@@ -271,6 +289,18 @@ function getRequestUrl(dataKey: string): string {
 function getAuthRequestUrl(dataKey: string, user: string = 'user', password: string = 'password'): string {
 	const requestUrl = getRequestUrl(dataKey);
 	return requestUrl.slice(0, 7) + user + ':' + password + '@' + requestUrl.slice(7);
+}
+
+function assertBasicAuthentication(options: { user?: string, password?: string }, expectedAuth: string, dfd: any) {
+	nodeRequest(getRequestUrl('foo.json'), options).then(
+		dfd.callback(function (response: any) {
+			const actual: string = response.nativeResponse.req._headers.authorization;
+			const expected = `Basic ${ new Buffer(expectedAuth).toString('base64') }`;
+
+			assert.strictEqual(actual, expected);
+		}),
+		dfd.reject.bind(dfd)
+	);
 }
 
 registerSuite({
@@ -366,6 +396,17 @@ registerSuite({
 			}
 		},
 
+		bodyStream: {
+			'stream is read'(this: any) {
+				return nodeRequest(getRequestUrl('echo'), {
+					method: 'POST',
+					bodyStream: fs.createReadStream('tests/support/data/foo.json')
+				}).then(res => res.json()).then(json => {
+					assert.deepEqual(requestData, { foo: 'bar' });
+				});
+			}
+		},
+
 		'content encoding': (function (compressionTypes) {
 			const suites: { [key: string]: any } = {};
 
@@ -413,49 +454,35 @@ registerSuite({
 
 		'user and password': {
 			both(this: any): void {
-				const dfd = this.async();
-				nodeRequest(getRequestUrl('foo.json'), {
-					user: 'user name',
-					password: 'pass word'
-				}).then(
-					dfd.callback(function (response: any) {
-						const actual: string = response.nativeResponse.req._headers.authorization;
-						const expected: string = 'Basic ' + new Buffer('user%20name:pass%20word').toString('base64');
-
-						assert.strictEqual(actual, expected);
-					}),
-					dfd.reject.bind(dfd)
-				);
+				const user = 'user name';
+				const password = 'pass word';
+				assertBasicAuthentication({
+					user,
+					password
+				}, `${ user }:${ password }`, this.async());
 			},
 
 			'user only'(this: any): void {
-				const dfd = this.async();
-				nodeRequest(getRequestUrl('foo.json'), {
-					user: 'user name'
-				}).then(
-					dfd.callback(function (response: any) {
-						const actual: string = response.nativeResponse.req._headers.authorization;
-						const expected: string = 'Basic ' + new Buffer('user%20name:').toString('base64');
-
-						assert.strictEqual(actual, expected);
-					}),
-					dfd.reject.bind(dfd)
-				);
+				const user = 'user name';
+				assertBasicAuthentication({
+					user
+				}, `${ user }:`, this.async());
 			},
 
 			'password only'(this: any): void {
-				const dfd = this.async();
-				nodeRequest(getRequestUrl('foo.json'), {
-					password: 'pass word'
-				}).then(
-					dfd.callback(function (response: any) {
-						const actual: string = response.nativeResponse.req._headers.authorization;
-						const expected: string = 'Basic ' + new Buffer(':pass%20word').toString('base64');
+				const password = 'pass word';
+				assertBasicAuthentication({
+					password
+				}, `:${ password }`, this.async());
+			},
 
-						assert.strictEqual(actual, expected);
-					}),
-					dfd.reject.bind(dfd)
-				);
+			'special characters'(this: any): void {
+				const user = '$pecialUser';
+				const password = '__!passW@rd';
+				assertBasicAuthentication({
+					user,
+					password
+				}, `${ user }:${ password }`, this.async());
 			},
 
 			error(this: any): void {
@@ -514,6 +541,69 @@ registerSuite({
 						assert.strictEqual(error.name, 'TimeoutError');
 					})
 				);
+		},
+		'upload monitoriting': {
+			'with a stream'(this: any) {
+				let events: number[] = [];
+
+				const req = nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					bodyStream: fs.createReadStream('tests/support/data/foo.json')
+				});
+
+				req.upload.subscribe(totalBytesUploaded => {
+					events.push(totalBytesUploaded);
+				});
+
+				return req.then(res => {
+					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
+					assert.equal(events[events.length - 1], 17);
+				});
+			},
+			'without a stream'(this: any) {
+				let events: number[] = [];
+
+				const req = nodeRequest(getRequestUrl('foo.json'), {
+					method: 'POST',
+					body: '{ "foo": "bar" }\n'
+				});
+
+				req.upload.subscribe(totalBytesUploaded => {
+					events.push(totalBytesUploaded);
+				});
+
+				return req.then(res => {
+					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
+					assert.equal(events[events.length - 1], 17);
+				});
+			}
+		},
+		'download events'() {
+			let downloadEvents: number[] = [];
+
+			return nodeRequest(getRequestUrl('foo.json')).then(response => {
+				response.download.subscribe(totalBytesDownloaded => {
+					downloadEvents.push(totalBytesDownloaded);
+				});
+
+				return response.text().then(() => {
+					assert.isTrue(downloadEvents.length > 0);
+				});
+			});
+		},
+
+		'data events'() {
+			let data: number[] = [];
+
+			return nodeRequest(getRequestUrl('foo.json')).then(response => {
+				response.data.subscribe(chunk => {
+					data.push(chunk);
+				});
+
+				return response.text().then(() => {
+					assert.isTrue(data.length > 0);
+				});
+			});
 		}
 	},
 
@@ -615,29 +705,34 @@ registerSuite({
 		},
 
 		'data cannot be used twice'() {
-			return nodeRequest(getRequestUrl('foo.json')).then((response?: Response) => {
-				if (response) {
-					assert.isFalse(response.bodyUsed);
+			return nodeRequest(getRequestUrl('foo.json')).then((response) => {
+				assert.isFalse(response.bodyUsed);
+
+				return response.json().then(() => {
+					assert.isTrue(response.bodyUsed);
 
 					return response.json().then(() => {
-						assert.isTrue(response.bodyUsed);
-
-						return response.json().then(() => {
-							throw new Error('should not have succeeded');
-						}, () => {
-							return true;
-						});
+						throw new Error('should not have succeeded');
+					}, () => {
+						return true;
 					});
-				}
+				});
 			});
 		},
 
 		'response types': {
-			'arrayBuffer'() {
+			'arrayBuffer with binary content'() {
+				return nodeRequest(getRequestUrl('blob.gif')).then((response: any) => {
+					return response.arrayBuffer().then((arrayBuffer: any) => {
+						assert.strictEqual(arrayBuffer.byteLength, blobFileSize);
+					});
+				});
+			},
+
+			'arrayBuffer with text content'() {
 				return nodeRequest(getRequestUrl('foo.json')).then((response: any) => {
 					return response.arrayBuffer().then((arrayBuffer: any) => {
-						assert.isAbove(arrayBuffer.byteLength, 0);
-						assert.isAbove(arrayBuffer.length, 0);
+						assert.strictEqual(arrayBuffer.byteLength, JSON.stringify({ foo: 'bar' }).length);
 					});
 				});
 			},
