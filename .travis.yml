@@ -26,6 +26,7 @@ script:
 - grunt intern:browserstack --combined
 - grunt remapIstanbul:ci
 - grunt uploadCoverage
+- grunt dist
 - if [ "$TRAVIS_BRANCH" = "master" ]; then grunt doc; fi
 notifications:
   slack:

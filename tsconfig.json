@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"declaration": false,
+		"declaration": true,
 		"experimentalDecorators": true,
 		"lib": [
 			"dom",
