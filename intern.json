@@ -1,0 +1,85 @@
+{
+	"environments": [
+		{ "browserName": "node" }
+	],
+
+	"functionalSuites": [
+		"./_build/tests/functional/**/*.js"
+	],
+
+	"browser": {
+		"suites": [
+			"./_build/tests/unit/all.js"
+		],
+
+		"loader": {
+			"script": "dojo2",
+			"options": {
+				"packages": [
+					{ "name": "src", "location": "_build/src" },
+					{ "name": "tests", "location": "_build/tests" },
+					{ "name": "dojo", "location": "node_modules/intern/browser_modules/dojo" },
+					{ "name": "@dojo", "location": "node_modules/@dojo" },
+					{ "name": "sinon", "location": "node_modules/sinon/pkg", "main": "sinon" },
+					{ "name": "grunt-dojo2", "location": "node_modules/grunt-dojo2"}
+				]
+			}
+		}
+	},
+
+	"node": {
+		"plugins": [
+			"./_build/tests/plugins/echo-service.js"
+		],
+
+		"suites": [
+			"./_build/tests/unit/**/*.js",
+			"!./_build/tests/unit/**/all.js",
+			"!./_build/tests/unit/on/browserOnly.js",
+			"!./_build/tests/unit/request/xhr.js",
+			"!./_build/tests/unit/request_browser.js",
+			"!./_build/tests/unit/text_browser.js",
+			"!./_build/tests/unit/text_node.js",
+			"!./_build/tests/unit/text.js"
+		]
+	},
+
+	"configs": {
+		"oldDefaults": {
+			"environments": [
+				{ "browserName": "internet explorer", "version": "11" },
+				{ "browserName": "edge" },
+				{ "browserName": "firefox", "platform": "WINDOWS" },
+				{ "browserName": "chrome", "platform": "WINDOWS" }
+			]
+		},
+
+		"coverage": {
+			"coverage": [
+				"./_build/src/**/*.js"
+			]
+		},
+
+		"local": {
+			"extends": [ "coverage" ],
+
+			"tunnel": "selenium",
+			"tunnelOptions": {},
+
+			"environments+": [
+				{ "browserName": "chrome" }
+			]
+		},
+
+		"saucelabs": {
+			"tunnel": "saucelabs",
+			"tunnelOptions": {
+			},
+			"environments": [
+				{ "browserName": "internet explorer", "version": [ "11.0" ], "platform": "Windows 7" },
+				{ "browserName": "firefox", "version": "43", "platform": "Windows 10" },
+				{ "browserName": "chrome", "platform": "Windows 10" }
+			]
+		}
+	}
+}

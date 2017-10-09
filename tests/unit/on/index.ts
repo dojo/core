@@ -2,20 +2,24 @@ import common from './common';
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import on, { emit } from '../../../src/on';
-import * as events from 'events';
+import Evented from '../../../src/Evented';
 
-function createTarget() {
-	return new events.EventEmitter();
-}
+registerSuite('events - Evented', {
+	'cannot target non-emitter': function () {
+		assert.throws(function () {
+			on(<any> {}, 'test', function () {});
+		});
+	},
 
-registerSuite('events - EventEmitter', {
 	'common cases': common({
 		eventName: 'test',
-		createTarget: createTarget
+		createTarget: function () {
+			return new Evented();
+		}
 	}),
 
 	'emit return value'() {
-		const target = createTarget();
+		const target = new Evented();
 		assert.isFalse(emit(target, { type: 'test' }));
 
 		const handle = on(target, 'test', function () {});

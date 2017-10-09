@@ -17,17 +17,15 @@
  * Further discussion: https://github.com/dojo/core/issues/107
  */
 
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 import * as sinon from 'sinon';
 import { Handle } from '@dojo/interfaces/core';
 import * as util from '../../src/util';
 
 const TIMEOUT = 3000;
 
-registerSuite({
-	name: 'utility functions',
-
+registerSuite('utility functions', {
 	createTimer: (function () {
 		let timer: Handle | null;
 
@@ -70,9 +68,15 @@ registerSuite({
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.debounce(dfd.callback(function(this: any) {
-					assert.strictEqual(this, foo, 'Function should be executed with correct context');
-				}), 0)
+				bar: util.debounce(function (this: any) {
+					try {
+						assert.strictEqual(this, foo, 'Function should be executed with correct context');
+						dfd.resolve();
+					}
+					catch (e) {
+						dfd.reject(e);
+					}
+				}, 0)
 			};
 
 			foo.bar();
@@ -126,9 +130,15 @@ registerSuite({
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttle(dfd.callback(function(this: any) {
-					assert.strictEqual(this, foo, 'Function should be executed with correct context');
-				}), 0)
+				bar: util.throttle(function (this: any) {
+					try {
+						assert.strictEqual(this, foo, 'Function should be executed with correct context');
+						dfd.resolve();
+					}
+					catch (e) {
+						dfd.reject(e);
+					}
+				}, 0)
 			};
 
 			foo.bar();
@@ -194,9 +204,15 @@ registerSuite({
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttleAfter(dfd.callback(function(this: any) {
-					assert.strictEqual(this, foo, 'Function should be executed with correct context');
-				}), 0)
+				bar: util.throttleAfter(function (this: any) {
+					try {
+						assert.strictEqual(this, foo, 'Function should be executed with correct context');
+						dfd.resolve();
+					}
+					catch (e) {
+						dfd.reject(e);
+					}
+				}, 0)
 			};
 
 			foo.bar();

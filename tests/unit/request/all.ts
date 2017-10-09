@@ -1,2 +1,2 @@
-import 'intern/dojo/has!host-node?./node:./xhr';
+import './xhr';
 import './SubscriptionPool';

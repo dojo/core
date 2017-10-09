@@ -1,21 +1,21 @@
-import intern = require('intern');
-import echo = require('intern/dojo/has!host-node?./services/echo');
+// import intern = require('intern');
+// import echo = require('intern/dojo/has!host-node?./services/echo');
 
-let server: any;
+// let server: any;
 
 // This hook is called when Intern starts
-export function setup() {
+/*export function setup() {
 	if (echo && intern.mode === 'runner') {
 		echo.start().then(function (_server: any) {
 			server = _server;
 		});
 	}
-}
+}*/
 
 // This hook is called when Intern closes
-export function teardown() {
+/*export function teardown() {
 	server && server.close();
-}
+}*/
 
 export const proxyPort = 9000;
 

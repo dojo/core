@@ -1,13 +1,11 @@
 import Promise from '@dojo/shim/Promise';
-import * as assert from 'intern/chai!assert';
-import * as registerSuite from 'intern!object';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
+import { Tests } from 'intern/lib/interfaces/object';
 import has from '../../../src/has';
 import { isPlugin, useDefault } from '../../../src/load/util';
-import global from '../../../src/global';
 
-const suite: any = {
-	name: 'load/util',
-
+const suite: Tests = {
 	isPlugin() {
 		assert.isFalse(isPlugin(null));
 		assert.isFalse(isPlugin(2));
@@ -50,7 +48,7 @@ const suite: any = {
 };
 
 if (has('host-node')) {
-	const nodeRequire: any = global.require.nodeRequire;
+	const nodeRequire: any = require;
 	const path: any = nodeRequire('path');
 	const buildDir: string = path.join(process.cwd(), '_build');
 
@@ -67,4 +65,4 @@ if (has('host-node')) {
 	};
 }
 
-registerSuite(suite);
+registerSuite('load/util', suite);
