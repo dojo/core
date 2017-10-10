@@ -48,7 +48,7 @@ const suite: Tests = {
 };
 
 if (has('host-node')) {
-	const nodeRequire: any = require;
+	const nodeRequire: any = (<any> require).nodeRequire || require;
 	const path: any = nodeRequire('path');
 	const buildDir: string = path.join(process.cwd(), '_build');
 
@@ -56,8 +56,8 @@ if (has('host-node')) {
 		'useDefault resolves es modules'(this: any) {
 			const def = this.async(5000);
 
-			const result: Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).succeedDefault;
-			result.then(def.callback(function ([ a, b ]: [ any, any ]) {
+			const result: () => Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).succeedDefault;
+			result().then(def.callback(function ([ a, b ]: [ any, any ]) {
 				assert.deepEqual(a, 'A');
 				assert.deepEqual(b, 'B');
 			}));

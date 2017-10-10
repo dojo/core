@@ -13,7 +13,7 @@ declare const require: RootRequire;
 
 const suite: ObjectSuiteDescriptor = {
 	before() {
-		return load('tests/support/load/a', 'tests/support/load/b', 'tests/support/load/c') as Promise<any>;
+		return load(require, '../support/load/a', '../support/load/b', '../support/load/c') as Promise<any>;
 	},
 
 	tests: {
@@ -125,7 +125,7 @@ const suite: ObjectSuiteDescriptor = {
 };
 
 if (has('host-node')) {
-	const nodeRequire: any = require;
+	const nodeRequire: any = (<any> require).nodeRequire || require;
 	const path: any = nodeRequire('path');
 	const buildDir: string = path.join(process.cwd(), '_build');
 
@@ -133,8 +133,8 @@ if (has('host-node')) {
 		'global load succeeds'(this: any) {
 			const def = this.async(5000);
 
-			const result: Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).globalSucceed;
-			result.then(def.callback(function ([ fs, path ]: [ any, any ]) {
+			const result: () => Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).globalSucceed;
+			result().then(def.callback(function ([ fs, path ]: [ any, any ]) {
 				assert.strictEqual(fs, nodeRequire('fs'));
 				assert.strictEqual(path, nodeRequire('path'));
 			}));
@@ -143,8 +143,8 @@ if (has('host-node')) {
 		'global load with relative path fails'(this: any) {
 			const def = this.async(5000);
 
-			const result: Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).globalFail;
-			result.then(function () {
+			const result: () => Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).globalFail;
+			result().then(function () {
 				def.reject(new Error('load should not have succeeded'));
 			}, def.callback(function (error: Error) {
 				assert.instanceOf(error, Error);
@@ -154,8 +154,8 @@ if (has('host-node')) {
 		'contextual load succeeds'(this: any) {
 			const def = this.async(5000);
 
-			const result: Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).succeed;
-			result.then(def.callback(function ([ a, b ]: [ any, any ]) {
+			const result: () => Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).succeed;
+			result().then(def.callback(function ([ a, b ]: [ any, any ]) {
 				assert.deepEqual(a, { 'default': 'A', one: 1, two: 2 });
 				assert.deepEqual(b, { 'default': 'B', three: 3, four: 4 });
 			}));
@@ -164,8 +164,8 @@ if (has('host-node')) {
 		'contextual load with non-existent module fails'(this: any) {
 			const def = this.async(5000);
 
-			const result: Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).fail;
-			result.then(function () {
+			const result: () => Promise<any[]> = nodeRequire(path.join(buildDir, 'tests', 'support', 'load', 'node')).fail;
+			result().then(function () {
 				def.reject(new Error('load should not have succeeded'));
 			}, def.callback(function (error: Error) {
 				assert.instanceOf(error, Error);

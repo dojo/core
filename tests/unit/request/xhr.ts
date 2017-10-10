@@ -1,8 +1,6 @@
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 
-import dojoCoreXhr from '@dojo/core/request/providers/xhr';
-
 import xhrRequest, { XhrResponse } from '../../../src/request/providers/xhr';
 import { Response } from '../../../src/request/interfaces';
 import UrlSearchParams from '../../../src/UrlSearchParams';
@@ -12,7 +10,7 @@ import Promise from '@dojo/shim/Promise';
 let echoServerAvailable = false;
 registerSuite('request/providers/xhr', {
 	before(this: any) {
-		return dojoCoreXhr('/__echo/', {
+		return xhrRequest('/__echo/', {
 			method: 'GET',
 			timeout: 10000
 		}).then(response => {
