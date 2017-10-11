@@ -8,7 +8,7 @@ interface CustomEvent {
 	value: number;
 }
 
-registerSuite('Evented', {
+registerSuite('QueuingEvented', {
 		'events are queued for the first subscriber': function () {
 			const evented = new QueuingEvented();
 			let listenerCallCount = 0;

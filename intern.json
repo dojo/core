@@ -3,13 +3,24 @@
 		{ "browserName": "node" }
 	],
 
+	"suites": [
+		"./_build/tests/unit/**/*.js"
+	],
+
 	"functionalSuites": [
 		"./_build/tests/functional/**/*.js"
 	],
 
+	"plugins": [
+		"./_build/tests/plugins/echo-service.js"
+	],
+
 	"browser": {
 		"suites": [
-			"./_build/tests/unit/all.js"
+			"!./_build/tests/unit/on/nodeOnly.js",
+			"!./_build/tests/unit/request/node.js",
+			"!./_build/tests/unit/request_node.js",
+			"!./_build/tests/unit/text_node.js"
 		],
 
 		"loader": {
@@ -28,13 +39,7 @@
 	},
 
 	"node": {
-		"plugins": [
-			"./_build/tests/plugins/echo-service.js"
-		],
-
 		"suites": [
-			"./_build/tests/unit/**/*.js",
-			"!./_build/tests/unit/**/all.js",
 			"!./_build/tests/unit/on/browserOnly.js",
 			"!./_build/tests/unit/request/xhr.js",
 			"!./_build/tests/unit/request_browser.js",

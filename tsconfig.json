@@ -14,12 +14,6 @@
 		"moduleResolution": "node",
 		"noImplicitAny": true,
 		"noImplicitThis": true,
-		"plugins": [
-			{
-				"name": "tslint-language-service",
-				"alwaysShowRuleFailuresAsWarnings": true
-			}
-		],
 		"outDir": "_build/",
 		"removeComments": false,
 		"sourceMap": true,

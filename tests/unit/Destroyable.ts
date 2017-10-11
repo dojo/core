@@ -2,7 +2,7 @@ const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import { Destroyable } from '../../src/Destroyable';
 
-registerSuite('bases/Destroyable', {
+registerSuite('Destroyable', {
 	'own/destroy handle'() {
 		let count = 0;
 
