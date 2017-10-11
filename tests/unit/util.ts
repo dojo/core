@@ -68,15 +68,9 @@ registerSuite('utility functions', {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.debounce(function (this: any) {
-					try {
-						assert.strictEqual(this, foo, 'Function should be executed with correct context');
-						dfd.resolve();
-					}
-					catch (e) {
-						dfd.reject(e);
-					}
-				}, 0)
+				bar: util.debounce(dfd.callback(function (this: any) {
+					assert.strictEqual(this, foo, 'Function should be executed with correct context');
+				}), 0)
 			};
 
 			foo.bar();
@@ -130,15 +124,9 @@ registerSuite('utility functions', {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttle(function (this: any) {
-					try {
-						assert.strictEqual(this, foo, 'Function should be executed with correct context');
-						dfd.resolve();
-					}
-					catch (e) {
-						dfd.reject(e);
-					}
-				}, 0)
+				bar: util.throttle(dfd.callback(function (this: any) {
+					assert.strictEqual(this, foo, 'Function should be executed with correct context');
+				}), 0)
 			};
 
 			foo.bar();
@@ -162,7 +150,7 @@ registerSuite('utility functions', {
 
 			let callCount = 0;
 			let cleared = false;
-			const throttledFunction = util.throttle(function (a: string) {
+			const throttledFunction = util.throttle(dfd.rejectOnError(function (a: string) {
 				callCount++;
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?
@@ -177,7 +165,7 @@ registerSuite('utility functions', {
 					cleared = true;
 					dfd.resolve();
 				}
-			}, 25);
+			}), 25);
 
 			let runCount = 1;
 			let lastRunTick = 0;
@@ -204,15 +192,9 @@ registerSuite('utility functions', {
 			const dfd = this.async(TIMEOUT);
 			// FIXME
 			var foo = {
-				bar: util.throttleAfter(function (this: any) {
-					try {
-						assert.strictEqual(this, foo, 'Function should be executed with correct context');
-						dfd.resolve();
-					}
-					catch (e) {
-						dfd.reject(e);
-					}
-				}, 0)
+				bar: util.throttleAfter(dfd.callback(function(this: any) {
+					assert.strictEqual(this, foo, 'Function should be executed with correct context');
+				}), 0)
 			};
 
 			foo.bar();
@@ -235,7 +217,7 @@ registerSuite('utility functions', {
 			// FIXME
 			let callCount = 0;
 			let cleared = false;
-			const throttledFunction = util.throttle(function (a: string) {
+			const throttledFunction = util.throttle(dfd.rejectOnError(function (a: string) {
 				callCount++;
 				assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
 				// Rounding errors?
@@ -250,7 +232,7 @@ registerSuite('utility functions', {
 					cleared = true;
 					dfd.resolve();
 				}
-			}, 25);
+			}), 25);
 
 			let runCount = 1;
 			let lastRunTick = 0;

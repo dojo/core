@@ -4,7 +4,7 @@ const { assert } = intern.getPlugin('chai');
 import xhrRequest, { XhrResponse } from '../../../src/request/providers/xhr';
 import { Response } from '../../../src/request/interfaces';
 import UrlSearchParams from '../../../src/UrlSearchParams';
-import has from '@dojo/has/has';
+import has from '../../../src/has';
 import Promise from '@dojo/shim/Promise';
 
 let echoServerAvailable = false;
@@ -564,35 +564,39 @@ registerSuite('request/providers/xhr', {
 
 		'Web Workers': {
 			'from blob'(this: any) {
+				if (!has('web-worker-xhr-upload')) {
+					this.skip('No web worker upload support');
+				}
+
 				const testUrl = location.origin + '/__echo/foo.json';
 				const baseUrl = location.origin;
 				const dfd = this.async();
 
 				const blob = new Blob([ `(function() {
-	self.addEventListener('message', function (event) {
-		testXhr(event.data.baseUrl, event.data.testUrl);
+self.addEventListener('message', function (event) {
+	testXhr(event.data.baseUrl, event.data.testUrl);
+});
+
+function testXhr(baseUrl, testUrl) {
+	importScripts(baseUrl + '/node_modules/@dojo/loader/loader.js');
+
+	require.config({
+		baseUrl: baseUrl,
+		packages: [
+			{ name: '@dojo', location: 'node_modules/@dojo' }
+		]
 	});
 
-	function testXhr(baseUrl, testUrl) {
-		importScripts(baseUrl + '/node_modules/@dojo/loader/loader.js');
-
-		require.config({
-			baseUrl: baseUrl,
-			packages: [
-				{ name: '@dojo', location: 'node_modules/@dojo' }
-			]
+	require(['_build/src/request/providers/xhr'], function (xhr) {
+		xhr.default(testUrl).then(function (response) {
+			return response.json();
+		}).then(function (json) {
+			self.postMessage({ status: 'success' });
+		}).catch(function (e) {
+			self.postMessage({ status: 'error', message: e.message });
 		});
-
-		require(['_build/src/request/providers/xhr'], function (xhr) {
-			xhr.default(testUrl).then(function (response) {
-				return response.json();
-			}).then(function (json) {
-				self.postMessage({ status: 'success' });
-			}).catch(function (e) {
-				self.postMessage({ status: 'error', message: e.message });
-			});
-		});
-	}
+	});
+}
 				})()` ], { type: 'application/javascript' });
 				const worker = new Worker(URL.createObjectURL(blob));
 				worker.addEventListener('error', (error) => {
