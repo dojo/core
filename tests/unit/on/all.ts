@@ -1,6 +1,7 @@
-import common from './common';
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
+
+import common from './common';
 import on, { emit } from '../../../src/on';
 import Evented from '../../../src/Evented';
 

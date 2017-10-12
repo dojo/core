@@ -4,11 +4,11 @@
 	],
 
 	"suites": [
-		"./_build/tests/unit/**/*.js"
+		"./_build/tests/unit/all.js"
 	],
 
 	"functionalSuites": [
-		"./_build/tests/functional/**/*.js"
+		"./_build/tests/functional/all.js"
 	],
 
 	"plugins": [
@@ -16,36 +16,27 @@
 	],
 
 	"browser": {
-		"suites": [
-			"!./_build/tests/unit/on/nodeOnly.js",
-			"!./_build/tests/unit/request/node.js",
-			"!./_build/tests/unit/request_node.js",
-			"!./_build/tests/unit/text_node.js"
-		],
-
 		"loader": {
 			"script": "dojo2",
 			"options": {
 				"packages": [
 					{ "name": "src", "location": "_build/src" },
 					{ "name": "tests", "location": "_build/tests" },
-					{ "name": "dojo", "location": "node_modules/intern/browser_modules/dojo" },
 					{ "name": "@dojo", "location": "node_modules/@dojo" },
 					{ "name": "sinon", "location": "node_modules/sinon/pkg", "main": "sinon" },
 					{ "name": "grunt-dojo2", "location": "node_modules/grunt-dojo2"}
 				]
 			}
-		}
+		},
+
+		"suites+": [
+			"./_build/tests/unit/all-browser.js"
+		]
 	},
 
 	"node": {
-		"suites": [
-			"!./_build/tests/unit/on/browserOnly.js",
-			"!./_build/tests/unit/request/xhr.js",
-			"!./_build/tests/unit/request_browser.js",
-			"!./_build/tests/unit/text_browser.js",
-			"!./_build/tests/unit/text_node.js",
-			"!./_build/tests/unit/text.js"
+		"suites+": [
+			"./_build/tests/unit/all-node.js"
 		]
 	},
 
@@ -77,17 +68,35 @@
 				{ "browserName": "edge" },
 				{ "browserName": "firefox", "platform": "WINDOWS" },
 				{ "browserName": "chrome", "platform": "WINDOWS" }
-				// Issue with iphone 9.1 and Safari compatability, commented out for move to
-				// browserstack and issue raised - https://github.com/dojo/core/issues/338
-				// { browserName: 'safari', version: '9.1', platform: 'MAC' },
-				// { browserName: 'iPhone', version: '9.1' }
 			],
 
 			"maxConcurrency": 5
 		},
 
-		"local": {
+		"node-loader": {
 			"extends": [ "coverage" ],
+
+			"node": {
+				"loader": {
+					"script": "dojo2",
+					"options": {
+						"packages": [
+							{ "name": "src", "location": "_build/src" },
+							{ "name": "tests", "location": "_build/tests" },
+							{ "name": "@dojo", "location": "node_modules/@dojo" },
+							{ "name": "sinon", "location": "node_modules/sinon/pkg", "main": "sinon" },
+							{ "name": "grunt-dojo2", "location": "node_modules/grunt-dojo2"}
+						]
+					}
+				},
+				"suites+": [
+					"./_build/tests/unit/all-node-loader.js"
+				]
+			}
+		},
+
+		"local": {
+			"extends": [ "coverage", "remoteCapabilities" ],
 
 			"tunnel": "selenium",
 			"tunnelOptions": {
@@ -96,7 +105,7 @@
 			},
 
 			"environments+": [
-				{ "browserName": "chrome", "fixSessionCapabilities": false }
+				{ "browserName": "chrome" }
 			]
 		},
 
@@ -109,12 +118,8 @@
 			"defaultTimeout": 10000,
 			"environments+": [
 				{ "browserName": "internet explorer", "version": [ "11.0" ], "platform": "Windows 7" },
-				// { browserName: 'microsoftedge', platform: 'Windows 10' },
 				{ "browserName": "firefox", "version": "43", "platform": "Windows 10" },
 				{ "browserName": "chrome", "platform": "Windows 10" }
-				// { browserName: 'safari', version: '9', platform: 'OS X 10.11' },
-				// { browserName: 'android', platform: 'Linux', version: '4.4', deviceName: 'Google Nexus 7 HD Emulator' }// ,
-				// { browserName: 'iphone', version: '9.1', deviceName: 'iPhone 6' }
 			],
 			"maxConcurrency": 4
 		}
