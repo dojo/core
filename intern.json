@@ -46,12 +46,7 @@
 			"!./_build/tests/unit/text_browser.js",
 			"!./_build/tests/unit/text_node.js",
 			"!./_build/tests/unit/text.js"
-		],
-
-		"reporters": {
-			"name": "runner",
-			"options": { "hideSkipped": true, "hidePassed": true }
-		}
+		]
 	},
 
 	"configs": {
