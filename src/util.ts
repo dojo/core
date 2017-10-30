@@ -105,7 +105,9 @@ export function guaranteeMinimumTimeout(callback: (...args: any[]) => void, dela
 		if (delay == null || delta >= delay) {
 			callback();
 		} else {
-			timerId = setTimeout(timeoutHandler);
+			// Cast setTimeout return value to fix TypeScript parsing bug.  Without it,
+			// it thinks we are using the Node version of setTimeout.
+			timerId = <any> setTimeout(timeoutHandler, delta);
 		}
 	}
 	timerId = setTimeout(timeoutHandler, delay);

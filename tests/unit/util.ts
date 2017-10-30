@@ -24,94 +24,85 @@ import { Handle } from '@dojo/interfaces/core';
 import * as util from '../../src/util';
 
 const TIMEOUT = 3000;
-let timerHandle: any = null;
+let timerHandle: Handle | null;
+
+function destroyTimerHandle() {
+	if (timerHandle) {
+		timerHandle.destroy();
+		timerHandle = null;
+	}
+}
 
 registerSuite('utility functions', {
 	afterEach() {
-		timerHandle && clearTimeout(timerHandle);
-		timerHandle = null;
+		destroyTimerHandle();
 	},
 
 	tests: {
-		createTimer: (function () {
-			let timer: Handle | null;
+		createTimer: {
+			destroy(this: any) {
+				const dfd = this.async(1000);
+				const spy = sinon.spy();
+				timerHandle = util.createTimer(spy, 100);
 
-			return {
-				afterEach() {
-					timer && timer.destroy();
-					timer = null;
-				},
+				setTimeout(function () {
+					destroyTimerHandle();
+				}, 50);
 
-				destroy(this: any) {
-					const dfd = this.async(1000);
-					const spy = sinon.spy();
-					timer = util.createTimer(spy, 100);
+				setTimeout(dfd.callback(function () {
+					assert.strictEqual(spy.callCount, 0);
+				}), 110);
+			},
 
-					setTimeout(function () {
-						if (timer) {
-							timer.destroy();
-						}
-					}, 50);
+			timeout(this: any) {
+				const dfd = this.async(1000);
+				const spy = sinon.spy();
+				timerHandle = util.createTimer(spy, 100);
 
-					setTimeout(dfd.callback(function () {
-						assert.strictEqual(spy.callCount, 0);
-					}), 110);
-				},
+				setTimeout(dfd.callback(function () {
+					assert.strictEqual(spy.callCount, 1);
+				}), 110);
+			}
+		},
 
-				timeout(this: any) {
-					const dfd = this.async(1000);
-					const spy = sinon.spy();
-					timer = util.createTimer(spy, 100);
+		guaranteeMinimumTimeout: {
+			destroy(this: any) {
+				const dfd = this.async(1000);
+				const spy = sinon.spy();
+				timerHandle = util.guaranteeMinimumTimeout(spy, 100);
 
-					setTimeout(dfd.callback(function () {
-						assert.strictEqual(spy.callCount, 1);
-					}), 110);
-				}
-			};
-		})(),
+				setTimeout(function () {
+					destroyTimerHandle();
+				}, 50);
 
-		guaranteeMinimumTimeout: (function () {
-			let timer: Handle | null;
+				setTimeout(dfd.callback(function () {
+					assert.strictEqual(spy.callCount, 0);
+				}), 110);
+			},
 
-			return {
-				afterEach() {
-					timer && timer.destroy();
-					timer = null;
-				},
+			timeout(this: any) {
+				const dfd = this.async(1000);
+				const startTime = Date.now();
+				timerHandle = util.guaranteeMinimumTimeout(dfd.callback(function () {
+					const dif = Date.now() - startTime;
+					assert.isTrue(dif >= 100, 'Delay was ' + dif + 'ms.');
+				}), 100);
+			},
 
-				destroy(this: any) {
-					const dfd = this.async(1000);
-					const spy = sinon.spy();
-					timer = util.guaranteeMinimumTimeout(spy, 100);
+			'timeout no delay'(this: any) {
+				const dfd = this.async(1000);
+				timerHandle = util.guaranteeMinimumTimeout(dfd.callback(function () {
+					// test will timeout if not called
+				}));
+			},
 
-					setTimeout(function () {
-						if (timer) {
-							timer.destroy();
-						}
-					}, 50);
-
-					setTimeout(dfd.callback(function () {
-						assert.strictEqual(spy.callCount, 0);
-					}), 110);
-				},
-
-				timeout(this: any) {
-					const dfd = this.async(1000);
-					const startTime = Date.now();
-					timer = util.guaranteeMinimumTimeout(dfd.callback(function () {
-						const dif = Date.now() - startTime;
-						assert.isTrue(dif >= 100, 'Delay was ' + dif + 'ms.');
-					}), 100);
-				},
-
-				'timeout no delay'(this: any) {
-					const dfd = this.async(1000);
-					timer = util.guaranteeMinimumTimeout(dfd.callback(function () {
-						assert.isTrue(true);
-					}));
-				}
-			};
-		})(),
+			'timeout zero delay'(this: any) {
+				const dfd = this.async(1000);
+				timerHandle = util.guaranteeMinimumTimeout(dfd.callback(function () {
+					// test will timeout if not called
+				}), 0);
+			}
+		},
 
 		debounce: {
 			'preserves context'(this: any) {
@@ -158,7 +149,7 @@ registerSuite('utility functions', {
 					runCount += 1;
 
 					if (runCount < 4) {
-						timerHandle = setTimeout(run, 5);
+						setTimeout(run, 5);
 					}
 				}
 
@@ -171,7 +162,7 @@ registerSuite('utility functions', {
 				const dfd = this.async(TIMEOUT);
 				// FIXME
 				const foo = {
-					bar: util.throttle(dfd.callback(function(this: any) {
+					bar: util.throttle(dfd.callback(function (this: any) {
 						assert.strictEqual(this, foo, 'Function should be executed with correct context');
 					}), 0)
 				};
@@ -195,7 +186,6 @@ registerSuite('utility functions', {
 				const dfd = this.async(TIMEOUT);
 				let callCount = 0;
 				let cleared = false;
-				let handle: Handle | null;
 				const throttledFunction = util.throttle(dfd.rejectOnError(function (a: string) {
 					callCount++;
 					assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
@@ -207,7 +197,7 @@ registerSuite('utility functions', {
 
 					lastRunTick = Date.now();
 					if (callCount > 1) {
-						handle && handle.destroy();
+						destroyTimerHandle();
 						cleared = true;
 						dfd.resolve();
 					}
@@ -222,7 +212,7 @@ registerSuite('utility functions', {
 					runCount += 1;
 
 					if (runCount < 10 && !cleared) {
-						handle = util.guaranteeMinimumTimeout(run, 5);
+						timerHandle = util.guaranteeMinimumTimeout(run, 5);
 					}
 				}
 
@@ -237,7 +227,7 @@ registerSuite('utility functions', {
 				const dfd = this.async(TIMEOUT);
 				// FIXME
 				const foo = {
-					bar: util.throttleAfter(dfd.callback(function(this: any) {
+					bar: util.throttleAfter(dfd.callback(function (this: any) {
 						assert.strictEqual(this, foo, 'Function should be executed with correct context');
 					}), 0)
 				};
@@ -259,42 +249,32 @@ registerSuite('utility functions', {
 
 			'throttles callback'(this: any) {
 				const dfd = this.async(TIMEOUT);
-				// FIXME
+
 				let callCount = 0;
-				let cleared = false;
-				const throttledFunction = util.throttle(dfd.rejectOnError(function (a: string) {
+				let lastRunTick = 0;
+				const throttledFunction = util.throttleAfter(dfd.rejectOnError(function (a: string) {
 					callCount++;
 					assert.notStrictEqual(a, 'b', 'Second invocation should be throttled');
-					// Rounding errors?
-					// Technically, the time diff should be greater than 24ms, but in some cases
-					// it is equal to 24ms.
 					assert.isAbove(Date.now() - lastRunTick, 23,
 						'Function should not be called until throttle delay has elapsed');
 
 					lastRunTick = Date.now();
-					if (callCount > 1) {
-						clearTimeout(timerHandle);
-						cleared = true;
+					if (callCount > 2) {
+						destroyTimerHandle();
 						dfd.resolve();
 					}
 				}), 25);
 
-				let runCount = 1;
-				let lastRunTick = 0;
-
 				function run() {
 					throttledFunction('a');
 					throttledFunction('b');
-					runCount += 1;
 
-					if (runCount < 10 && !cleared) {
-						timerHandle = setTimeout(run, 5);
-					}
+					timerHandle = util.guaranteeMinimumTimeout(dfd.rejectOnError(run), 5);
 				}
 
 				run();
-				assert.strictEqual(callCount, 1,
-					'Function should be called as soon as it is first invoked');
+				assert.strictEqual(callCount, 0,
+					'Function should not be called as soon as it is first invoked');
 			}
 		}
 	}
