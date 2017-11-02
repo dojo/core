@@ -1,15 +1,14 @@
-import { Handle } from '@dojo/interfaces/core';
+import {Handle} from '@dojo/interfaces/core';
 import global from '@dojo/shim/global';
-import { forOf } from '@dojo/shim/iterator';
 import WeakMap from '@dojo/shim/WeakMap';
-import Task, { State } from '../../async/Task';
+import Task, {State} from '../../async/Task';
 import has from '../../has';
-import { createTimer } from '../../util';
+import {createTimer} from '../../util';
 import Headers from '../Headers';
-import { RequestOptions, UploadObservableTask } from '../interfaces';
-import Response, { getArrayBufferFromBlob, getTextFromBlob } from '../Response';
+import {RequestOptions, UploadObservableTask} from '../interfaces';
+import Response, {getArrayBufferFromBlob, getTextFromBlob} from '../Response';
 import TimeoutError from '../TimeoutError';
-import { generateRequestUrl } from '../util';
+import {generateRequestUrl} from '../util';
 import Observable from '../../Observable';
 import SubscriptionPool from '../SubscriptionPool';
 
@@ -286,9 +285,9 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 		hasRequestedWithHeader = requestHeaders.has('x-requested-with');
 		hasContentTypeHeader = requestHeaders.has('content-type');
 
-		forOf(requestHeaders, ([key, value]) => {
+		for (const [key, value] of requestHeaders) {
 			request.setRequestHeader(key, value);
-		});
+		}
 	}
 
 	if (!hasRequestedWithHeader && includeRequestedWithHeader) {

@@ -20,7 +20,8 @@
 		"strictNullChecks": true,
 		"target": "es5",
 		"types": [ "intern" ],
-		"noEmitHelpers": true
+		"noEmitHelpers": true,
+		"downlevelIteration": true
 	},
 	"include": [
 		"./src/**/*.ts",
