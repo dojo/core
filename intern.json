@@ -11,7 +11,7 @@
 	],
 
 	"suites": [
-		"@dojo/shim", "./_build/tests/unit/all.js"
+		"./_build/tests/unit/all.js"
 	],
 
 	"functionalSuites": [
