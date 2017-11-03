@@ -104,10 +104,10 @@ export function load(id: string, require: Require, load: (value?: any) => void, 
 			pending[url].push(finish);
 		} else {
 			let pendingList = pending[url] = [finish];
-			getText(url, function(value: string) {
+			getText(url, function(value) {
 				textCache[mid] = textCache[url] = value;
 				for (let i = 0; i < pendingList.length; ) {
-					pendingList[i++](value);
+					pendingList[i++](value || '');
 				}
 				delete pending[url];
 			});

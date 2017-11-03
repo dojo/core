@@ -17,8 +17,9 @@ export function delay<T>(milliseconds: number): Identity<T> {
 	};
 }
 
+export type IdentityValue<T> = T | (() => T | Thenable<T>);
 export interface Identity<T> {
-	(value?: T | (() => T | Thenable<T>)): Promise<T>;
+	(value?: IdentityValue<T>): Promise<T>;
 }
 
 /**
@@ -30,9 +31,12 @@ export interface Identity<T> {
  */
 export function timeout<T>(milliseconds: number, reason: Error): Identity<T> {
 	const start = Date.now();
-	return function (value: T): Promise<T> {
+	return function (value?: IdentityValue<T>): Promise<T> {
 		if (Date.now() - milliseconds > start) {
 			return Promise.reject<T>(reason);
+		}
+		if (typeof value === 'function') {
+			return Promise.resolve(value());
 		}
 		return Promise.resolve(value);
 	};
@@ -57,4 +61,4 @@ export class DelayedRejection extends Promise<any> {
 			}, milliseconds);
 		});
 	}
-};
+}

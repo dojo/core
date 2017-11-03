@@ -8,7 +8,7 @@ import Observable from '../../src/Observable';
 const mockData = '{ "foo": "bar" }';
 let handle: any;
 
-function mockProvider(url: string, options: RequestOptions): UploadObservableTask<Response> {
+function mockProvider(url: string, options?: RequestOptions): UploadObservableTask<Response> {
 	const task = <UploadObservableTask<Response>> Task.resolve(new class extends Response {
 		bodyUsed = false;
 		headers: Headers = new Headers();
@@ -16,7 +16,7 @@ function mockProvider(url: string, options: RequestOptions): UploadObservableTas
 		status = 200;
 		statusText = 'OK';
 		url: string = url;
-		requestOptions = options;
+		requestOptions = options || {};
 
 		download = new Observable<number>(() => {});
 		data = new Observable<number>(() => {});

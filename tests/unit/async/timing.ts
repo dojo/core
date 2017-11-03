@@ -8,7 +8,7 @@ import Promise from '@dojo/shim/Promise';
 registerSuite('async/timing', {
 	'delay()': {
 		'delay returning a value after the given timeout': function () {
-			return timing.delay(251)(Date.now()).then(function (start: number) {
+			return timing.delay<number>(251)(Date.now()).then(function (start: number) {
 				const diff: number = Date.now() - start;
 				assert.approximately(diff, 251, 100);
 			});
@@ -18,7 +18,7 @@ registerSuite('async/timing', {
 			const getNow = function() {
 				return Date.now();
 			};
-			return timing.delay(251)( getNow ).then(function (finish: number) {
+			return timing.delay<number>(251)( getNow ).then(function (finish: number) {
 				const diff: number = finish - now;
 				assert.approximately(diff, 251, 100);
 			});
@@ -28,7 +28,7 @@ registerSuite('async/timing', {
 			const getNow = function() {
 				return Promise.resolve( Date.now() );
 			};
-			return timing.delay(251)( getNow ).then(function (finish: number) {
+			return timing.delay<number>(251)( getNow ).then(function (finish: number) {
 				const diff: number = finish - now;
 				assert.approximately(diff, 251, 150);
 			});

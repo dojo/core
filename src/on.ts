@@ -71,8 +71,8 @@ export function emit<T extends EventObject>(target: any, event: T | EventObject)
  * @param capture Whether the listener should be registered in the capture phase (DOM events only)
  * @return A handle which will remove the listener when destroy is called
  */
-export default function on(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
 export default function on(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): Handle;
+export default function on(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
 export default function on(target: any, type: any, listener: any, capture?: boolean): Handle {
 	if (Array.isArray(type)) {
 		let handles: Handle[] = type.map(function (type: string): Handle {

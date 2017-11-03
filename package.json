@@ -21,12 +21,11 @@
     "test": "grunt test"
   },
   "peerDependencies": {
-    "@dojo/has": "~0.1.0",
-    "@dojo/shim": "~0.2.2"
+    "@dojo/has": "file:tarballs/dojo-has-0.1.1-alpha.1.tgz",
+    "@dojo/shim": "file:tarballs/dojo-shim-0.1.1-alpha.1.tgz"
   },
   "devDependencies": {
-    "@dojo/interfaces": "~0.1.0",
-    "@dojo/loader": "~0.1.0",
+    "@dojo/loader": "file:tarballs/dojo-loader-0.1.1-alpha.1.tgz",
     "@types/benchmark": "~1.0.0",
     "@types/chai": "~3.4.0",
     "@types/glob": "~5.0.0",
@@ -40,6 +39,10 @@
     "intern": "~4.1.0",
     "multer": "~1.3.0",
     "sinon": "~1.17.6",
-    "typescript": "~2.4.1"
+    "typescript": "~2.6.1"
+  },
+  "dependencies": {
+    "@dojo/has": "file:tarballs/dojo-has-0.1.1-alpha.1.tgz",
+    "@dojo/shim": "file:tarballs/dojo-shim-0.1.1-alpha.1.tgz"
   }
 }

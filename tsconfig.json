@@ -17,7 +17,7 @@
 		"outDir": "_build/",
 		"removeComments": false,
 		"sourceMap": true,
-		"strictNullChecks": true,
+		"strict": true,
 		"target": "es5",
 		"types": [ "intern" ],
 		"importHelpers": true,
@@ -25,7 +25,7 @@
 	},
 	"include": [
 		"./src/**/*.ts",
-		"./tests/**/*.ts",
-		"./typings/index.d.ts"
+		"./tests/**/*.ts"
 	]
 }
+
