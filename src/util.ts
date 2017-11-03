@@ -55,6 +55,7 @@ export function throttle<T extends (this: any, ...args: any[]) => void>(callback
 	let ran: boolean | null;
 
 	return <T> function () {
+		let time: number;
 		if (ran) {
 			return;
 		}
@@ -62,9 +63,18 @@ export function throttle<T extends (this: any, ...args: any[]) => void>(callback
 		ran = true;
 
 		callback.apply(this, arguments);
-		setTimeout(function () {
+		time = Date.now();
+		// FIXME
+		// setTimeout is returning early in some Edge on browser stack
+		function  retryIfEarly() {
+			const interval = Date.now() - time;
+			if (interval < delay) {
+				setTimeout(retryIfEarly, delay - interval);
+				return;
+			}
 			ran = null;
-		}, delay);
+		}
+		setTimeout(retryIfEarly, delay);
 	};
 }
 
