@@ -387,7 +387,7 @@ function addPromiseTests(suite: any, Promise: any) {
 		'cancelable': (function () {
 			return {
 				'isIterable': function (this: any) {
-					let pending: any[] = [function () {}];
+					const pending = [ new Task(() => {}), new Task(() => {}), new Task(() => {})];
 
 					cancelTasks(pending).then(() => {
 						pending.forEach((task) => {
@@ -396,7 +396,10 @@ function addPromiseTests(suite: any, Promise: any) {
 					});
 				},
 				'isObject': function (this: any) {
-					let pending = <any> {0: function () {}};
+					const pending: { [ index: string ]: Task<any> } = {
+						foo: new Task(() => {}),
+						bar: new Task(() => {})
+					};
 
 					cancelTasks(pending).then(() => {
 						Object.keys(pending).forEach((key) => {
@@ -408,11 +411,7 @@ function addPromiseTests(suite: any, Promise: any) {
 			};
 
 			function cancelTasks(pending: any) {
-				for (let i = 1; i < 3; i++) {
-					pending[i] = new Task(function () {});
-				}
-
-				let tasks = Task.all(pending);
+				const tasks = Task.all(pending);
 
 				tasks.cancel();
 

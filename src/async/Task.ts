@@ -149,8 +149,8 @@ export default class Task<T> extends ExtensiblePromise<T> {
 	 * @returns An extensible promise
 	 */
 	static all<T>(iterable: DictionaryOfPromises<T> | ListOfPromises<T>): Task<any> {
-		return new Task<T>((resolve, reject) => {
-			super.all(iterable).then(<any> resolve, <any> reject);
+		return new Task((resolve, reject) => {
+			super.all(iterable).then(resolve, reject);
 		}, () => {
 			if (isIterable(iterable) || isArrayLike(iterable)) {
 				forOf(iterable, (promiseLike: any) => {
@@ -161,7 +161,7 @@ export default class Task<T> extends ExtensiblePromise<T> {
 			}
 			else {
 				Object.keys(iterable).forEach((key: any) => {
-					const promiseLike = iterable[ key ];
+					const promiseLike = iterable[key];
 
 					if (isTask(promiseLike)) {
 						promiseLike.cancel();
