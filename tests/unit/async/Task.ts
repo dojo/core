@@ -387,24 +387,39 @@ function addPromiseTests(suite: any, Promise: any) {
 		'cancelable': (function () {
 			return {
 				'isIterable': function (this: any) {
-					const pending = [ new Task(() => {}), new Task(() => {}), new Task(() => {})];
+					// Make sure it checks whether each PromiseLike is cancelable
+					const promise = Promise.resolve();
+					promise.cancel = null;
+					const pending = [
+						promise,
+						new Task(() => {}),
+						new Task(() => {})
+					];
 
 					cancelTasks(pending).then(() => {
 						pending.forEach((task) => {
-							assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							if (isTask(task)) {
+								assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							}
 						});
 					});
 				},
 				'isObject': function (this: any) {
-					const pending: { [ index: string ]: Task<any> } = {
+					// Make sure it checks whether each PromiseLike is cancelable
+					const promise = Promise.resolve();
+					promise.cancel = null;
+					const pending: { [ index: string ]: PromiseLike<any> } = {
 						foo: new Task(() => {}),
-						bar: new Task(() => {})
+						bar: new Task(() => {}),
+						promise
 					};
 
 					cancelTasks(pending).then(() => {
 						Object.keys(pending).forEach((key) => {
 							let task = pending[key];
-							assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							if (isTask(task)) {
+								assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							}
 						});
 					});
 				}
