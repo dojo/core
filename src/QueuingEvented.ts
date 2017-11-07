@@ -9,7 +9,7 @@ import Evented, { isGlobMatch } from './Evented';
  *
  * @property maxEvents  The number of events to queue before old events are discarded. If zero (default), an unlimited number of events is queued.
  */
-class QueuingEvented<M extends {}> extends Evented<M> {
+class QueuingEvented<M extends {} = {}> extends Evented<M> {
 	private _queue: Map<string | symbol, EventObject[]>;
 
 	maxEvents = 0;

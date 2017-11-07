@@ -1,4 +1,5 @@
 import { Handle } from './interfaces';
+import { createCompositeHandle } from './lang';
 import Promise from '@dojo/shim/Promise';
 
 /**
@@ -34,12 +35,13 @@ export class Destroyable {
 	 * @param {Handle} handle The handle to add for the instance
 	 * @returns {Handle} a handle for the handle, removes the handle for the instance and calls destroy
 	 */
-	own(handle: Handle): Handle {
-		const { handles } = this;
-		handles.push(handle);
+	own(handles: Handle | Handle[]): Handle {
+		const handle = Array.isArray(handles) ? createCompositeHandle(...handles) : handles;
+		const { handles: _handles } = this;
+		_handles.push(handle);
 		return {
 			destroy() {
-				handles.splice(handles.indexOf(handle));
+				_handles.splice(_handles.indexOf(handle));
 				handle.destroy();
 			}
 		};

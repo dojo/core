@@ -3,14 +3,14 @@ export type EventType = string | symbol;
 /**
  * The base event object, which provides a `type` property
  */
-export interface EventObject<T extends EventType = EventType> {
+export interface EventObject<T = EventType> {
 	/**
 	 * The type of the event
 	 */
 	readonly type: T;
 }
 
-export interface EventErrorObject<T extends EventType = EventType> extends EventObject<T> {
+export interface EventErrorObject<T = EventType> extends EventObject<T> {
 	/**
 	 * The error that is the subject of this event
 	 */
@@ -22,7 +22,7 @@ export interface EventErrorObject<T extends EventType = EventType> extends Event
  * `.preventDefault()` method on the object, the event should be cancelled and not
  * proceed any further
  */
-export interface EventCancelableObject<T extends EventType = EventType> extends EventObject<T> {
+export interface EventCancelableObject<T = EventType> extends EventObject<T> {
 	/**
 	 * Can the event be canceled?
 	 */
