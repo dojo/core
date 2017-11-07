@@ -1,4 +1,4 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle } from './interfaces';
 import Promise from '@dojo/shim/Promise';
 
 /**
@@ -6,14 +6,14 @@ import Promise from '@dojo/shim/Promise';
  */
 function noop(): Promise<boolean> {
 	return Promise.resolve(false);
-};
+}
 
 /**
  * No op function used to replace own, once instance has been destoryed
  */
 function destroyed(): never {
 	throw new Error('Call made to destroyed method');
-};
+}
 
 export class Destroyable {
 	/**

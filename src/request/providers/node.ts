@@ -1,4 +1,4 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle } from '../../interfaces';
 import Set from '@dojo/shim/Set';
 import WeakMap from '@dojo/shim/WeakMap';
 import * as http from 'http';

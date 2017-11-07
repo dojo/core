@@ -1,6 +1,6 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle, EventObject } from './interfaces';
 import Map from '@dojo/shim/Map';
-import Evented, { isGlobMatch, EventObject } from './Evented';
+import Evented, { isGlobMatch } from './Evented';
 
 /**
  * An implementation of the Evented class that queues up events when no listeners are
@@ -9,9 +9,8 @@ import Evented, { isGlobMatch, EventObject } from './Evented';
  *
  * @property maxEvents  The number of events to queue before old events are discarded. If zero (default), an unlimited number of events is queued.
  */
-export default class QueuingEvented extends Evented {
+class QueuingEvented<M extends {}> extends Evented<M> {
 	private _queue: Map<string | symbol, EventObject[]>;
-	private _originalOn: (...args: any[]) => Handle;
 
 	maxEvents = 0;
 
@@ -19,28 +18,16 @@ export default class QueuingEvented extends Evented {
 		super();
 
 		this._queue = new Map<string, EventObject[]>();
-		this._originalOn = this.on;
-		this.on = function (this: QueuingEvented, ...args: any[]): Handle {
-			let handle = this._originalOn(...args);
-
-			this.listenersMap.forEach((method, listenerType) => {
-				this._queue.forEach((events, queuedType) => {
-					if (isGlobMatch(listenerType, queuedType)) {
-						events.forEach((event) => this.emit(event));
-						this._queue.delete(queuedType);
-					}
-				});
-			});
-
-			return handle;
-		};
 	}
+}
 
-	emit<E extends EventObject>(event: E): void {
-		super.emit(event);
+(function (proto) {
+	QueuingEvented.prototype.emit = function emit(event: any): void {
+		proto.emit.call(this, event);
 
 		let hasMatch = false;
 
+		// @ts-ignore
 		this.listenersMap.forEach((method, type) => {
 			if (isGlobMatch(type, event.type)) {
 				hasMatch = true;
@@ -48,10 +35,12 @@ export default class QueuingEvented extends Evented {
 		});
 
 		if (!hasMatch) {
+			// @ts-ignore
 			let queue = this._queue.get(event.type);
 
 			if (!queue) {
 				queue = [];
+				// @ts-ignore
 				this._queue.set(event.type, queue);
 			}
 
@@ -63,5 +52,25 @@ export default class QueuingEvented extends Evented {
 				}
 			}
 		}
-	}
-}
+	};
+
+	QueuingEvented.prototype.on = function on(...args: any[]): Handle {
+		let handle = proto.on.call(this, ...args);
+
+		// @ts-ignore
+		this.listenersMap.forEach((method, listenerType) => {
+			// @ts-ignore
+			this._queue.forEach((events, queuedType) => {
+				if (isGlobMatch(listenerType, queuedType)) {
+					events.forEach((event) => this.emit(event));
+					// @ts-ignore
+					this._queue.delete(queuedType);
+				}
+			});
+		});
+
+		return handle;
+	};
+})(Evented.prototype);
+
+export default QueuingEvented;

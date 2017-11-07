@@ -1,15 +1,14 @@
-import { RootRequire } from '@dojo/interfaces/loader';
 import Promise from '@dojo/shim/Promise';
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import { ObjectSuiteDescriptor } from 'intern/lib/interfaces/object';
 import * as sinon from 'sinon';
 import has from '../../src/has';
-import load, { isPlugin, useDefault } from '../../src/load';
+import load, { isPlugin, useDefault, AmdRootRequire } from '../../src/load';
 import { isPlugin as utilIsPlugin, useDefault as utilUseDefault } from '../../src/load/util';
 import mockPlugin from '../support/load/plugin-default';
 
-declare const require: RootRequire;
+declare const require: AmdRootRequire;
 
 const suite: ObjectSuiteDescriptor = {
 	before() {

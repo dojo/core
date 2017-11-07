@@ -1,4 +1,4 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle } from '../../interfaces';
 import global from '@dojo/shim/global';
 import WeakMap from '@dojo/shim/WeakMap';
 import Task, { State } from '../../async/Task';

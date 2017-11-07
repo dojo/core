@@ -1,7 +1,7 @@
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import Test from 'intern/lib/Test';
-import { Require } from '@dojo/interfaces/loader';
+import { Require } from '../../../src/load';
 import pollUntil from '@theintern/leadfoot/helpers/pollUntil';
 
 declare const require: Require;

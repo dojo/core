@@ -40,9 +40,5 @@
     "multer": "~1.3.0",
     "sinon": "~1.17.6",
     "typescript": "~2.6.1"
-  },
-  "dependencies": {
-    "@dojo/has": "file:tarballs/dojo-has-0.1.1-alpha.1.tgz",
-    "@dojo/shim": "file:tarballs/dojo-shim-0.1.1-alpha.1.tgz"
   }
 }

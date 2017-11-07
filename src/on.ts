@@ -1,6 +1,6 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle, EventObject } from './interfaces';
 import { createHandle, createCompositeHandle } from './lang';
-import Evented, { EventObject } from './Evented';
+import Evented from './Evented';
 
 export interface EventCallback {
 	(event: EventObject): void;
@@ -23,7 +23,7 @@ interface DOMEventObject extends EventObject {
  * @return Boolean indicating if preventDefault was called on the event object (only relevant for DOM events;
  *     always false for other event emitters)
  */
-export function emit<T extends EventObject>(target: Evented | EventTarget | EventEmitter, event: T | EventObject): boolean;
+export function emit<T extends EventObject>(target: Evented<any> | EventTarget | EventEmitter, event: T | EventObject): boolean;
 export function emit<T extends EventObject>(target: any, event: T | EventObject): boolean {
 	if (
 		target.dispatchEvent && /* includes window and document */
@@ -71,7 +71,7 @@ export function emit<T extends EventObject>(target: any, event: T | EventObject)
  * @param capture Whether the listener should be registered in the capture phase (DOM events only)
  * @return A handle which will remove the listener when destroy is called
  */
-export default function on(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): Handle;
+export default function on(target: EventEmitter | Evented<any>, type: string | string[], listener: EventCallback): Handle;
 export default function on(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
 export default function on(target: any, type: any, listener: any, capture?: boolean): Handle {
 	if (Array.isArray(type)) {
@@ -121,7 +121,7 @@ export default function on(target: any, type: any, listener: any, capture?: bool
  * @return A handle which will remove the listener when destroy is called
  */
 export function once(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): Handle;
-export function once(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): Handle;
+export function once(target: EventEmitter | Evented<any>, type: string | string[], listener: EventCallback): Handle;
 export function once(target: any, type: any, listener: any, capture?: boolean): Handle {
 	// FIXME
 	// tslint:disable-next-line:no-var-keyword
@@ -147,7 +147,7 @@ export interface PausableHandle extends Handle {
  * @return A handle with additional pause and resume methods; the listener will never fire when paused
  */
 export function pausable(target: EventTarget, type: string | string[], listener: EventCallback, capture?: boolean): PausableHandle;
-export function pausable(target: EventEmitter | Evented, type: string | string[], listener: EventCallback): PausableHandle;
+export function pausable(target: EventEmitter | Evented<any>, type: string | string[], listener: EventCallback): PausableHandle;
 export function pausable(target: any, type: any, listener: any, capture?: boolean): PausableHandle {
 	let paused: boolean;
 

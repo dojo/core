@@ -4,7 +4,7 @@ const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import * as sinon from 'sinon';
 import * as aspect from '../../src/aspect';
-import { Handle } from '@dojo/interfaces/core';
+import { Handle } from '../../src/interfaces';
 import Map from '@dojo/shim/Map';
 
 const slice = Array.prototype.slice;

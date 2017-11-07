@@ -2,6 +2,11 @@ const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import { Evented } from '../../src/Evented';
 
+interface FooBarEvents {
+	foo: { type: 'foo'; };
+	bar: { type: 'bar'; };
+}
+
 registerSuite('Evented', {
 	creation() {
 		const evented = new Evented({});
@@ -11,7 +16,7 @@ registerSuite('Evented', {
 	},
 	'listeners at creation'() {
 		const eventStack: string[] = [];
-		const evented = new Evented({
+		const evented = new Evented<FooBarEvents>({
 			listeners: {
 				'foo'(event) {
 					eventStack.push(event.type);
@@ -36,7 +41,7 @@ registerSuite('Evented', {
 	},
 	'listener array at creation'() {
 		const eventStack: string[] = [];
-		const evented = new Evented({
+		const evented = new Evented<FooBarEvents>({
 			listeners: {
 				foo: [
 					function (event) {
@@ -65,7 +70,7 @@ registerSuite('Evented', {
 	'on': {
 		'on()'() {
 			const eventStack: string[] = [];
-			const evented = new Evented({});
+			const evented = new Evented<FooBarEvents>({});
 			const handle = evented.on('foo', (event) => {
 				eventStack.push(event.type);
 			});
@@ -83,7 +88,7 @@ registerSuite('Evented', {
 		'on() with Symbol type'() {
 			const foo = Symbol();
 			const bar = Symbol();
-			const eventStack: string[] = [];
+			const eventStack: symbol[] = [];
 			const evented = new Evented({});
 			const handle = evented.on(foo, (event) => {
 				eventStack.push(event.type);
@@ -102,7 +107,7 @@ registerSuite('Evented', {
 		},
 		'listener on creation, plus on'() {
 			const eventStack: string[] = [];
-			const evented = new Evented({
+			const evented = new Evented<FooBarEvents>({
 				listeners: {
 					foo(event) {
 						eventStack.push('listener:' + event.type);
@@ -124,7 +129,7 @@ registerSuite('Evented', {
 		},
 		'multiple listeners, same event'() {
 			const eventStack: string[] = [];
-			const evented = new Evented({});
+			const evented = new Evented<FooBarEvents>({});
 
 			const handle1 = evented.on('foo', () => {
 				eventStack.push('one');
@@ -143,7 +148,7 @@ registerSuite('Evented', {
 		},
 		'on(map)'() {
 			const eventStack: string[] = [];
-			const evented = new Evented({});
+			const evented = new Evented<FooBarEvents>({});
 
 			const handle = evented.on({
 				foo(event) {
@@ -164,7 +169,7 @@ registerSuite('Evented', {
 		},
 		'on(type, listener[])'() {
 			const eventStack: string[] = [];
-			const evented = new Evented({});
+			const evented = new Evented<FooBarEvents>({});
 
 			const handle = evented.on({
 				foo: [
@@ -262,42 +267,6 @@ registerSuite('Evented', {
 			evented.emit({ type: 'barfoo' });
 
 			assert.deepEqual(eventStack, [ 'foo->foo', '*foo->foo', '*foo->barfoo' ]);
-		}
-	},
-	'actions': {
-		'listener'() {
-			const eventStack: string[] = [];
-			const action = {
-				do(options: { event: { type: string; target: any; } }): void {
-					eventStack.push(options.event.type);
-				}
-			};
-
-			const evented = new Evented({
-				listeners: {
-					foo: action
-				}
-			});
-
-			const handle = evented.on('bar', action);
-
-			evented.emit({ type: 'foo' });
-			evented.emit({ type: 'bar' });
-			evented.emit({ type: 'baz' });
-
-			evented.destroy();
-
-			evented.emit({ type: 'foo' });
-			evented.emit({ type: 'bar' });
-			evented.emit({ type: 'baz' });
-
-			handle.destroy();
-
-			evented.emit({ type: 'foo' });
-			evented.emit({ type: 'bar' });
-			evented.emit({ type: 'baz' });
-
-			assert.deepEqual(eventStack, [ 'foo', 'bar', 'bar' ]);
 		}
 	}
 });
