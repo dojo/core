@@ -1,4 +1,4 @@
-import {Iterable, IterableIterator, ShimIterator} from '@dojo/shim/iterator';
+import { Iterable, IterableIterator, ShimIterator } from '@dojo/shim/iterator';
 import WeakMap from '@dojo/shim/WeakMap';
 
 const listItems: WeakMap<List<any>, any[]> = new WeakMap<List<any>, any[]>();

@@ -1,5 +1,5 @@
-import {Headers as HeadersInterface} from './interfaces';
-import {IterableIterator, ShimIterator} from '@dojo/shim/iterator';
+import { Headers as HeadersInterface } from './interfaces';
+import { IterableIterator, ShimIterator } from '@dojo/shim/iterator';
 import Map from '@dojo/shim/Map';
 
 function isHeadersLike(object: any): object is HeadersInterface {
