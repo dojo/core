@@ -21,11 +21,11 @@
     "test": "grunt test"
   },
   "peerDependencies": {
-    "@dojo/has": "file:tarballs/dojo-has-0.1.1-beta.1.tgz",
-    "@dojo/shim": "file:tarballs/dojo-shim-0.1.1-beta.1.tgz"
+    "@dojo/has": "./tarballs/dojo-has-0.1.1-beta.1.tgz",
+    "@dojo/shim": "./tarballs/dojo-shim-0.1.1-beta.1.tgz"
   },
   "devDependencies": {
-    "@dojo/loader": "file:tarballs/dojo-loader-0.1.1-beta.1.tgz",
+    "@dojo/loader": "./tarballs/dojo-loader-0.1.1-beta.1.tgz",
     "@types/benchmark": "~1.0.0",
     "@types/chai": "~3.4.0",
     "@types/glob": "~5.0.0",
