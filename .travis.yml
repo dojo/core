@@ -20,6 +20,9 @@ before_install:
 install:
 - travis_retry npm install grunt-cli
 - travis_retry npm install
+- travis_retry cd node_modules/intern && npm i @dojo/core @dojo/has && cd ..
+- travis_retry cd node_modules/@theintern/digdug && npm i @dojo/core @dojo/has && cd ../..
+- travis_retry cd node_modules/@theintern/leadfoot && npm i @dojo/core @dojo/has && cd ../..
 script:
 - grunt
 - grunt intern:browserstack --test-reporter
