@@ -19,7 +19,6 @@
 	],
 
 	"plugins": [
-		{ "script": "@dojo/shim/main", "useLoader": true },
 		"./_build/tests/plugins/echo-service.js"
 	],
 

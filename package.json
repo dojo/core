@@ -22,7 +22,7 @@
   },
   "peerDependencies": {
     "@dojo/has": "./tarballs/dojo-has-0.1.1-beta.1.tgz",
-    "@dojo/shim": "./tarballs/dojo-shim-0.2.2-beta.1.tgz"
+    "@dojo/shim": "./tarballs/dojo-shim-0.2.3-beta.1.tgz"
   },
   "devDependencies": {
     "@dojo/loader": "./tarballs/dojo-loader-0.1.1-beta.1.tgz",

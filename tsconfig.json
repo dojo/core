@@ -3,6 +3,7 @@
 		"declaration": false,
 		"downlevelIteration": true,
 		"experimentalDecorators": true,
+		"importHelpers": true,
 		"lib": [
 			"dom",
 			"es5",
