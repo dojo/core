@@ -1,5 +1,6 @@
 import { Handle } from '@dojo/interfaces/core';
 import { assign } from '@dojo/shim/object';
+
 export { assign } from '@dojo/shim/object';
 
 const slice = Array.prototype.slice;
@@ -51,13 +52,15 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 	const copied = kwArgs.copied || [];
 	const copiedClone = [ ...copied ];
 
-	kwArgs.sources.forEach(source => {
+	for (let i = 0; i < kwArgs.sources.length; i++) {
+		const source = kwArgs.sources[ i ];
+
 		if (source === null || source === undefined) {
-			return;
+			continue;
 		}
 		for (let key in source) {
 			if (inherited || hasOwnProperty.call(source, key)) {
-				let value: any = source[key];
+				let value: any = source[ key ];
 
 				if (copiedClone.indexOf(value) !== -1) {
 					continue;
@@ -68,7 +71,7 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 						value = copyArray(value, inherited);
 					}
 					else if (shouldDeepCopyObject(value)) {
-						const targetValue: any = target[key] || {};
+						const targetValue: any = target[ key ] || {};
 						copied.push(source);
 						value = _mixin({
 							deep: true,
@@ -79,11 +82,10 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 						});
 					}
 				}
-				target[key] = value;
+				target[ key ] = value;
 			}
 		}
-
-	});
+	}
 
 	return <T&U> target;
 }
@@ -280,8 +282,8 @@ export function createHandle(destructor: () => void): Handle {
  */
 export function createCompositeHandle(...handles: Handle[]): Handle {
 	return createHandle(function () {
-		handles.forEach(handle => {
-			handle.destroy();
-		});
+		for (let i = 0; i < handles.length; i++) {
+			handles[ i ].destroy();
+		}
 	});
 }
