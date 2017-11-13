@@ -51,9 +51,9 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 	const copied = kwArgs.copied || [];
 	const copiedClone = [ ...copied ];
 
-	for (let source of kwArgs.sources) {
+	kwArgs.sources.forEach(source => {
 		if (source === null || source === undefined) {
-			continue;
+			return;
 		}
 		for (let key in source) {
 			if (inherited || hasOwnProperty.call(source, key)) {
@@ -82,7 +82,8 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 				target[key] = value;
 			}
 		}
-	}
+
+	});
 
 	return <T&U> target;
 }
@@ -279,8 +280,8 @@ export function createHandle(destructor: () => void): Handle {
  */
 export function createCompositeHandle(...handles: Handle[]): Handle {
 	return createHandle(function () {
-		for (let handle of handles) {
+		handles.forEach(handle => {
 			handle.destroy();
-		}
+		});
 	});
 }

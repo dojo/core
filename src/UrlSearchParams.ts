@@ -11,7 +11,7 @@ export type ParamList = Hash<string | string[]>;
  */
 function parseQueryString(input: string): ParamList {
 	const query: Hash<string[]> = {};
-	for (const entry of input.split('&')) {
+	input.split('&').forEach(entry => {
 		const indexOfFirstEquals = entry.indexOf('=');
 		let key: string;
 		let value = '';
@@ -32,7 +32,7 @@ function parseQueryString(input: string): ParamList {
 		else {
 			query[key] = [ value ];
 		}
-	}
+	});
 	return query;
 }
 
@@ -186,9 +186,9 @@ export default class UrlSearchParams {
 			const values = this._list[key];
 			if (values) {
 				const encodedKey = encodeURIComponent(key);
-				for (const value of values) {
+				values.forEach(value => {
 					query.push(encodedKey + (value ? ('=' + encodeURIComponent(value)) : ''));
-				}
+				});
 			}
 		}
 

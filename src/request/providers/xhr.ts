@@ -91,12 +91,12 @@ export class XhrResponse extends Response {
 
 		const responseHeaders = request.getAllResponseHeaders();
 		if (responseHeaders) {
-			for (let line of responseHeaders.split(/\r\n/g)) {
+			responseHeaders.split(/\r\n/g).forEach(line => {
 				const match = line.match(/^(.*?): (.*)$/);
 				if (match) {
 					headers.append(match[1], match[2]);
 				}
-			}
+			});
 		}
 
 		this.status = request.status;

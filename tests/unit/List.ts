@@ -7,9 +7,9 @@ registerSuite('List', function () {
 	function listWith<T>(...items: T[]): List<T> {
 		const list = new List<T>();
 
-		for (let item of items) {
+		items.forEach(item => {
 			list.add(item);
-		}
+		});
 
 		return list;
 	}
