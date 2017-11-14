@@ -14,7 +14,7 @@ function parseQueryString(input: string): ParamList {
 	const splits = input.split('&');
 
 	for (let i = 0; i < splits.length; i++) {
-		const entry = splits[ i ];
+		const entry = splits[i];
 		const indexOfFirstEquals = entry.indexOf('=');
 		let key: string;
 		let value = '';
@@ -31,10 +31,10 @@ function parseQueryString(input: string): ParamList {
 		value = value ? decodeURIComponent(value) : '';
 
 		if (key in query) {
-			query[ key ].push(value);
+			query[key].push(value);
 		}
 		else {
-			query[ key ] = [ value ];
+			query[key] = [value];
 		}
 	}
 	return query;
@@ -191,7 +191,7 @@ export default class UrlSearchParams {
 			if (values) {
 				const encodedKey = encodeURIComponent(key);
 				for (let i = 0; i < values.length; i++) {
-					query.push(encodedKey + (values[ i ] ? ('=' + encodeURIComponent(values[ i ])) : ''));
+					query.push(encodedKey + (values[i] ? ('=' + encodeURIComponent(values[i])) : ''));
 				}
 			}
 		}

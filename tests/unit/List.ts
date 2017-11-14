@@ -8,7 +8,7 @@ registerSuite('List', function () {
 		const list = new List<T>();
 
 		for (let i = 0; i < items.length; i++) {
-			list.add(items[ i ]);
+			list.add(items[i]);
 		}
 
 		return list;

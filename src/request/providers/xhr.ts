@@ -94,9 +94,9 @@ export class XhrResponse extends Response {
 			const lines = responseHeaders.split(/\r\n/g);
 
 			for (let i = 0; i < lines.length; i++) {
-				const match = lines[ i ].match(/^(.*?): (.*)$/);
+				const match = lines[i].match(/^(.*?): (.*)$/);
 				if (match) {
-					headers.append(match[ 1 ], match[ 2 ]);
+					headers.append(match[1], match[2]);
 				}
 			}
 		}

@@ -40,7 +40,7 @@ export function useDefault(modules: any | any[]): any[] | any {
 		let processedModules: any[] = [];
 
 		for (let i = 0; i < modules.length; i++) {
-			const module = modules[ i ];
+			const module = modules[i];
 			processedModules.push((module.__esModule && module.default) ? module.default : module);
 		}
 

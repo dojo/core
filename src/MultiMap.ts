@@ -23,13 +23,13 @@ export default class MultiMap<T> implements Map<any[], T> {
 		if (iterable) {
 			if (isArrayLike(iterable)) {
 				for (let i = 0; i < iterable.length; i++) {
-					const value = iterable[ i ];
-					this.set(value[ 0 ], value[ 1 ]);
+					const value = iterable[i];
+					this.set(value[0], value[1]);
 				}
 			}
 			else if (isIterable(iterable)) {
 				for (const value of iterable) {
-					this.set(value[ 0 ], value[ 1 ]);
+					this.set(value[0], value[1]);
 				}
 			}
 		}

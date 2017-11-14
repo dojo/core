@@ -23,7 +23,7 @@ function shouldDeepCopyObject(value: any): value is Object {
 function copyArray<T>(array: T[], inherited: boolean): T[] {
 	return array.map(function (item: T): T {
 		if (Array.isArray(item)) {
-			return <any> copyArray(<any> item, inherited);
+			return <any>copyArray(<any> item, inherited);
 		}
 
 		return !shouldDeepCopyObject(item) ?
@@ -31,7 +31,7 @@ function copyArray<T>(array: T[], inherited: boolean): T[] {
 			_mixin({
 				deep: true,
 				inherited: inherited,
-				sources: <Array<T>> [item],
+				sources: <Array<T>>[item],
 				target: <T> {}
 			});
 	});
@@ -45,12 +45,12 @@ interface MixinArgs<T extends {}, U extends {}> {
 	copied?: any[];
 }
 
-function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T & U {
+function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 	const deep = kwArgs.deep;
 	const inherited = kwArgs.inherited;
 	const target: any = kwArgs.target;
 	const copied = kwArgs.copied || [];
-	const copiedClone = [...copied];
+	const copiedClone = [ ...copied ];
 
 	for (let i = 0; i < kwArgs.sources.length; i++) {
 		const source = kwArgs.sources[i];
@@ -76,7 +76,7 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T & U {
 						value = _mixin({
 							deep: true,
 							inherited: inherited,
-							sources: [value],
+							sources: [ value ],
 							target: targetValue,
 							copied
 						});
@@ -87,16 +87,13 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T & U {
 		}
 	}
 
-	return <T & U> target;
+	return <T&U> target;
 }
 
 interface ObjectAssignConstructor extends ObjectConstructor {
 	assign<T, U>(target: T, source: U): T & U;
-
 	assign<T, U1, U2>(target: T, source1: U1, source2: U2): T & U1 & U2;
-
 	assign<T, U1, U2, U3>(target: T, source1: U1, source2: U2, source3: U3): T & U1 & U2 & U3;
-
 	assign(target: any, ...sources: any[]): any;
 }
 
@@ -271,8 +268,7 @@ export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs
 export function createHandle(destructor: () => void): Handle {
 	return {
 		destroy: function (this: Handle) {
-			this.destroy = function () {
-			};
+			this.destroy = function () {};
 			destructor.call(this);
 		}
 	};

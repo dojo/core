@@ -15,7 +15,7 @@ export function unwrapPromises(iterable: Iterable<any> | any[]): any[] {
 
 	if (isArrayLike(iterable)) {
 		for (let i = 0; i < iterable.length; i++) {
-			const item = iterable[ i ];
+			const item = iterable[i];
 			unwrapped.push(item instanceof ExtensiblePromise ? item._promise : item);
 		}
 	}

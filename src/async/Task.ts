@@ -154,7 +154,7 @@ export default class Task<T> extends ExtensiblePromise<T> {
 		}, () => {
 			if (isArrayLike(iterable)) {
 				for (let i = 0; i < iterable.length; i++) {
-					const promiseLike = iterable[ i ];
+					const promiseLike = iterable[i];
 
 					if (isTask(promiseLike)) {
 						promiseLike.cancel();
