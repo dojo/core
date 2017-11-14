@@ -55,17 +55,7 @@
 
 		"node-loader": {
 			"node": {
-				"loader": {
-					"script": "dojo2",
-					"options": {
-						"packages": [
-							{ "name": "src", "location": "_build/src" },
-							{ "name": "tests", "location": "_build/tests" },
-							{ "name": "@dojo", "location": "node_modules/@dojo" },
-							{ "name": "sinon", "location": "node_modules/sinon/pkg", "main": "sinon" }
-						]
-					}
-				},
+				"loader": "./node_modules/grunt-dojo2/lib/intern/internLoader.js",
 				"suites+": [
 					"./_build/tests/unit/all-node-loader.js"
 				]
