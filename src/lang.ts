@@ -23,7 +23,7 @@ function shouldDeepCopyObject(value: any): value is Object {
 function copyArray<T>(array: T[], inherited: boolean): T[] {
 	return array.map(function (item: T): T {
 		if (Array.isArray(item)) {
-			return <any>copyArray(<any> item, inherited);
+			return <any> copyArray(<any> item, inherited);
 		}
 
 		return !shouldDeepCopyObject(item) ?
@@ -31,7 +31,7 @@ function copyArray<T>(array: T[], inherited: boolean): T[] {
 			_mixin({
 				deep: true,
 				inherited: inherited,
-				sources: <Array<T>>[item],
+				sources: <Array<T>> [ item ],
 				target: <T> {}
 			});
 	});
