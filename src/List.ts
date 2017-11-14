@@ -22,7 +22,7 @@ export default class List<T> {
 		if (source) {
 			if (isArrayLike(source)) {
 				for (let i = 0; i < source.length; i++) {
-					this.add(source[ i ]);
+					this.add(source[i]);
 				}
 			}
 			else if (isIterable(source)) {
@@ -52,7 +52,7 @@ export default class List<T> {
 	}
 
 	entries(): IterableIterator<[number, T]> {
-		return new ShimIterator<[number, T]>(getListItems(this).map<[number, T]>((value, index) => [ index, value ]));
+		return new ShimIterator<[number, T]>(getListItems(this).map<[number, T]>((value, index) => [index, value]));
 	}
 
 	forEach(fn: (value: T, idx: number, list: this) => void, thisArg?: any): void {

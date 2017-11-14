@@ -23,7 +23,7 @@ function shouldDeepCopyObject(value: any): value is Object {
 function copyArray<T>(array: T[], inherited: boolean): T[] {
 	return array.map(function (item: T): T {
 		if (Array.isArray(item)) {
-			return  <any> copyArray(<any> item, inherited);
+			return <any> copyArray(<any> item, inherited);
 		}
 
 		return !shouldDeepCopyObject(item) ?
@@ -31,7 +31,7 @@ function copyArray<T>(array: T[], inherited: boolean): T[] {
 			_mixin({
 				deep: true,
 				inherited: inherited,
-				sources: <Array<T>> [ item ],
+				sources: <Array<T>> [item],
 				target: <T> {}
 			});
 	});
@@ -45,22 +45,22 @@ interface MixinArgs<T extends {}, U extends {}> {
 	copied?: any[];
 }
 
-function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
+function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T & U {
 	const deep = kwArgs.deep;
 	const inherited = kwArgs.inherited;
 	const target: any = kwArgs.target;
 	const copied = kwArgs.copied || [];
-	const copiedClone = [ ...copied ];
+	const copiedClone = [...copied];
 
 	for (let i = 0; i < kwArgs.sources.length; i++) {
-		const source = kwArgs.sources[ i ];
+		const source = kwArgs.sources[i];
 
 		if (source === null || source === undefined) {
 			continue;
 		}
 		for (let key in source) {
 			if (inherited || hasOwnProperty.call(source, key)) {
-				let value: any = source[ key ];
+				let value: any = source[key];
 
 				if (copiedClone.indexOf(value) !== -1) {
 					continue;
@@ -71,29 +71,32 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T&U {
 						value = copyArray(value, inherited);
 					}
 					else if (shouldDeepCopyObject(value)) {
-						const targetValue: any = target[ key ] || {};
+						const targetValue: any = target[key] || {};
 						copied.push(source);
 						value = _mixin({
 							deep: true,
 							inherited: inherited,
-							sources: [ value ],
+							sources: [value],
 							target: targetValue,
 							copied
 						});
 					}
 				}
-				target[ key ] = value;
+				target[key] = value;
 			}
 		}
 	}
 
-	return <T&U> target;
+	return <T & U> target;
 }
 
 interface ObjectAssignConstructor extends ObjectConstructor {
 	assign<T, U>(target: T, source: U): T & U;
+
 	assign<T, U1, U2>(target: T, source1: U1, source2: U2): T & U1 & U2;
+
 	assign<T, U1, U2, U3>(target: T, source1: U1, source2: U2, source3: U3): T & U1 & U2 & U3;
+
 	assign(target: any, ...sources: any[]): any;
 }
 
@@ -268,7 +271,8 @@ export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs
 export function createHandle(destructor: () => void): Handle {
 	return {
 		destroy: function (this: Handle) {
-			this.destroy = function () {};
+			this.destroy = function () {
+			};
 			destructor.call(this);
 		}
 	};
@@ -283,7 +287,7 @@ export function createHandle(destructor: () => void): Handle {
 export function createCompositeHandle(...handles: Handle[]): Handle {
 	return createHandle(function () {
 		for (let i = 0; i < handles.length; i++) {
-			handles[ i ].destroy();
+			handles[i].destroy();
 		}
 	});
 }
