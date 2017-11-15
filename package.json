@@ -25,6 +25,7 @@
     "@dojo/shim": "./tarballs/dojo-shim-0.2.3-beta.1.tgz"
   },
   "devDependencies": {
+    "@dojo/interfaces": "./tarballs/dojo-interfaces-0.2.0-beta.1.tgz",
     "@dojo/loader": "./tarballs/dojo-loader-0.1.1-beta.1.tgz",
     "@types/benchmark": "~1.0.0",
     "@types/chai": "~3.4.0",

@@ -1,9 +1,9 @@
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import * as text from '../../src/text';
-import { AmdRootRequire } from '../../src/load';
+import { RootRequire } from '@dojo/interfaces/loader';
 
-declare const require: AmdRootRequire;
+declare const require: RootRequire;
 
 registerSuite('text - browser', {
 		'load': {

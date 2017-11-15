@@ -3,9 +3,9 @@ const { assert } = intern.getPlugin('chai');
 import has from '../../src/has';
 import * as text from '../../src/text';
 import { stub } from 'sinon';
-import { AmdRootRequire } from '../../src/load';
+import { RootRequire } from '@dojo/interfaces/loader';
 
-declare const require: AmdRootRequire;
+declare const require: RootRequire;
 
 // The exported get function from the text module
 // uses fs.readFile on node systems, which resolves

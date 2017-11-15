@@ -3,9 +3,9 @@ const { assert } = intern.getPlugin('chai');
 import * as text from '../../src/text';
 import { spy, SinonSpy } from 'sinon';
 import * as fs from 'fs';
-import { AmdRootRequire } from '../../src/load';
+import { RootRequire } from '@dojo/interfaces/loader';
 
-declare const require: AmdRootRequire;
+declare const require: RootRequire;
 
 const basePath = '_build/tests/support/data/';
 let fsSpy: SinonSpy;

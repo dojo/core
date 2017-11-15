@@ -1,9 +1,9 @@
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import request from '../../src/request';
-import { AmdRequire } from '../../src/load';
+import { Require } from '@dojo/interfaces/loader';
 
-declare const require: AmdRequire;
+declare const require: Require;
 
 const getRequestUrl = function (dataKey: string): string {
 	return require.toUrl('../support/data/' + dataKey);
