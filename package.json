@@ -1,6 +1,6 @@
 {
   "name": "@dojo/core",
-  "version": "0.2.2-pre",
+  "version": "0.3.0-pre",
   "description": "Basic utilites for common TypeScript development",
   "engines": {
     "npm": ">=3.0.0"
@@ -21,8 +21,8 @@
     "test": "grunt test"
   },
   "peerDependencies": {
-    "@dojo/has": "./tarballs/dojo-has-0.1.1-beta.1.tgz",
-    "@dojo/shim": "./tarballs/dojo-shim-0.2.3-beta.1.tgz"
+    "@dojo/has": "./tarballs/dojo-has-0.2.0-beta.1.tgz",
+    "@dojo/shim": "./tarballs/dojo-shim-0.3.0-beta.1.tgz"
   },
   "devDependencies": {
     "@dojo/interfaces": "./tarballs/dojo-interfaces-0.2.0-beta.1.tgz",
