@@ -66,6 +66,11 @@ export type EventedCallbackOrArray<T = EventType, E extends EventObject<T> = Eve
  */
 export class Evented<M extends {} = {}, T = EventType, O extends EventObject<T> = EventObject<T>> extends Destroyable {
 
+	// The following member is purely so TypeScript remembers the type of `M` when extending so
+	// that the utilities in `on.ts` will work
+	// tslint:disable-next-line
+	protected __typeMap__?: M;
+
 	/**
 	 * map of listeners keyed by event type
 	 */
