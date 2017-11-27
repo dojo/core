@@ -1,6 +1,6 @@
-import { Handle, EventObject } from './interfaces';
+import { Handle, EventObject, EventType } from './interfaces';
 import Map from '@dojo/shim/Map';
-import Evented, { isGlobMatch } from './Evented';
+import Evented, { isGlobMatch, EventedCallbackOrArray } from './Evented';
 
 /**
  * An implementation of the Evented class that queues up events when no listeners are
@@ -9,7 +9,7 @@ import Evented, { isGlobMatch } from './Evented';
  *
  * @property maxEvents  The number of events to queue before old events are discarded. If zero (default), an unlimited number of events is queued.
  */
-class QueuingEvented<M extends {} = {}> extends Evented<M> {
+class QueuingEvented<M extends {} = {}, T = EventType, O extends EventObject<T> = EventObject<T>> extends Evented<M, T, O> {
 	private _queue: Map<string | symbol, EventObject[]>;
 
 	maxEvents = 0;
@@ -19,28 +19,25 @@ class QueuingEvented<M extends {} = {}> extends Evented<M> {
 
 		this._queue = new Map<string, EventObject[]>();
 	}
-}
 
-(function (proto) {
-	QueuingEvented.prototype.emit = function emit(event: any): void {
-		proto.emit.call(this, event);
+	emit<K extends keyof M>(event: M[K]): void;
+	emit(event: O): void;
+	emit(event: any): void {
+		super.emit(event);
 
 		let hasMatch = false;
 
-		// @ts-ignore
 		this.listenersMap.forEach((method, type) => {
-			if (isGlobMatch(type, event.type)) {
+			if (isGlobMatch(<any> type, event.type)) {
 				hasMatch = true;
 			}
 		});
 
 		if (!hasMatch) {
-			// @ts-ignore
 			let queue = this._queue.get(event.type);
 
 			if (!queue) {
 				queue = [];
-				// @ts-ignore
 				this._queue.set(event.type, queue);
 			}
 
@@ -52,25 +49,24 @@ class QueuingEvented<M extends {} = {}> extends Evented<M> {
 				}
 			}
 		}
-	};
+	}
 
-	QueuingEvented.prototype.on = function on(...args: any[]): Handle {
-		let handle = proto.on.call(this, ...args);
+	on<K extends keyof M>(type: K, listener: EventedCallbackOrArray<K, M[K]>): Handle;
+	on(type: T, listener: EventedCallbackOrArray<T, O>): Handle;
+	on(type: any, listener: EventedCallbackOrArray<any, any>): Handle {
+		let handle = super.on(type, listener);
 
-		// @ts-ignore
 		this.listenersMap.forEach((method, listenerType) => {
-			// @ts-ignore
 			this._queue.forEach((events, queuedType) => {
-				if (isGlobMatch(listenerType, queuedType)) {
+				if (isGlobMatch(listenerType as any, queuedType)) {
 					events.forEach((event) => this.emit(event));
-					// @ts-ignore
 					this._queue.delete(queuedType);
 				}
 			});
 		});
 
 		return handle;
-	};
-})(Evented.prototype);
+	}
+}
 
 export default QueuingEvented;

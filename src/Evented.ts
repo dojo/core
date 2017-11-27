@@ -74,7 +74,7 @@ export class Evented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 	/**
 	 * map of listeners keyed by event type
 	 */
-	protected listenersMap: Map<T, EventedCallback<T, O>> = new Map();
+	protected listenersMap: Map<T | keyof M, EventedCallback<T, O> | EventedCallback<keyof M, M[keyof M]>> = new Map();
 
 	/**
 	 * Emits the event objet for the specified type

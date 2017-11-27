@@ -372,7 +372,7 @@ export function after<F extends GenericFunction<T>, T>(joinPointOrTarget: F | Ta
 		return afterJoinPoint(joinPointOrTarget, <JoinPointAfterAdvice<T>> methodNameOrAdvice);
 	}
 	else {
-		return afterObject(joinPointOrTarget, <string> methodNameOrAdvice, objectAdvice!);
+		return afterObject(joinPointOrTarget, <string | symbol> methodNameOrAdvice, objectAdvice!);
 	}
 }
 
@@ -438,7 +438,7 @@ export function around<F extends GenericFunction<T>, T>(joinPointOrTarget: F | T
 		return aroundJoinPoint(joinPointOrTarget, <JoinPointAroundAdvice<T>> methodNameOrAdvice);
 	}
 	else {
-		return aroundObject(joinPointOrTarget, <string> methodNameOrAdvice, objectAdvice!);
+		return aroundObject(joinPointOrTarget, <string | symbol> methodNameOrAdvice, objectAdvice!);
 	}
 }
 
@@ -485,7 +485,7 @@ export function before<F extends GenericFunction<T>, T>(joinPointOrTarget: F | T
 		return beforeJoinPoint(joinPointOrTarget, <JoinPointBeforeAdvice> methodNameOrAdvice);
 	}
 	else {
-		return beforeObject(joinPointOrTarget, <string> methodNameOrAdvice, objectAdvice!);
+		return beforeObject(joinPointOrTarget, <string | symbol> methodNameOrAdvice, objectAdvice!);
 	}
 }
 
