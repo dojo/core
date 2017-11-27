@@ -17,7 +17,7 @@ class QueuingEvented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 	constructor() {
 		super();
 
-		this._queue = new Map<string, EventObject[]>();
+		this._queue = new Map();
 	}
 
 	emit<K extends keyof M>(event: M[K]): void;
@@ -28,7 +28,7 @@ class QueuingEvented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 		let hasMatch = false;
 
 		this.listenersMap.forEach((method, type) => {
-			if (isGlobMatch(<any> type, event.type)) {
+			if (isGlobMatch(type as any, event.type)) {
 				hasMatch = true;
 			}
 		});
