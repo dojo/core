@@ -68,6 +68,7 @@ export class Evented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 
 	// The following member is purely so TypeScript remembers the type of `M` when extending so
 	// that the utilities in `on.ts` will work
+	// https://github.com/Microsoft/TypeScript/issues/20348
 	// tslint:disable-next-line
 	protected __typeMap__?: M;
 
@@ -85,7 +86,8 @@ export class Evented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 	emit(event: O): void;
 	emit(event: any): void {
 		this.listenersMap.forEach((method, type) => {
-			if (isGlobMatch(<any> type, event.type)) {
+			// Since `type` is generic, the compiler doesn't know what type it is and `isGlobMatch` requires `string | symbol`
+			if (isGlobMatch(type as any, event.type)) {
 				method.call(this, event);
 			}
 		});

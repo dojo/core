@@ -28,6 +28,7 @@ class QueuingEvented<M extends {} = {}, T = EventType, O extends EventObject<T> 
 		let hasMatch = false;
 
 		this.listenersMap.forEach((method, type) => {
+			// Since `type` is generic, the compiler doesn't know what type it is and `isGlobMatch` requires `string | symbol`
 			if (isGlobMatch(type as any, event.type)) {
 				hasMatch = true;
 			}
