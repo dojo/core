@@ -1,17 +1,16 @@
-import { Handle } from '@dojo/interfaces/core';
+import { Handle } from '../../interfaces';
 import global from '@dojo/shim/global';
-import { forOf } from '@dojo/shim/iterator';
 import WeakMap from '@dojo/shim/WeakMap';
 import Task, { State } from '../../async/Task';
 import has from '../../has';
+import Observable from '../../Observable';
 import { createTimer } from '../../util';
 import Headers from '../Headers';
 import { RequestOptions, UploadObservableTask } from '../interfaces';
 import Response, { getArrayBufferFromBlob, getTextFromBlob } from '../Response';
+import SubscriptionPool from '../SubscriptionPool';
 import TimeoutError from '../TimeoutError';
 import { generateRequestUrl } from '../util';
-import Observable from '../../Observable';
-import SubscriptionPool from '../SubscriptionPool';
 
 /**
  * Request options specific to an XHR request
@@ -92,8 +91,10 @@ export class XhrResponse extends Response {
 
 		const responseHeaders = request.getAllResponseHeaders();
 		if (responseHeaders) {
-			for (let line of responseHeaders.split(/\r\n/g)) {
-				const match = line.match(/^(.*?): (.*)$/);
+			const lines = responseHeaders.split(/\r\n/g);
+
+			for (let i = 0; i < lines.length; i++) {
+				const match = lines[i].match(/^(.*?): (.*)$/);
 				if (match) {
 					headers.append(match[1], match[2]);
 				}
@@ -175,7 +176,7 @@ function setOnError(request: XMLHttpRequest, reject: Function) {
 	});
 }
 
-export default function xhr(url: string, options: XhrRequestOptions = {}): UploadObservableTask<Response> {
+export default function xhr(url: string, options: XhrRequestOptions = {}): UploadObservableTask<XhrResponse> {
 	const request = new XMLHttpRequest();
 	const requestUrl = generateRequestUrl(url, options);
 
@@ -198,7 +199,7 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 	let timeoutHandle: Handle;
 	let timeoutReject: Function;
 
-	const task = <UploadObservableTask<Response>> new Task<Response>((resolve, reject) => {
+	const task = <UploadObservableTask<XhrResponse>> new Task<XhrResponse>((resolve, reject) => {
 		timeoutReject = reject;
 
 		request.onreadystatechange = function () {
@@ -286,9 +287,9 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 		hasRequestedWithHeader = requestHeaders.has('x-requested-with');
 		hasContentTypeHeader = requestHeaders.has('content-type');
 
-		forOf(requestHeaders, ([key, value]) => {
+		for (const [key, value] of requestHeaders) {
 			request.setRequestHeader(key, value);
-		});
+		}
 	}
 
 	if (!hasRequestedWithHeader && includeRequestedWithHeader) {
@@ -311,9 +312,11 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 	const uploadObserverPool = new SubscriptionPool<number>();
 	task.upload = new Observable<number>(observer => uploadObserverPool.add(observer));
 
-	request.upload.addEventListener('progress', event => {
-		uploadObserverPool.next(event.loaded);
-	});
+	if (has('host-browser') || has('web-worker-xhr-upload')) {
+		request.upload.addEventListener('progress', event => {
+			uploadObserverPool.next(event.loaded);
+		});
+	}
 
 	request.send(options.body || null);
 

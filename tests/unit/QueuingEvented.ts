@@ -1,16 +1,20 @@
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
-import QueuingEvented from '../../src/QueuingEvented';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 
-interface CustomEvent {
+import QueuingEvented from '../../src/QueuingEvented';
+import { EventObject } from '../../src/interfaces';
+
+interface CustomEvent extends EventObject {
 	type: 'test';
 	target: any;
 	value: number;
 }
 
-registerSuite({
-		name: 'Evented',
+function isCustomEvent(object: any): object is CustomEvent {
+	return object.type === 'test';
+}
 
+registerSuite('QueuingEvented', {
 		'events are queued for the first subscriber': function () {
 			const evented = new QueuingEvented();
 			let listenerCallCount = 0;
@@ -39,8 +43,10 @@ registerSuite({
 				});
 			}
 
-			evented.on('test', function (event: CustomEvent) {
-				expectedValues.push(event.value);
+			evented.on('test', function (event) {
+				if (isCustomEvent(event)) {
+					expectedValues.push(event.value);
+				}
 			});
 
 			assert.deepEqual(expectedValues, [ 6, 7, 8, 9, 10 ]);

@@ -1,5 +1,6 @@
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
+import { Tests } from 'intern/lib/interfaces/object';
 import * as iteration from '../../../src/async/iteration';
 import { ShimIterator } from '@dojo/shim/iterator';
 import Promise from '@dojo/shim/Promise';
@@ -64,7 +65,7 @@ function join(current: string, value: string): string {
 	return current + value;
 }
 
-function findTests(findMethod: (items: any[], callback: iteration.Filterer<any>) => Promise<any>, solutions: any) {
+function findTests(findMethod: (items: any[], callback: iteration.Filterer<any>) => Promise<any>, solutions: any): Tests {
 	function getExpectedSolution(test: any): any {
 		return solutions[test.parent.name][test.name];
 	}
@@ -145,7 +146,7 @@ function findTests(findMethod: (items: any[], callback: iteration.Filterer<any>)
 
 				'mixed synchronous and asynchronous values': function (this: any) {
 					const expected: any = getExpectedSolution(this);
-					const values = [ createTriggerablePromise(), 'hello', createTriggerablePromise() ];
+					const values: [ ControlledPromise<string>, string, ControlledPromise<string> ] = [ createTriggerablePromise(), 'hello', createTriggerablePromise() ];
 					const iterable = getIterable(useIterator, values);
 					const promise = findMethod(iterable, helloWorldTest).then(function (result) {
 						assert.strictEqual(result, expected);
@@ -207,7 +208,7 @@ function findTests(findMethod: (items: any[], callback: iteration.Filterer<any>)
 	};
 }
 
-function reduceTests(reduceMethod: (items: (any | Promise<any>)[], callback: iteration.Reducer<any, any>, initialvalue?: any) => Promise<any>, solutions: any) {
+function reduceTests(reduceMethod: (items: (any | Promise<any>)[], callback: iteration.Reducer<any, any>, initialvalue?: any) => Promise<any>, solutions: any): Tests {
 	function getExpectedSolution(test: any): any {
 		return solutions[test.parent.name][test.name];
 	}
@@ -410,9 +411,9 @@ function reduceTests(reduceMethod: (items: (any | Promise<any>)[], callback: ite
 		'array-like value': arrayLikeTests,
 		'iterator value': getTests(true)
 	};
-};
+}
 
-function haltImmediatelyTests(haltingMethod: (items: (any | Promise<any>)[], callback: iteration.Filterer<any>) => Promise<boolean>, solutions: any) {
+function haltImmediatelyTests(haltingMethod: (items: (any | Promise<any>)[], callback: iteration.Filterer<any>) => Promise<boolean>, solutions: any): Tests {
 	function getParameters(test: any): any {
 		return solutions[test.parent.name][test.name];
 	}
@@ -520,9 +521,7 @@ function haltImmediatelyTests(haltingMethod: (items: (any | Promise<any>)[], cal
 	};
 }
 
-registerSuite({
-	name: 'async/iteration',
-
+registerSuite('async/iteration', {
 	'.every<T>()': (function () {
 		const tests: any = haltImmediatelyTests(iteration.every, {
 				'synchronous values': {

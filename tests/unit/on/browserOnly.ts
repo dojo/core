@@ -1,8 +1,8 @@
 import common from './common';
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 import on, { emit } from '../../../src/on';
-import { EventObject } from '@dojo/interfaces/core';
+import { EventObject } from '../../../src/interfaces';
 
 function createTarget(): HTMLElement {
 	let element = document.createElement('div');
@@ -20,9 +20,11 @@ interface DOMEvent extends EventObject {
 	preventDefault: Function;
 }
 
-registerSuite({
-	name: 'events - EventTarget',
+function isDOMEvent(object: any): object is DOMEvent {
+	return Boolean(object.preventDefault);
+}
 
+registerSuite('events - EventTarget', {
 	'common cases': common({
 		eventName: 'test',
 		createTarget: createTarget,
@@ -33,8 +35,10 @@ registerSuite({
 		const target = createTarget();
 		assert.isTrue(emit(target, { type: 'test' }));
 
-		const handle = on(target, 'test', function (evt: DOMEvent) {
-			evt.preventDefault();
+		const handle = on(target, 'test', function (evt: EventObject) {
+			if (isDOMEvent(evt)) {
+				evt.preventDefault();
+			}
 		});
 
 		assert.isTrue(emit(target, { type: 'test', cancelable: false }));
@@ -47,8 +51,10 @@ registerSuite({
 	'emit on window'() {
 		const target = window;
 
-		const handle = on(target, 'test', function(evt: DOMEvent) {
-			evt.preventDefault();
+		const handle = on(target, 'test', function(evt: EventObject) {
+			if (isDOMEvent(evt)) {
+				evt.preventDefault();
+			}
 		});
 
 		assert.isTrue(emit(target, { type: 'test', cancelable: false }));
@@ -60,8 +66,10 @@ registerSuite({
 	'emit on document'() {
 		const target = document;
 
-		const handle = on(target, 'test', function(evt: DOMEvent) {
-			evt.preventDefault();
+		const handle = on(target, 'test', function(evt: EventObject) {
+			if (isDOMEvent(evt)) {
+				evt.preventDefault();
+			}
 		});
 
 		assert.isTrue(emit(target, { type: 'test', cancelable: false }));

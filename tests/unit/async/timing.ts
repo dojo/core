@@ -1,16 +1,14 @@
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 import * as timing from '../../../src/async/timing';
 import { throwImmediatly } from '../../support/util';
 import { isEventuallyRejected } from '../../support/util';
 import Promise from '@dojo/shim/Promise';
 
-registerSuite({
-	name: 'async/timing',
-
+registerSuite('async/timing', {
 	'delay()': {
 		'delay returning a value after the given timeout': function () {
-			return timing.delay(251)(Date.now()).then(function (start: number) {
+			return timing.delay<number>(251)(Date.now()).then(function (start: number) {
 				const diff: number = Date.now() - start;
 				assert.approximately(diff, 251, 100);
 			});
@@ -20,7 +18,7 @@ registerSuite({
 			const getNow = function() {
 				return Date.now();
 			};
-			return timing.delay(251)( getNow ).then(function (finish: number) {
+			return timing.delay<number>(251)( getNow ).then(function (finish: number) {
 				const diff: number = finish - now;
 				assert.approximately(diff, 251, 100);
 			});
@@ -30,7 +28,7 @@ registerSuite({
 			const getNow = function() {
 				return Promise.resolve( Date.now() );
 			};
-			return timing.delay(251)( getNow ).then(function (finish: number) {
+			return timing.delay<number>(251)( getNow ).then(function (finish: number) {
 				const diff: number = finish - now;
 				assert.approximately(diff, 251, 150);
 			});
@@ -60,7 +58,11 @@ registerSuite({
 
 	'timeout()': {
 		'called before the timeout; resolves the promise': function () {
-			return Promise.resolve('unused').then((<any> timing).timeout(100, new Error('Error')));
+			return Promise.resolve('unused').then(timing.timeout(100, new Error('Error')));
+		},
+
+		'called before the timeout; passes function; resolves the promise': function () {
+			return Promise.resolve((): string => 'unused').then(timing.timeout(100, new Error('Error')));
 		},
 
 		'called after the timeout; rejects the promise': function () {

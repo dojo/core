@@ -1,10 +1,8 @@
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 import * as lang from '../../src/lang';
 
-registerSuite({
-	name: 'lang functions',
-
+registerSuite('lang functions', {
 	'.assign()'() {
 		// this is a re-export from `@dojo/shim/object::assign`
 		assert.isFunction(lang.assign);
@@ -321,7 +319,7 @@ registerSuite({
 
 		assert.strictEqual(Object.getPrototypeOf(object), prototype);
 		assert.strictEqual(object.b, mixin.b);
-		assert.isTrue(Object.getOwnPropertyDescriptor(object, 'd').writable);
+		assert.isTrue(Object.getOwnPropertyDescriptor(object, 'd')!.writable);
 		assert.isUndefined(object.e);
 		assert.isUndefined(object.lorem);
 		assert.throw(function () {

@@ -1,6 +1,5 @@
 import { RequestOptions } from './interfaces';
 import UrlSearchParams from '../UrlSearchParams';
-import { forOf } from '@dojo/shim/iterator';
 
 /**
  * Returns a URL formatted with optional query string and cache-busting segments.
@@ -8,10 +7,9 @@ import { forOf } from '@dojo/shim/iterator';
  * @param url The base URL.
  * @param options The RequestOptions used to generate the query string or cacheBust.
  */
-export function generateRequestUrl(url: string,
-		{ query, cacheBust }: RequestOptions = {}): string {
-	query = new UrlSearchParams(query).toString();
-	if (cacheBust) {
+export function generateRequestUrl(url: string, options: RequestOptions = {}): string {
+	let query = new UrlSearchParams(options.query).toString();
+	if (options.cacheBust) {
 		const bustString = String(Date.now());
 		query += query ? `&${bustString}` : bustString;
 	}
@@ -22,9 +20,9 @@ export function generateRequestUrl(url: string,
 export function getStringFromFormData(formData: any): string {
 	const fields: string[] = [];
 
-	forOf(formData.keys(), (key: string) => {
+	for (const key of formData.keys()) {
 		fields.push(encodeURIComponent(key) + '=' + encodeURIComponent(formData.get(key)));
-	});
+	}
 
 	return fields.join('&');
 }

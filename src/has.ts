@@ -26,3 +26,31 @@ add('blob', function () {
 add('node-buffer', 'Buffer' in global && typeof global.Buffer === 'function', true);
 
 add('fetch', 'fetch' in global && typeof global.fetch === 'function', true);
+
+add('web-worker-xhr-upload', new Promise((resolve) => {
+	try {
+		if (global.Worker !== undefined && global.URL && global.URL.createObjectURL) {
+			const blob = new Blob([ `(function () {
+self.addEventListener('message', function () {
+	var xhr = new XMLHttpRequest();
+	try {
+		xhr.upload;
+		postMessage('true');
+	} catch (e) {
+		postMessage('false');
+	}
+});
+		})()` ], { type: 'application/javascript' });
+			const worker = new Worker(URL.createObjectURL(blob));
+			worker.addEventListener('message', ({ data: result }) => {
+				resolve(result === 'true');
+			});
+			worker.postMessage({});
+		} else {
+			resolve(false);
+		}
+	} catch (e) {
+		// IE11 on Winodws 8.1 encounters a security error.
+		resolve(false);
+	}
+}), true);

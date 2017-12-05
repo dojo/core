@@ -1,13 +1,12 @@
-import * as registerSuite from 'intern!object';
-import * as assert from 'intern/chai!assert';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
+import { Tests } from 'intern/lib/interfaces/object';
 import Promise from '@dojo/shim/Promise';
 import { Thenable } from '@dojo/shim/interfaces';
 import { ShimIterator } from '@dojo/shim/iterator';
 import Task, { State, isTask } from '../../../src/async/Task';
 
-let suite = {
-	name: 'Task',
-
+const suite: Tests = {
 	'isTask()'() {
 		const task = new Task((resolve) => resolve(), () => {
 		});
@@ -383,7 +382,57 @@ function addPromiseTests(suite: any, Promise: any) {
 			Promise.all(iterable).then(dfd.callback(function (value: number[]) {
 				assert.notStrictEqual(value, iterable);
 			}));
-		}
+		},
+
+		'cancelable': (function () {
+			return {
+				'isIterable': function (this: any) {
+					// Make sure it checks whether each PromiseLike is cancelable
+					const promise = Promise.resolve();
+					promise.cancel = null;
+					const pending = [
+						promise,
+						new Task(() => {}),
+						new Task(() => {})
+					];
+
+					cancelTasks(pending).then(() => {
+						pending.forEach((task) => {
+							if (isTask(task)) {
+								assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							}
+						});
+					});
+				},
+				'isObject': function (this: any) {
+					// Make sure it checks whether each PromiseLike is cancelable
+					const promise = Promise.resolve();
+					promise.cancel = null;
+					const pending: { [ index: string ]: PromiseLike<any> } = {
+						foo: new Task(() => {}),
+						bar: new Task(() => {}),
+						promise
+					};
+
+					cancelTasks(pending).then(() => {
+						Object.keys(pending).forEach((key) => {
+							let task = pending[key];
+							if (isTask(task)) {
+								assert.strictEqual(task.state, State.Canceled, 'Task should have Canceled state');
+							}
+						});
+					});
+				}
+			};
+
+			function cancelTasks(pending: any) {
+				const tasks = Task.all(pending);
+
+				tasks.cancel();
+
+				return tasks;
+			}
+		})()
 	};
 
 	suite['.race'] = {
@@ -769,11 +818,15 @@ function addPromiseTests(suite: any, Promise: any) {
 			};
 
 			let calledAlready = false;
-			Promise.resolve(evilPromise).then(dfd.rejectOnError(function (value: number) {
+			const p = Promise.resolve(evilPromise).then(dfd.rejectOnError(function (value: number) {
 				assert.strictEqual(calledAlready, false, 'resolver should not have been called');
 				calledAlready = true;
 				assert.strictEqual(value, 1, 'resolver called with unexpected value');
-			})).then(dfd.resolve, dfd.reject);
+			}));
+
+			p.catch(dfd.reject.bind(dfd));
+
+			setTimeout(() => dfd.resolve(), 100);
 		}
 	};
 
@@ -818,4 +871,4 @@ function addPromiseTests(suite: any, Promise: any) {
 
 addPromiseTests(suite, Task);
 
-registerSuite(suite);
+registerSuite('Task', suite);

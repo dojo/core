@@ -1,23 +1,20 @@
-import * as assert from 'intern/chai!assert';
-import * as registerSuite from 'intern!object';
-import List from '../../src/List';
-import { forOf } from '@dojo/shim/iterator';
+const { registerSuite } = intern.getInterface('object');
+const { assert } = intern.getPlugin('chai');
 import Set from '@dojo/shim/Set';
+import List from '../../src/List';
 
-registerSuite(function () {
+registerSuite('List', function () {
 	function listWith<T>(...items: T[]): List<T> {
 		const list = new List<T>();
 
-		for (let item of items) {
-			list.add(item);
+		for (let i = 0; i < items.length; i++) {
+			list.add(items[i]);
 		}
 
 		return list;
 	}
 
 	return {
-		name: 'List',
-
 		'add'() {
 			const list = new List<number>();
 
@@ -51,9 +48,9 @@ registerSuite(function () {
 
 			let entries: [number, string][] = [];
 
-			forOf(list.entries(), (value: [number, string]) => {
+			for (const value of list.entries()) {
 				entries.push(value);
-			});
+			}
 
 			assert.deepEqual(entries, [
 				[ 0, 'one' ],
@@ -99,9 +96,9 @@ registerSuite(function () {
 
 			let keys: number[] = [];
 
-			forOf(list.keys(), (key: number) => {
+			for (const key of list.keys()) {
 				keys.push(key);
-			});
+			}
 
 			assert.deepEqual(keys, [ 0, 1, 2 ]);
 		},
@@ -111,9 +108,9 @@ registerSuite(function () {
 
 			let values: string[] = [];
 
-			forOf(list.values(), (value: string) => {
+			for (const value of list.values()) {
 				values.push(value);
-			});
+			}
 
 			assert.deepEqual(values, [ 'one', 'two', 'three' ]);
 		},
@@ -192,9 +189,9 @@ registerSuite(function () {
 			const list = listWith('the', 'quick', 'brown', 'fox');
 			let values: string[] = [];
 
-			forOf(list, (value: string) => {
+			for (const value of list) {
 				values.push(value);
-			});
+			}
 
 			assert.deepEqual(values, [ 'the', 'quick', 'brown', 'fox' ]);
 		},

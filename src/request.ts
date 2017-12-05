@@ -54,12 +54,14 @@ Object.defineProperty(request, 'setDefaultProvider', {
 providerRegistry.setDefaultProvider(xhr);
 
 if (has('host-node')) {
-	let nodeProvider = require('./request/providers/node').default;
-	providerRegistry.setDefaultProvider(nodeProvider);
+	// tslint:disable-next-line
+	import('./request/providers/node').then(node => {
+		providerRegistry.setDefaultProvider(node.default);
+	});
 }
 
 export default request;
 export * from './request/interfaces';
 export { default as Headers } from './request/Headers';
 export { default as TimeoutError } from './request/TimeoutError';
-export { default as Response, ResponseData } from './request/Response';
+export { ResponseData } from './request/Response';
