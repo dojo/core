@@ -1,5 +1,4 @@
-import { assign } from '@dojo/shim/object';
-import { keys } from '@dojo/shim/object';
+import { assign, keys } from '@dojo/shim/object';
 import Set from '@dojo/shim/Set';
 
 /* Assigning to local variables to improve minification and readability */
@@ -104,36 +103,36 @@ export interface ConstructRecord extends AnonymousConstructRecord {
  * like another
  */
 export type PatchRecord = {
-		/**
-		 * The name of the property on the Object
-		 */
-		name: string;
+	/**
+	 * The name of the property on the Object
+	 */
+	name: string;
 
-		/**
-		 * The type of the patch
-		 */
-		type: 'delete';
-	} | {
-		/**
-		 * A property descriptor that describes the property in `name`
-		 */
-		descriptor: PropertyDescriptor;
+	/**
+	 * The type of the patch
+	 */
+	type: 'delete';
+} | {
+	/**
+	 * A property descriptor that describes the property in `name`
+	 */
+	descriptor: PropertyDescriptor;
 
-		/**
-		 * The name of the property on the Object
-		 */
-		name: string;
+	/**
+	 * The name of the property on the Object
+	 */
+	name: string;
 
-		/**
-		 * The type of the patch
-		 */
-		type: 'add' | 'update';
+	/**
+	 * The type of the patch
+	 */
+	type: 'add' | 'update';
 
-		/**
-		 * Additional patch records which describe the value of the property
-		 */
-		valueRecords?: (ConstructRecord | PatchRecord | SpliceRecord)[];
-	};
+	/**
+	 * Additional patch records which describe the value of the property
+	 */
+	valueRecords?: (ConstructRecord | PatchRecord | SpliceRecord)[];
+};
 
 /**
  * The different types of patch records supported
@@ -376,7 +375,7 @@ function diffArray(a: any[], b: any, options: DiffOptions): SpliceRecord[] {
  * describe the differences
  *
  * @param a The first plain object to compare to
- * @param b The second plain bject to compare to
+ * @param b The second plain object to compare to
  * @param options An options bag that allows configuration of the behaviour of `diffPlainObject()`
  */
 function diffPlainObject(a: any, b: any, options: DiffOptions): (ConstructRecord | PatchRecord)[] {
@@ -391,29 +390,16 @@ function diffPlainObject(a: any, b: any, options: DiffOptions): (ConstructRecord
 		const bHasOwnProperty = hasOwnProperty.call(comparableB, name);
 
 		if (bHasOwnProperty && (valueA === valueB ||
-			(allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function'))) { /* not different */
-				/* when `allowFunctionValues` is true, functions are simply considered to be equal by `typeof` */
-				return patchRecords;
+				(allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function'))) { /* not different */
+			/* when `allowFunctionValues` is true, functions are simply considered to be equal by `typeof` */
+			return patchRecords;
 		}
 
 		const type = bHasOwnProperty ? 'update' : 'add';
 
 		const isValueAArray = isArray(valueA);
 		const isValueAPlainObject = isPlainObject(valueA);
-
-		if ((isValueAArray || isValueAPlainObject)) { /* non-primitive values we can diff */
-			/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
-			* we can diff those two values, if not, then we need to use an empty array or an empty object and diff
-			* the valueA with that */
-			const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
-				valueB : isValueAArray ?
-					[] : objectCreate(null);
-			const valueRecords = diff(valueA, value, options);
-			if (valueRecords.length) { /* only add if there are changes */
-				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value, options)));
-			}
-		}
-		else if (isCustomDiff(valueA) && !isCustomDiff(valueB)) { /* complex diff left hand */
+		if (isCustomDiff(valueA) && !isCustomDiff(valueB)) { /* complex diff left hand */
 			const result = valueA.diff(valueB, name, b);
 			if (result) {
 				patchRecords.push(result);
@@ -425,10 +411,22 @@ function diffPlainObject(a: any, b: any, options: DiffOptions): (ConstructRecord
 				patchRecords.push(result);
 			}
 		}
+		else if ((isValueAArray || isValueAPlainObject)) { /* non-primitive values we can diff */
+			/* this is a bit complicated, but essentially if valueA and valueB are both arrays or plain objects, then
+			* we can diff those two values, if not, then we need to use an empty array or an empty object and diff
+			* the valueA with that */
+			const value = (isValueAArray && isArray(valueB)) || (isValueAPlainObject && isPlainObject(valueB)) ?
+				valueB : isValueAArray ?
+					[] : objectCreate(null);
+			const valueRecords = diff(valueA, value, options);
+			if (valueRecords.length) { /* only add if there are changes */
+				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(value), diff(valueA, value, options)));
+			}
+		}
 		else if (isPrimitive(valueA) || (allowFunctionValues && typeof valueA === 'function') ||
 			isIgnoredPropertyValue(name, a, b, ignorePropertyValues)) {
-				/* primitive values, functions values if allowed, or ignored property values can just be copied */
-				patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(valueA)));
+			/* primitive values, functions values if allowed, or ignored property values can just be copied */
+			patchRecords.push(createPatchRecord(type, name, createValuePropertyDescriptor(valueA)));
 		}
 		else {
 			throw new TypeError(`Value of property named "${name}" from first argument is not a primative, plain Object, or Array.`);
@@ -468,8 +466,8 @@ export function getComparableObjects(a: any, b: any, options: DiffOptions) {
 	const comparableA = keys(a).reduce((obj, name) => {
 		if (isIgnoredProperty(name) ||
 			hasOwnProperty.call(b, name) && isIgnoredPropertyValue(name, a, b, ignorePropertyValues)) {
-				ignore.add(name);
-				return obj;
+			ignore.add(name);
+			return obj;
 		}
 
 		keep.add(name);
@@ -487,6 +485,14 @@ export function getComparableObjects(a: any, b: any, options: DiffOptions) {
 	}, {} as { [key: string]: any });
 
 	return { comparableA, comparableB, ignore };
+}
+
+/**
+ * A guard that determines if the value is a `CustomDiff`
+ * @param value The value to check
+ */
+export function isCustomDiff<T>(value: any): value is CustomDiff<T> {
+	return typeof value === 'object' && value instanceof CustomDiff;
 }
 
 /**
@@ -548,14 +554,6 @@ function isPrimitive(value: any): value is (string | number | boolean | undefine
 		typeofValue === 'string' ||
 		typeofValue === 'number' ||
 		typeofValue === 'boolean';
-}
-
-/**
- * A guard that determines if the value is a `CustomDiff`
- * @param value The value to check
- */
-function isCustomDiff<T>(value: any): value is CustomDiff<T> {
-	return typeof value === 'object' && value instanceof CustomDiff;
 }
 
 /**
@@ -635,7 +633,7 @@ function resolveTargetValue(patchValue: any, targetValue: any): any {
 			patchIsSpliceRecordArray ?
 				isArray(targetValue) ?
 					targetValue : [] : isPlainObject(targetValue) ?
-						targetValue : objectCreate(null),
+				targetValue : objectCreate(null),
 			patchValue
 		) :
 		patchValue;
