@@ -6,16 +6,19 @@ import Set from '@dojo/shim/Set';
 const objectCreate = Object.create;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const defineProperty = Object.defineProperty;
+const isArray = Array.isArray;
 const isFrozen = Object.isFrozen;
 const isSealed = Object.isSealed;
 
-function isArray(item: any) {
-	return Array.isArray(item) || isTypedArray(item);
-
-}
-
 function isTypedArray(item: any) {
 	return item != null && item.buffer instanceof ArrayBuffer && item.BYTES_PER_ELEMENT;
+}
+
+function toPlainArray(item: any) {
+	if (item == null || !isTypedArray(item)) {
+		return item;
+	}
+	return Array.prototype.slice.call(item);
 }
 
 export type IgnorePropertyFunction = (name: string, a: any, b: any) => boolean;
@@ -339,7 +342,8 @@ function diffArray(a: any[], b: any, options: DiffOptions): SpliceRecord[] {
 	}
 
 	arrayA.forEach((valueA, index) => {
-		const valueB = arrayB[index];
+		valueA = toPlainArray(valueA);
+		const valueB = toPlainArray(arrayB[index]);
 
 		if (index in arrayB && (valueA === valueB || (allowFunctionValues && typeof valueA === 'function' && typeof valueB === 'function'))) {
 			return; /* not different */
@@ -393,8 +397,8 @@ function diffPlainObject(a: any, b: any, options: DiffOptions): (ConstructRecord
 
 	/* look for keys in a that are different from b */
 	keys(comparableA).reduce((patchRecords, name) => {
-		const valueA = a[name];
-		const valueB = b[name];
+		const valueA = toPlainArray(a[name]);
+		const valueB = toPlainArray(b[name]);
 		const bHasOwnProperty = hasOwnProperty.call(comparableB, name);
 
 		if (bHasOwnProperty && (valueA === valueB ||
@@ -661,6 +665,9 @@ export function diff(a: any, b: any, options: DiffOptions = {}): (ConstructRecor
 		throw new TypeError('Arguments are not of type object.');
 	}
 
+	a = toPlainArray(a);
+	b = toPlainArray(b);
+
 	if (isArray(a)) {
 		return diffArray(a, b, options);
 	}
@@ -683,6 +690,7 @@ export function diff(a: any, b: any, options: DiffOptions = {}): (ConstructRecor
  * @param records A set of patch records to be applied to the target
  */
 export function patch(target: any, records: (ConstructRecord | PatchRecord | SpliceRecord)[]): any {
+	target = toPlainArray(target);
 	if (!isArray(target) && !isPlainObject(target)) {
 		throw new TypeError('A target for a patch must be either an array or a plain object.');
 	}

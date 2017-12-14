@@ -1214,6 +1214,18 @@ registerSuite('compare', {
 					const patchRecords = diff(array1, array2);
 
 					assert.deepEqual(patchRecords, [ ]);
+				},
+
+				'object with typed array'() {
+					const patchRecords = diff({
+						name: 'foo',
+						values: new Int8Array([1, 2, 3])
+					}, {
+						name: 'foo',
+						values: new Int8Array([1, 2, 3])
+					});
+
+					assert.deepEqual(patchRecords, [ ]);
 				}
 			},
 
@@ -1253,6 +1265,38 @@ registerSuite('compare', {
 							type: 'splice'
 						}
 					]);
+				},
+
+				'object with typed array'() {
+					const patchRecords = diff({
+						name: 'foo',
+						values: new Int8Array([1, 2, 3])
+					}, {
+						name: 'foo',
+						values: new Int8Array([1, 2, 5])
+					});
+
+					assert.deepEqual(patchRecords, [
+							{
+								type: 'update',
+								name: 'values',
+								descriptor: {
+									value: [ 1, 2, 5 ],
+									writable: true,
+									enumerable: true,
+									configurable: true
+								},
+								valueRecords: [
+									{
+										add: [ 3 ],
+										start: 2,
+										deleteCount: 1,
+										type: 'splice'
+									}
+								]
+							}
+						]
+					);
 				}
 			}
 		}
