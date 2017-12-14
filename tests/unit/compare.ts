@@ -1198,6 +1198,63 @@ registerSuite('compare', {
 			assert.throws(() => {
 				diff({}, foo);
 			}, TypeError, 'Arguments are not plain Objects or Arrays.');
+		},
+
+		'typed arrays': {
+			'matching': {
+				'integers'() {
+					const patchRecords = diff(new Int8Array([1, 2, 3]), new Int8Array([1, 2, 3]));
+
+					assert.deepEqual(patchRecords, [ ]);
+				},
+
+				'arrays of typed arrays'() {
+					const array1 = [ new Int8Array([1, 2, 3]), new Int8Array([1, 2, 3]) ];
+					const array2 = [ new Int8Array([1, 2, 3]), new Int8Array([1, 2, 3]) ];
+					const patchRecords = diff(array1, array2);
+
+					assert.deepEqual(patchRecords, [ ]);
+				}
+			},
+
+			'not matching': {
+				'integers'() {
+					const patchRecords = diff(new Int8Array([1, 5, 3]), new Int8Array([1, 2, 3]));
+
+					assert.deepEqual(patchRecords, [
+						{
+							add: [ 5 ],
+							deleteCount: 1,
+							start: 1,
+							type: 'splice'
+						}
+					]);
+				},
+
+				'arrays of typed arrays'() {
+					const array1 = [ new Int8Array([1, 2, 3]), new Int8Array([1, 2, 5]) ];
+					const array2 = [ new Int8Array([1, 2, 3]), new Int8Array([1, 2, 3]) ];
+					const patchRecords = diff(array1, array2);
+
+					assert.deepEqual(patchRecords, [
+						{
+							add: [
+								[
+									{
+										add: [ 5 ],
+										deleteCount: 1,
+										start: 2,
+										type: 'splice'
+									}
+								]
+							],
+							deleteCount: 1,
+							start: 1,
+							type: 'splice'
+						}
+					]);
+				}
+			}
 		}
 	},
 

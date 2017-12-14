@@ -6,9 +6,17 @@ import Set from '@dojo/shim/Set';
 const objectCreate = Object.create;
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const defineProperty = Object.defineProperty;
-const isArray = Array.isArray;
 const isFrozen = Object.isFrozen;
 const isSealed = Object.isSealed;
+
+function isArray(item: any) {
+	return Array.isArray(item) || isTypedArray(item);
+
+}
+
+function isTypedArray(item: any) {
+	return item != null && item.buffer instanceof ArrayBuffer && item.BYTES_PER_ELEMENT;
+}
 
 export type IgnorePropertyFunction = (name: string, a: any, b: any) => boolean;
 
