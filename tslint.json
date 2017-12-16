@@ -36,7 +36,6 @@
 		"no-var-requires": false,
 		"object-literal-sort-keys": false,
 		"one-line": [ true, "check-open-brace", "check-whitespace" ],
-		"quotemark": [ true, "single" ],
 		"radix": true,
 		"semicolon": [ true, "always" ],
 		"trailing-comma": [ true, {
