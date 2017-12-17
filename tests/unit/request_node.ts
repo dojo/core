@@ -12,7 +12,6 @@ let handle: any;
 const serverPort = 8124;
 const serverUrl = 'http://localhost:' + serverPort;
 let server: any;
-let nodeRequest: any;
 
 let getRequestUrl = function(dataKey: string): string {
 	return serverUrl + '?dataKey=' + dataKey;
@@ -33,7 +32,6 @@ registerSuite('request node', {
 
 		server = createServer(function(request, response) {
 			const body = getResponseData(request);
-			nodeRequest = request;
 
 			response.writeHead(200, {
 				'Content-Type': 'application/json'

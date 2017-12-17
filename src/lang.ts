@@ -89,13 +89,6 @@ function _mixin<T extends {}, U extends {}>(kwArgs: MixinArgs<T, U>): T & U {
 	return <T & U>target;
 }
 
-interface ObjectAssignConstructor extends ObjectConstructor {
-	assign<T, U>(target: T, source: U): T & U;
-	assign<T, U1, U2>(target: T, source1: U1, source2: U2): T & U1 & U2;
-	assign<T, U1, U2, U3>(target: T, source1: U1, source2: U2, source3: U3): T & U1 & U2 & U3;
-	assign(target: any, ...sources: any[]): any;
-}
-
 /**
  * Creates a new object from the given prototype, and copies all enumerable own properties of one or more
  * source objects to the newly created target object.

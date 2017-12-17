@@ -1,4 +1,3 @@
-import Promise from '@dojo/shim/Promise';
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import { Tests } from 'intern/lib/interfaces/object';
