@@ -364,10 +364,13 @@ export function partial(targetFunction: (...args: any[]) => any, ...suppliedArgs
  * @return The handle object
  */
 export function createHandle(destructor: () => void): Handle {
+	var called = false;
 	return {
 		destroy: function(this: Handle) {
-			this.destroy = function() {};
-			destructor.call(this);
+			if (!called) {
+				called = true;
+				destructor();
+			}
 		}
 	};
 }
