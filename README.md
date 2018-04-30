@@ -24,7 +24,6 @@ npm install @dojo/shim
 
 - [Feature Detection](#feature-detection)
 - [Language Utilities](#language-utilities)
-  - [array](#array)
   - [lang](#lang)
   - [load](#load)
   - [math](#math)
@@ -45,10 +44,6 @@ detect which platforms support which features.
 
 The core package provides modules offering language utilities.  Some of these are heavily based
 on methods in the ES2015 proposal; others are additional APIs for commonly-performed tasks.
-
-#### array
-
-The [`@dojo/core/array` module](docs/array.md) contains analogs to some of the ES2015 Array APIs.
 
 #### lang
 
@@ -152,7 +147,6 @@ See [LICENSE](LICENSE) for details.
 	"pages": [
 		"docs/DateObject.md",
 		"docs/UrlSearchParams.md",
-		"docs/array.md",
 		"docs/has.md",
 		"docs/lang.md",
 		"docs/load.md",
