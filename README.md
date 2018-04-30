@@ -140,7 +140,6 @@ See [LICENSE](LICENSE) for details.
 {
 	"api": "docs/api.json",
 	"pages": [
-		"docs/DateObject.md",
 		"docs/UrlSearchParams.md",
 		"docs/has.md",
 		"docs/lang.md",
