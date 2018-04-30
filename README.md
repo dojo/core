@@ -26,7 +26,6 @@ npm install @dojo/shim
 - [Language Utilities](#language-utilities)
   - [lang](#lang)
   - [load](#load)
-  - [math](#math)
   - [string](#string)
 - [UrlSearchParams](#urlsearchparams)
 - [Event Handling](#event-handling)
@@ -52,10 +51,6 @@ and creating late-bound or partially applied functions.
 
 ### load
 The [`@dojo/core/load` module](docs/load.md) can be used to dynamically load modules or other arbitrary resources via plugins.
-
-#### math
-
-The [`@dojo/core/math` module](docs/math.md) contains analogs to a number of ES2015 APIs, including many trigonometric and logarithmic functions.
 
 #### string
 
@@ -150,7 +145,6 @@ See [LICENSE](LICENSE) for details.
 		"docs/has.md",
 		"docs/lang.md",
 		"docs/load.md",
-		"docs/math.md",
 		"docs/on.md",
 		"docs/request.md",
 		"docs/stringExtras.md"
