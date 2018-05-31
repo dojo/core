@@ -214,7 +214,7 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 					abortError = new Error('Aborted');
 					abortError.name = 'AbortError';
 				}
-				reject(new DOMException('Aborted', 'AbortError'));
+				reject(abortError);
 			});
 		}
 
