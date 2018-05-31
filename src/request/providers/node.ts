@@ -671,6 +671,10 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 		throw error;
 	});
 
+	if (options.signal) {
+		options.signal.addEventListener('abort', () => requestTask.cancel());
+	}
+
 	requestTask.upload = new Observable<number>((observer) => uploadObserverPool.add(observer));
 
 	return requestTask;

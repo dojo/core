@@ -263,6 +263,10 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 		setOnError(request, reject);
 	}, abort);
 
+	if (options.signal) {
+		options.signal.addEventListener('abort', () => task.cancel());
+	}
+
 	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
 
 	if (has('filereader') && has('blob')) {
