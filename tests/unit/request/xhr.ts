@@ -7,7 +7,6 @@ import { Response } from '../../../src/request/interfaces';
 import UrlSearchParams from '../../../src/UrlSearchParams';
 import has from '../../../src/has';
 import Promise from '@dojo/shim/Promise';
-import { State } from '../../../src/async/Task';
 
 let echoServerAvailable = false;
 registerSuite('request/providers/xhr', {
@@ -104,9 +103,9 @@ registerSuite('request/providers/xhr', {
 				const controller = new AbortController();
 				const { signal } = controller;
 				const request = xhrRequest('/__echo/foo.json', { signal, timeout: 100 });
-				request.finally(
-					dfd.callback(() => {
-						assert.strictEqual(request.state, State.Canceled);
+				request.catch(
+					dfd.callback((error: Error) => {
+						assert.strictEqual(error.name, 'AbortError');
 					})
 				);
 

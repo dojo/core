@@ -7,7 +7,6 @@ import * as zlib from 'zlib';
 import { Response } from '../../../src/request/interfaces';
 import { default as nodeRequest, NodeResponse } from '../../../src/request/providers/node';
 import TimeoutError from '../../../src/request/TimeoutError';
-import { State } from '../../../src/async/Task';
 import AbortController from '@dojo/shim/AbortController';
 
 const serverPort = 8124;
@@ -471,9 +470,9 @@ registerSuite('request/node', {
 				const controller = new AbortController();
 				const { signal } = controller;
 				const request = nodeRequest(url, { signal });
-				request.finally(
-					dfd.callback(() => {
-						assert.strictEqual(request.state, State.Canceled);
+				request.catch(
+					dfd.callback((error: Error) => {
+						assert.strictEqual(error.name, 'AbortError');
 					})
 				);
 				controller.abort();

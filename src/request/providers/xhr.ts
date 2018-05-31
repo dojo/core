@@ -205,6 +205,19 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 	const task = <UploadObservableTask<XhrResponse>>new Task<XhrResponse>((resolve, reject) => {
 		timeoutReject = reject;
 
+		if (options.signal) {
+			options.signal.addEventListener('abort', () => {
+				let abortError: Error;
+				try {
+					abortError = new DOMException('Aborted', 'AbortError');
+				} catch {
+					abortError = new Error('Aborted');
+					abortError.name = 'AbortError';
+				}
+				reject(new DOMException('Aborted', 'AbortError'));
+			});
+		}
+
 		request.onreadystatechange = function() {
 			if (isAborted) {
 				return;
@@ -262,10 +275,6 @@ export default function xhr(url: string, options: XhrRequestOptions = {}): Uploa
 
 		setOnError(request, reject);
 	}, abort);
-
-	if (options.signal) {
-		options.signal.addEventListener('abort', () => task.cancel());
-	}
 
 	request.open(options.method, requestUrl, !options.blockMainThread, options.user, options.password);
 
