@@ -568,7 +568,7 @@ registerSuite('request/node', {
 			},
 			'upload monitoriting': {
 				'with a stream'(this: any) {
-					let events: number[] = [];
+					let events: any[] = [];
 
 					const req = nodeRequest(getRequestUrl('foo.json'), {
 						method: 'POST',
@@ -585,7 +585,7 @@ registerSuite('request/node', {
 					});
 				},
 				'without a stream'(this: any) {
-					let events: number[] = [];
+					let events: any[] = [];
 
 					const req = nodeRequest(getRequestUrl('foo.json'), {
 						method: 'POST',

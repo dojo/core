@@ -112,7 +112,7 @@ registerSuite('request/providers/xhr', {
 					this.skip('No echo server available');
 				}
 
-				let events: number[] = [];
+				let events: any[] = [];
 
 				const req = xhrRequest('/__echo/post', {
 					method: 'POST',

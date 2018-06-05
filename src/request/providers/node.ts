@@ -10,7 +10,7 @@ import { deepAssign } from '../../lang';
 import { queueTask } from '../../queue';
 import { createTimer } from '../../util';
 import Headers from '../Headers';
-import { RequestOptions, UploadObservableTask } from '../interfaces';
+import { RequestOptions, UploadObservableTask, RequestUploadData } from '../interfaces';
 import Response from '../Response';
 import TimeoutError from '../TimeoutError';
 import { Readable } from 'stream';
@@ -395,7 +395,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 
 	const request = parsedUrl.protocol === 'https:' ? https.request(requestOptions) : http.request(requestOptions);
 
-	const uploadObserverPool = new SubscriptionPool<number>();
+	const uploadObserverPool = new SubscriptionPool<RequestUploadData>();
 
 	const requestTask = <UploadObservableTask<NodeResponse>>new Task<NodeResponse>(
 		(resolve, reject) => {
@@ -630,7 +630,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 
 				options.bodyStream.on('data', (chunk: any) => {
 					uploadedSize += chunk.length;
-					uploadObserverPool.next(uploadedSize);
+					uploadObserverPool.next({ loaded: uploadedSize });
 				});
 
 				options.bodyStream.on('end', () => {
@@ -641,7 +641,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 				const body = options.body.toString();
 
 				request.on('response', () => {
-					uploadObserverPool.next(body.length);
+					uploadObserverPool.next({ loaded: body.length });
 				});
 
 				request.end(body);
@@ -671,7 +671,7 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 		throw error;
 	});
 
-	requestTask.upload = new Observable<number>((observer) => uploadObserverPool.add(observer));
+	requestTask.upload = new Observable<RequestUploadData>((observer) => uploadObserverPool.add(observer));
 
 	return requestTask;
 }
