@@ -581,7 +581,7 @@ registerSuite('request/node', {
 
 					return req.then((res) => {
 						assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
-						assert.equal(events[events.length - 1], 17);
+						assert.deepEqual(events[events.length - 1], { loaded: 17 });
 					});
 				},
 				'without a stream'(this: any) {
@@ -598,7 +598,7 @@ registerSuite('request/node', {
 
 					return req.then((res) => {
 						assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
-						assert.equal(events[events.length - 1], 17);
+						assert.deepEqual(events[events.length - 1], { loaded: 17 });
 					});
 				}
 			},

@@ -125,7 +125,9 @@ registerSuite('request/providers/xhr', {
 
 				return req.then((res) => {
 					assert.isTrue(events.length > 0, 'was expecting at least one monitor event');
-					assert.equal(events[events.length - 1], 5);
+					assert.equal(events[events.length - 1].loaded, 5);
+					assert.equal(events[events.length - 1].total, 5);
+					assert.equal(events[events.length - 1].lengthComputable, true);
 				});
 			},
 
