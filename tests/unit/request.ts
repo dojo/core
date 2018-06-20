@@ -2,6 +2,7 @@ const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 import Task from '../../src/async/Task';
 import request, { providerRegistry, Response, Headers, RequestOptions, UploadObservableTask } from '../../src/request';
+import { RequestUploadData } from '../../src/request/interfaces';
 import ResponseClass from '../../src/request/Response';
 import Observable from '../../src/Observable';
 
@@ -40,7 +41,7 @@ function mockProvider(url: string, options?: RequestOptions): UploadObservableTa
 		}()
 	);
 
-	task.upload = new Observable<number>(() => {});
+	task.upload = new Observable<RequestUploadData>(() => {});
 
 	return task;
 }

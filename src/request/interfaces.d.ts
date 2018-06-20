@@ -26,8 +26,12 @@ export interface Headers {
 	[Symbol.iterator](): IterableIterator<[string, string]>;
 }
 
-export interface UploadObservableTask<T> extends Task<T> {
-	upload: Observable<number>;
+export interface RequestUploadData {
+	loaded: number;
+}
+
+export interface UploadObservableTask<T, U = RequestUploadData> extends Task<T> {
+	upload: Observable<U>;
 }
 
 export type Provider = (url: string, options?: RequestOptions) => UploadObservableTask<Response>;
