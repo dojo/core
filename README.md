@@ -1,6 +1,6 @@
-## The `@dojo/core` repository has been deprecated and moved to [`@dojo/framework`](https://github.com/dojo/framework)
+## The `@dojo/core` repository has been deprecated and merged into [`@dojo/framework`](https://github.com/dojo/framework)
 
-You can read more about this change on our [blog](https://dojo.io/blog/). We will continue providing patches for `core` and other Dojo 2 repositories, and we are working on a [CLI command](https://github.com/dojo/framework/issues/13) to aid in migrating projects from v2 to v3.
+You can read more about this change on our [blog](https://dojo.io/blog/). We will continue providing patches for `core` and other Dojo 2 repositories, and a [CLI migration tool](https://github.com/dojo/cli-upgrade) is available to aid in migrating projects from v2 to v3.
 
 ***
 
