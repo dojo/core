@@ -1,3 +1,9 @@
+## The `@dojo/core` repository has been deprecated and merged into [`@dojo/framework`](https://github.com/dojo/framework)
+
+You can read more about this change on our [blog](https://dojo.io/blog/). We will continue providing patches for `core` and other Dojo 2 repositories, and a [CLI migration tool](https://github.com/dojo/cli-upgrade) is available to aid in migrating projects from v2 to v3.
+
+***
+
 # Dojo 2 core
 
 [![Build Status](https://travis-ci.org/dojo/core.svg?branch=master)](https://travis-ci.org/dojo/core)
@@ -81,11 +87,6 @@ The `@dojo/core/Promise` class is an implementation of the ES2015 Promise API th
 #### Task
 
 The `@dojo/core/async/Task` class is an extension of `@dojo/core/Promise` that provides cancelation support.
-
-## How Do I Contribute?
-
-We appreciate your interest! Please see the [Dojo 2 Meta Repository](https://github.com/dojo/meta#readme)
-for the Contributing Guidelines.
 
 ### Code Style
 
