@@ -1,6 +1,7 @@
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
 
+import AbortController from '@dojo/shim/AbortController';
 import xhrRequest, { XhrResponse } from '../../../src/request/providers/xhr';
 import { Response } from '../../../src/request/interfaces';
 import UrlSearchParams from '../../../src/UrlSearchParams';
@@ -92,6 +93,23 @@ registerSuite('request/providers/xhr', {
 						assert.strictEqual(error.name, 'TimeoutError');
 					}
 				);
+			},
+
+			'"signal"'(this: any) {
+				if (!echoServerAvailable) {
+					this.skip('No echo server available');
+				}
+				const dfd = this.async();
+				const controller = new AbortController();
+				const { signal } = controller;
+				const request = xhrRequest('/__echo/foo.json', { signal, timeout: 100 });
+				request.catch(
+					dfd.callback((error: Error) => {
+						assert.strictEqual(error.name, 'AbortError');
+					})
+				);
+
+				controller.abort();
 			},
 
 			'user and password'(this: any) {

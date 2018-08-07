@@ -654,6 +654,15 @@ export default function node(url: string, options: NodeRequestOptions = {}): Upl
 					timeoutReject && timeoutReject(new TimeoutError('The request timed out'));
 				}, options.timeout);
 			}
+
+			if (options.signal) {
+				options.signal.addEventListener('abort', () => {
+					const abortError = new Error('Aborted');
+					abortError.name = 'AbortError';
+					reject(abortError);
+				});
+			}
+
 		},
 		() => {
 			request.abort();
